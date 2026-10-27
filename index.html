@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0a">
+  <meta name="description" content="Consulte a planta do seu final e sobreponha arquitetura, elétrica, instalações e vistas hidráulicas do Riviera Martim de Sá.">
+  <title>Plantas · Riviera Martim de Sá</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script src="services.js" defer></script>
+  <script src="view3d.js" defer></script>
+  <script src="final4.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#painel">Ir para a planta</a>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="identity"><span class="identity-mark" aria-hidden="true">R</span><div><strong>Riviera Martim de Sá</strong><small>Plantas dos apartamentos</small></div></div>
+      <span class="edition">PLANTAS E REFORMA</span>
+      <a class="toplink" href="#documentos">Plantas originais <span aria-hidden="true">↗</span></a>
+    </header>
+    <main id="painel" class="app-layout">
+      <aside id="control-panel" class="control-panel" aria-label="Consulta da planta">
+        <div class="panel-section final-section">
+          <div class="section-kicker">01 / UNIDADE</div>
+          <label for="final-input">Qual é o final?</label>
+          <div class="final-entry"><span>FINAL</span><input id="final-input" type="text" inputmode="numeric" pattern="[1-6]" maxlength="1" placeholder="2" autocomplete="off" aria-describedby="final-hint"><button id="final-submit" type="button" aria-label="Consultar final">→</button></div>
+          <p id="final-hint">Use o último dígito do número do seu apartamento.</p>
+          <div id="final-result" class="final-result" aria-live="polite"></div>
+          <div class="quick-finals" aria-label="Escolha rápida do final"><button type="button" data-final="1">1</button><button type="button" data-final="2">2</button><button type="button" data-final="3">3</button><button type="button" data-final="4">4</button><button type="button" data-final="5">5</button><button type="button" data-final="6">6</button></div>
+        </div>
+        <div class="panel-section layers-section">
+          <div class="section-kicker">02 / CAMADAS</div>
+          <h2>Escolha o que ver</h2>
+          <p class="subtle">Você pode combinar as opções.</p>
+          <div id="layer-list" class="layer-list"></div>
+          <div class="layer-actions"><button id="show-all" type="button">Mostrar todas</button><button id="show-base" type="button">Só arquitetura</button></div>
+          <label class="opacity-label" for="overlay-opacity">Intensidade das sobreposições <output id="opacity-value">85%</output></label>
+          <input id="overlay-opacity" type="range" min="35" max="100" value="85">
+        </div>
+        <div class="panel-section legend-section">
+          <div class="section-kicker">03 / SÍMBOLOS</div>
+          <div id="legend" class="legend"></div>
+        </div>
+      </aside>
+      <section class="map-section" aria-labelledby="map-title">
+        <div class="map-heading"><div><div class="section-kicker">SEU APARTAMENTO</div><h1 id="map-title">Planta do final 2</h1><p id="map-description">Plantas dos finais 2 e 5</p></div><div class="mode-controls"><div class="mode-switch" aria-label="Modo de visualização"><button id="view-2d" type="button" aria-pressed="true">2D</button><button id="view-3d" type="button" aria-pressed="false">3D</button></div><span id="map-status" class="map-status">PLANTA 2D</span></div></div>
+        <div id="map-frame" class="map-frame">
+          <div id="plan-stage" class="plan-stage"></div>
+          <canvas id="plan-3d" aria-label="Vista 3D ilustrativa do apartamento" hidden></canvas>
+          <div class="side-toggle-bar" aria-label="Painéis laterais"><button id="toggle-controls" type="button" aria-controls="control-panel" aria-expanded="true" aria-label="Recolher controles"><span class="toggle-icon" aria-hidden="true">◀</span><span>Controles</span></button><button id="toggle-details" type="button" aria-controls="info-panel" aria-expanded="true" aria-label="Recolher detalhes"><span>Detalhes</span><span class="toggle-icon" aria-hidden="true">▶</span></button></div>
+          <section id="tech-popover" class="tech-popover" role="dialog" aria-modal="false" aria-labelledby="tech-title" tabindex="-1" hidden><div class="tech-popover-body"><button id="tech-close" class="tech-close" type="button" aria-label="Fechar detalhamento">×</button><div id="tech-layer" class="section-kicker">DETALHES DA PLANTA</div><h2 id="tech-title"></h2><p id="tech-description" class="tech-description"></p><div class="tech-evidence"><span>PLANTA ORIGINAL</span><strong id="tech-source-name"></strong></div><div class="tech-check"><span>ANTES DE REFORMAR</span><p id="tech-check-text"></p></div><div class="tech-actions"><a id="tech-source-link" target="_blank" rel="noopener">Abrir planta original ↗</a></div><button id="tech-services-button" class="popover-switch" type="button">Ver serviços para esta área →</button></div></section>
+          <section id="service-popover" class="service-popover" role="dialog" aria-modal="false" aria-labelledby="service-title" tabindex="-1" hidden><div class="service-popover-body"><button id="service-close" class="tech-close" type="button" aria-label="Fechar serviços">×</button><button id="service-back" class="service-back" type="button" hidden>← Detalhes da planta</button><div class="section-kicker">SERVIÇOS PARA ESTA ÁREA</div><h2 id="service-title">O que você quer fazer aqui?</h2><p id="service-intro" class="service-intro"></p><div id="service-list" class="service-list"></div><div id="service-results" class="service-results" aria-live="polite" hidden></div><p class="service-disclosure">Empresas exibidas são anunciantes. Antes de contratar, confirme as regras da obra com o condomínio.</p></div></section>
+          <div id="gesture-hint" class="gesture-hint" hidden>Arraste para girar · no celular, dois dedos inclinam, giram e aproximam</div>
+          <a id="dimension-status" class="dimension-status" href="#measurement-section" hidden><strong>MEDIDAS</strong><span>Comprimentos indisponíveis · saiba mais ↗</span></a>
+          <a id="area-status" class="area-status" href="#area-section" hidden><strong>ÁREAS</strong><span>Valores aproximados · ver detalhes ↗</span></a>
+          <div id="empty-state" class="empty-state" hidden></div><div class="map-tools"><button id="zoom-out" type="button" aria-label="Diminuir zoom">−</button><output id="zoom-value">100%</output><button id="zoom-in" type="button" aria-label="Aumentar zoom">+</button><button id="zoom-fit" type="button" aria-label="Ajustar planta">⤢</button></div><div class="map-watermark">RIVIERA <span>/</span> PLANTAS</div>
+        </div>
+        <div class="map-footer"><p id="map-disclaimer">As posições são aproximadas. Confira medidas e instalações no imóvel antes de reformar.</p><a id="main-source" href="assets/docs/finais-2-5.pdf#page=1" target="_blank" rel="noopener">Abrir planta original ↗</a></div>
+      </section>
+      <aside id="info-panel" class="info-panel" aria-label="Informações da consulta"><div class="panel-section"><div id="selection-kicker" class="section-kicker">COMO USAR</div><div id="selection-info" class="selection-info"><h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p></div></div><div id="area-section" class="panel-section area-panel" hidden><div class="section-kicker">ÁREAS APROXIMADAS</div><h2>Tamanho dos cômodos</h2><div id="area-content"></div></div><div id="measurement-section" class="panel-section measurement-panel" hidden><div class="section-kicker">MEDIDAS</div><h2>Comprimento das paredes</h2><div id="measurement-content"></div></div><div class="panel-section manual-section"><div class="section-kicker">MANUAL DO PROPRIETÁRIO</div><h2>Antes da reforma</h2><div id="manual-tip-list" class="manual-tip-list"></div><a class="manual-full-link" href="assets/docs/manual-proprietario.pdf" target="_blank" rel="noopener">Abrir manual completo ↗</a></div><div class="panel-section"><div class="section-kicker">PLANTAS ORIGINAIS</div><div id="source-list" class="source-list"></div></div><div class="panel-section compact-warning"><div class="section-kicker">ATENÇÃO</div><p>Não altere paredes estruturais, shafts ou instalações sem consultar as plantas e o profissional responsável.</p></div></aside>
+    </main>
+    <footer id="documentos" class="bottom-bar"><div><strong>Plantas e documentos</strong><span>Apartamentos comuns</span></div><nav aria-label="Documentos originais"><a href="assets/docs/finais-2-5.pdf" target="_blank" rel="noopener">Plantas 2/5 ↗</a><a href="assets/docs/finais-3-6.pdf" target="_blank" rel="noopener">Plantas 3/6 ↗</a><a href="assets/docs/final-4-comum.pdf" target="_blank" rel="noopener">Planta 4 ↗</a><a href="assets/docs/manual-proprietario.pdf" target="_blank" rel="noopener">Manual ↗</a><a href="assets/docs/guia-reformas.pdf" target="_blank" rel="noopener">Guia de reformas ↗</a></nav></footer>
+  </div>
+  <noscript>Ative o JavaScript para consultar as camadas. Os PDFs originais estão nos links do rodapé.</noscript>
+</body>
+</html>
