@@ -343,6 +343,10 @@ function renderServices(detail){
   }).join("");
   $("#service-results").hidden=true;
   $("#service-results").replaceChildren();
+  $("#independent-toggle").hidden=true;
+  $("#independent-toggle").setAttribute("aria-expanded","false");
+  $("#independent-list").hidden=true;
+  $("#independent-list").replaceChildren();
 }
 function positionPopovers(point){
   const bounds=$("#map-frame").getBoundingClientRect();
@@ -414,6 +418,21 @@ function detailForSurface(surface){
   const item=SURFACE_CATALOG[surface];
   return item?{layer:"architecture",surface,title:item.title,description:item.description,page:1}:null;
 }
+function createProviderCard(provider,service,independent){
+  const card=document.createElement("div");
+  card.className=independent?"independent-card":"sponsor-card";
+  const badge=document.createElement("small");
+  badge.textContent=independent?(provider.listingPaid?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":"PROFISSIONAL INDEPENDENTE"):"PUBLICIDADE";
+  const name=document.createElement("strong");name.textContent=provider.name;
+  card.append(badge,name);
+  const phone=String(provider.whatsapp||"").replace(/\D/g,"");
+  if(/^55\d{10,11}$/.test(phone)){
+    const link=document.createElement("a");link.target="_blank";link.rel="noopener";
+    link.href=`https://wa.me/${phone}?text=${encodeURIComponent(`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`)}`;
+    link.textContent="Pedir orçamento ↗";card.append(link);
+  }
+  return card;
+}
 function showService(serviceId){
   const service=SERVICE_CATALOG[serviceId];
   if(!service)return;
@@ -428,28 +447,37 @@ function showService(serviceId){
     results.append(condition);
   }
   const sponsors=SPONSORS.filter(item=>item.active && item.services?.includes(serviceId)).slice(0,MAX_SPONSORS_PER_SERVICE);
-  if(!sponsors.length){
+  const independents=INDEPENDENT_PROVIDERS.filter(item=>item.active && item.services?.includes(serviceId));
+  const featured=[...sponsors,...independents.slice(0,MAX_SPONSORS_PER_SERVICE-sponsors.length)];
+  if(!featured.length){
     const empty=document.createElement("p");empty.className="service-empty";
-    empty.textContent="Ainda não há empresas cadastradas neste serviço.";
+    empty.textContent="Ainda não há profissionais cadastrados neste serviço.";
     results.append(empty);
   }else{
-    sponsors.forEach(sponsor=>{
-      const card=document.createElement("div");card.className="sponsor-card";
-      const badge=document.createElement("small");badge.textContent="PUBLICIDADE";
-      const name=document.createElement("strong");name.textContent=sponsor.name;
-      card.append(badge,name);
-      const phone=String(sponsor.whatsapp||"").replace(/\D/g,"");
-      if(/^55\d{10,11}$/.test(phone)){
-        const link=document.createElement("a");link.target="_blank";link.rel="noopener";
-        link.href=`https://wa.me/${phone}?text=${encodeURIComponent(`Olá, vi seu anúncio de ${service.name} no site das plantas do Riviera.`)}`;
-        link.textContent="Pedir orçamento ↗";card.append(link);
-      }
-      results.append(card);
-    });
+    sponsors.forEach(sponsor=>results.append(createProviderCard(sponsor,service,false)));
+    featured.slice(sponsors.length).forEach(provider=>results.append(createProviderCard(provider,service,true)));
   }
   results.hidden=false;
+  const independentList=$("#independent-list");
+  independentList.replaceChildren();
+  if(independents.length){
+    independents.forEach(provider=>independentList.append(createProviderCard(provider,service,true)));
+  }else{
+    const empty=document.createElement("p");empty.className="service-empty";
+    empty.textContent="Ainda não há profissionais independentes cadastrados para este serviço.";
+    independentList.append(empty);
+  }
+  independentList.hidden=true;
+  const toggle=$("#independent-toggle");toggle.hidden=false;toggle.setAttribute("aria-expanded","false");
   if(activePoint)requestAnimationFrame(()=>positionPopovers(activePoint));
 }
+$("#independent-toggle").addEventListener("click",()=>{
+  const toggle=$("#independent-toggle");
+  const expanded=toggle.getAttribute("aria-expanded")!=="true";
+  toggle.setAttribute("aria-expanded",String(expanded));
+  $("#independent-list").hidden=!expanded;
+  if(activePoint)requestAnimationFrame(()=>positionPopovers(activePoint));
+});
 $("#service-list").addEventListener("click",e=>{
   const button=e.target.closest("button[data-service]");
   if(button)showService(button.dataset.service);

@@ -6,7 +6,7 @@ Consulte as plantas dos apartamentos comuns pelos finais **2, 3, 4, 5 e 6**. Dig
 
 O desenho interativo facilita a consulta, mas as posições e áreas exibidas são aproximadas. Ele não fornece medidas para obra, não indica locais liberados para furar e não substitui as plantas originais, a conferência no imóvel ou a avaliação do profissional responsável. Consulte também o Manual do Proprietário e as regras de reforma do condomínio.
 
-Os documentos de origem estão em `assets/docs/`. Nenhum morador, unidade ou prestador foi cadastrado. Quando houver anunciantes, eles aparecerão identificados como **PUBLICIDADE**; a presença de um serviço ou empresa não significa que uma intervenção esteja autorizada.
+Os documentos de origem estão em `assets/docs/`. Nenhum morador, unidade ou prestador foi cadastrado. Há até três posições em destaque por serviço: anunciantes contratantes têm prioridade e profissionais independentes podem ocupar vagas livres sem cobrança adicional. Uma lista expansível reúne todos os independentes daquele serviço. Anúncios pagos aparecem identificados como **PUBLICIDADE**; a presença de um serviço ou profissional não significa indicação técnica nem que uma intervenção esteja autorizada.
 
 ## Executar localmente
 

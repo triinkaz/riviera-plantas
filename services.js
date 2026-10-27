@@ -71,7 +71,11 @@ const SERVICE_CONTEXTS = {
   drain:["drenos","hidraulica","vistoria"]
 };
 
-// Anunciantes reais serão cadastrados aqui após verificação e contratação.
+// Cadastre somente contatos reais, com autorização para publicar os dados.
 // Formato: {id, name, services:["pintura"], whatsapp:"55...", active:true}.
 const SPONSORS = [];
+// Profissionais que trabalham por conta própria. O destaque ocupa apenas vagas
+// não contratadas entre as três primeiras posições, sem cobrança adicional.
+// listingPaid identifica eventual cadastro pago para rotular a publicidade.
+const INDEPENDENT_PROVIDERS = [];
 const MAX_SPONSORS_PER_SERVICE = 3;
