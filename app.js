@@ -265,7 +265,7 @@ function render3D() {
     final:state.final, mirrored:mirrored(), layers:state.layers,
     theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
-    cooling:state.cooling, coolingOutline:coolingOutline(),
+    cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(),
     structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
     drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
     shafts:state.final===4?FINAL4.shafts:SHAFTS,
@@ -440,10 +440,11 @@ function detailFor3DDot(dot){
     electric:{title:dot.label==="T"?"Tomada indicada":dot.label==="I"?"Interruptor indicado":"Iluminação de teto",description:"Ponto representado na folha elétrica. A posição no volume é aproximada; confira altura, tensão e circuito na instalação real.",page:2},
     hydraulic:{title:"Vista hidráulica disponível",description:"O ponto indica um ambiente com vista hidráulica. O volume não representa o trajeto das tubulações.",page:6},
     systems:{title:"Prumada ou instalação indicada",description:"Elemento indicado na folha de ar, gás e prumadas. Confira a legenda e a posição real antes de qualquer intervenção.",page:4},
-    drains:{title:"Dreno indicado",description:"Ponto de dreno indicado nas folhas técnicas. A posição no volume é aproximada; confira a vista original.",page:4}
+    drains:{title:"Dreno indicado",description:"Ponto de dreno indicado nas folhas técnicas. A posição no volume é aproximada; confira a vista original.",page:4},
+    areas:{title:"Área aproximada",description:"Estimativa obtida da planta. Meça no apartamento antes de planejar compras ou obra.",page:1}
   }[dot.layer];
   if(!defaults)return null;
-  return {layer:dot.layer,title:dot.title||defaults.title,description:defaults.description,page:dot.page||defaults.page};
+  return {layer:dot.layer,title:dot.title||defaults.title,description:dot.description||defaults.description,page:dot.page||defaults.page};
 }
 function detailForSurface(surface){
   const item=SURFACE_CATALOG[surface];
