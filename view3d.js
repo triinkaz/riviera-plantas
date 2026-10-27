@@ -83,6 +83,11 @@ function drawApartment3D(canvas, options) {
   }
   context.restore();
 
+  if (options.cooling && options.coolingOutline) {
+    const zone=options.coolingOutline.map(([x,y])=>[x,mirrorY(y),4]);
+    polygon(zone, light ? "#4aa9d366" : "#37b7e177", light ? "#12789e" : "#8ce4ff", 2);
+  }
+
   if (options.layers.architecture) {
     if(custom){
       custom.wet.forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,light?"#aed5dd8c":"#26404b7d",null);markSurface(vertices,"wet_floor");});

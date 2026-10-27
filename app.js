@@ -59,6 +59,7 @@ const AREA_ESTIMATES = {
 const state = {
   final: 2,
   layers: { architecture: true, electric: false, hydraulic: false, systems: false, drains: false, dimensions: false, areas: false },
+  cooling: false,
   opacity: 0.85, zoom: 1, panX: 0, panY: 0, mode: "2d",
   view3d: { yaw: -0.5, tilt: 0.77, zoom: 1, panX: 0, panY: 0 }
 };
@@ -101,6 +102,16 @@ const mirrored = () => [3,6].includes(state.final);
 const yy = (y) => mirrored() ? 1570 - y : y;
 const areaData = () => state.final===4 ? AREA_ESTIMATES.four : AREA_ESTIMATES.pair;
 const areaLabel = (approx) => `≈${Math.round(approx)} m²`;
+const coolingOutline = () => state.final===4
+  ? [[390,493],[630,493],[630,710],[390,710]]
+  : [[680,750],[1015,750],[1015,1080],[680,1080]];
+function coolingOverlaySvg() {
+  const shape=coolingOutline().map(([x,y])=>`${x},${y}`).join(" ");
+  const transform=mirrored()? ' transform="translate(0 1570) scale(1 -1)"' : '';
+  const titleY=state.final===4?520:mirrored()?535:785;
+  const subtitleY=state.final===4?541:mirrored()?560:810;
+  return `<g id="cooling-overlay" class="cooling-overlay" aria-hidden="true"><polygon points="${shape}"${transform}/><text x="${state.final===4?510:847}" y="${titleY}" text-anchor="middle">9.000 BTU/h</text><text x="${state.final===4?510:847}" y="${subtitleY}" text-anchor="middle" class="cooling-subtitle">ALCANCE ILUSTRATIVO</text></g>`;
+}
 const rect = (x,y,w,h,cls) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${cls}"/>`;
 const path = (d,cls) => `<path d="${d}" class="${cls}"/>`;
 const line = (x1,y1,x2,y2,cls) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
@@ -221,7 +232,7 @@ function renderSvg() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 260 1200 1080" role="group" aria-label="Planta vetorial do final ${state.final} com camadas selecionáveis">
   <defs><pattern id="drawing-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#29251d" stroke-width="0.6"/></pattern></defs>
   <rect x="100" y="260" width="1200" height="1080" fill="url(#drawing-grid)"/>
-  ${structure}${roomLabels()}${hydraulicPoints()}${systemsPoints()}${drainPoints()}${electricPoints()}
+  ${structure}${coolingOverlaySvg()}${roomLabels()}${hydraulicPoints()}${systemsPoints()}${drainPoints()}${electricPoints()}
   ${areaMarkers()}
   <text x="160" y="296" class="plate-title">FINAL ${state.final} <tspan> / </tspan> ${mirrored() ? "TIPO 3/6" : "TIPO 2/5"}</text>
   </svg>`;
@@ -251,6 +262,7 @@ function render3D() {
     final:state.final, mirrored:mirrored(), layers:state.layers,
     theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
+    cooling:state.cooling, coolingOutline:coolingOutline(),
     structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
     drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
     shafts:state.final===4?FINAL4.shafts:SHAFTS,
@@ -262,6 +274,7 @@ function render3D() {
 }
 function syncMode() {
   const available = state.final!==1;
+  $("#cooling-toggle").disabled = !available;
   $("#view-2d").disabled = !available;
   $("#view-3d").disabled = !available;
   $("#view-2d").setAttribute("aria-pressed",String(available && state.mode==="2d"));
@@ -537,6 +550,8 @@ function applyLayers() {
     labels.setAttribute("aria-hidden", String(!state.layers.architecture));
   }
   $("#plan-stage").style.setProperty("--overlay-opacity", state.opacity);
+  const coolingOverlay=$("#cooling-overlay");
+  if(coolingOverlay)coolingOverlay.style.display=state.cooling?"":"none";
   $("#layer-list").querySelectorAll("input").forEach(input => { input.checked = !!state.layers[input.dataset.layer]; });
   renderDimensions();
   renderAreas();
@@ -587,6 +602,8 @@ function setFinal(value) {
     return;
   }
   state.final = n;
+  state.cooling=false;
+  syncCooling();
   $("#final-input").value = String(n);
   const available = n!==1;
   if (!available) state.mode = "2d";
@@ -607,6 +624,8 @@ function setFinal(value) {
   $("#main-source").hidden = !available;
   if (available) {
     $("#main-source").href = docUrl(1);
+    $("#cooling-electric-source").href=docUrl(3);
+    $("#cooling-open-area").textContent=String(Math.round(areaData().find(item=>item.open).approx));
     renderSvg();
     renderSources();
     $("#selection-info").innerHTML = '<h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p>';
@@ -655,6 +674,15 @@ $("#show-base").addEventListener("click",()=>{ LAYERS.forEach(l=>state.layers[l.
 $("#overlay-opacity").addEventListener("input",e=>{ state.opacity=Number(e.target.value)/100; $("#opacity-value").textContent=`${e.target.value}%`; applyLayers(); });
 $("#view-2d").addEventListener("click",()=>setMode("2d"));
 $("#view-3d").addEventListener("click",()=>setMode("3d"));
+function syncCooling(){
+  $("#cooling-toggle").setAttribute("aria-pressed",String(state.cooling));
+  $("#cooling-toggle").textContent=state.cooling?"❄ Ocultar área do ar":"❄ Área do ar";
+  $("#cooling-panel").hidden=!state.cooling || state.final===1;
+  const overlay=$("#cooling-overlay");
+  if(overlay)overlay.style.display=state.cooling?"":"none";
+  render3D();
+}
+$("#cooling-toggle").addEventListener("click",()=>{state.cooling=!state.cooling;syncCooling();});
 $("#zoom-in").addEventListener("click",()=>changeZoom(1.2));
 $("#zoom-out").addEventListener("click",()=>changeZoom(1/1.2));
 $("#zoom-fit").addEventListener("click",()=>{
