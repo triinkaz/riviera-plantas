@@ -180,39 +180,16 @@ function drawApartment3D(canvas, options) {
     }
     context.globalAlpha = 1;
   });
-  if (options.layers.areas && options.areas) {
-    options.areas.forEach(area => {
-      const [sx,sy]=project([area.x,mirrorY(area.y),18]);
-      const label=`≈${Math.round(area.approx)} m²`;
-      context.font="bold 12px Arial";
-      const badgeWidth=Math.max(62,context.measureText(label).width+18);
-      const badgeHeight=25;
-      const badgeX=sx-badgeWidth/2;
-      const badgeY=sy+8;
-      context.fillStyle=light?"#e5f6e9f2":"#143824f2";
-      context.strokeStyle=light?"#3d9461":"#8fe1ac";
-      context.lineWidth=1.5;
-      context.beginPath();
-      if (typeof context.roundRect==="function") context.roundRect(badgeX,badgeY,badgeWidth,badgeHeight,6);
-      else context.rect(badgeX,badgeY,badgeWidth,badgeHeight);
-      context.fill();
-      context.stroke();
-      context.fillStyle=light?"#1c6237":"#e7ffed";
-      context.textAlign="center";
-      context.textBaseline="middle";
-      context.fillText(label,sx,badgeY+badgeHeight/2);
-      hits.push({x:sx,y:badgeY+badgeHeight/2,r:Math.max(21,badgeWidth/2),dot:{layer:"areas",title:`${area.name}: ${label}`,description:area.open?"Sala, cozinha, serviço e circulação formam um espaço sem paredes separando esses usos. Valor aproximado; confira as medidas no imóvel.":"Valor aproximado obtido da planta. Confira as medidas no imóvel.",page:1}});
-    });
-  }
   if (options.cooling && options.coolingOutline) {
     const zone=options.coolingOutline.map(([x,y])=>[x,mirrorY(y),4]);
     const center=zone.reduce((sum,[x,y])=>[sum[0]+x/zone.length,sum[1]+y/zone.length],[0,0]);
     const [sx,sy]=project([center[0],center[1],7]);
     const badgeWidth=Math.min(236,Math.max(180,width-16));
     const badgeHeight=70;
-    const badgeX=Math.max(8,Math.min(width-badgeWidth-8,sx-badgeWidth/2));
-    const above=sy>115;
-    const badgeY=Math.max(10,Math.min(height-badgeHeight-10,above?sy-112:sy+34));
+    const showAreas=!!options.layers.areas;
+    const badgeX=showAreas?10:Math.max(8,Math.min(width-badgeWidth-8,sx-badgeWidth/2));
+    const above=showAreas||sy>115;
+    const badgeY=showAreas?Math.max(10,Math.min(height-badgeHeight-10,options.layers.dimensions?140:100)):Math.max(10,Math.min(height-badgeHeight-10,above?sy-112:sy+34));
     context.beginPath();
     context.moveTo(badgeX+badgeWidth/2,above?badgeY+badgeHeight:badgeY);
     context.lineTo(sx,sy);
@@ -240,6 +217,30 @@ function drawApartment3D(canvas, options) {
     context.fillText("10–15 m² sem sol direto",badgeX+badgeWidth/2,badgeY+39);
     context.font="9px Arial";
     context.fillText("CONTORNO ILUSTRATIVO",badgeX+badgeWidth/2,badgeY+57);
+  }
+  if (options.layers.areas && options.areas) {
+    options.areas.forEach(area => {
+      const [sx,sy]=project([area.x,mirrorY(area.y),18]);
+      const label=`≈${Math.round(area.approx)} m²`;
+      context.font="bold 12px Arial";
+      const badgeWidth=Math.max(62,context.measureText(label).width+18);
+      const badgeHeight=25;
+      const badgeX=sx-badgeWidth/2;
+      const badgeY=sy+8;
+      context.fillStyle=light?"#e5f6e9f2":"#143824f2";
+      context.strokeStyle=light?"#3d9461":"#8fe1ac";
+      context.lineWidth=1.5;
+      context.beginPath();
+      if (typeof context.roundRect==="function") context.roundRect(badgeX,badgeY,badgeWidth,badgeHeight,6);
+      else context.rect(badgeX,badgeY,badgeWidth,badgeHeight);
+      context.fill();
+      context.stroke();
+      context.fillStyle=light?"#1c6237":"#e7ffed";
+      context.textAlign="center";
+      context.textBaseline="middle";
+      context.fillText(label,sx,badgeY+badgeHeight/2);
+      hits.push({x:sx,y:badgeY+badgeHeight/2,r:Math.max(21,badgeWidth/2),dot:{layer:"areas",title:`${area.name}: ${label}`,description:area.open?"Sala, cozinha, serviço e circulação formam um espaço sem paredes separando esses usos. Valor aproximado; confira as medidas no imóvel.":"Valor aproximado obtido da planta. Confira as medidas no imóvel.",page:1}});
+    });
   }
   return {hits,surfaces:surfaceHits};
 }
