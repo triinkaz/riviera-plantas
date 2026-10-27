@@ -672,6 +672,8 @@ let drag2d=null;
 const activePointers=new Map();
 let gesture3d=null;
 let tap3d=null;
+let last3DOpen=null;
+let last3DPointerEnd=null;
 const frame=$("#map-frame");
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 function insidePolygon(x,y,points){
@@ -690,6 +692,16 @@ function pick3D(x,y){
     if(insidePolygon(x,y,item.points))return {surface:item.surface,x,y};
   }
   return null;
+}
+function open3DAt(clientX,clientY){
+  const bounds=$("#plan-3d").getBoundingClientRect();
+  const hit=pick3D(clientX-bounds.left,clientY-bounds.top);
+  if(!hit)return false;
+  const detail=hit.dot?detailFor3DDot(hit.dot):detailForSurface(hit.surface);
+  if(!detail)return false;
+  openTechPopover(detail,{x:bounds.left+hit.x,y:bounds.top+hit.y});
+  last3DOpen={time:performance.now(),x:clientX,y:clientY};
+  return true;
 }
 function beginTwoFingerGesture(){
   const points=[...activePointers.values()];
@@ -755,15 +767,12 @@ frame.addEventListener("pointermove",e=>{
   updateTransform();
 });
 function endPointer(e){
+  const was3DPointer=state.mode==="3d" && activePointers.has(e.pointerId);
+  const was3DGesture=was3DPointer && (e.type==="pointercancel" || !tap3d);
   if(e.type==="pointerup" && state.mode==="3d" && tap3d?.id===e.pointerId && activePointers.size===1){
-    const bounds=$("#plan-3d").getBoundingClientRect();
-    const x=e.clientX-bounds.left,y=e.clientY-bounds.top;
-    const hit=pick3D(x,y);
-    if(hit){
-      const detail=hit.dot?detailFor3DDot(hit.dot):detailForSurface(hit.surface);
-      if(detail)openTechPopover(detail,{x:bounds.left+hit.x,y:bounds.top+hit.y});
-    }
+    open3DAt(e.clientX,e.clientY);
   }
+  if(was3DPointer)last3DPointerEnd={time:performance.now(),drag:was3DGesture};
   tap3d=null;
   drag2d=null;
   activePointers.delete(e.pointerId);
@@ -773,6 +782,22 @@ function endPointer(e){
 }
 frame.addEventListener("pointerup",endPointer);
 frame.addEventListener("pointercancel",endPointer);
+frame.addEventListener("lostpointercapture",e=>{
+  if(drag2d?.id===e.pointerId)drag2d=null;
+  if(activePointers.delete(e.pointerId)){
+    tap3d=null;
+    gesture3d=null;
+  }
+  if(!activePointers.size)frame.classList.remove("dragging");
+});
+// Mantém o clique no 3D funcional quando o navegador não entrega o pointerup capturado.
+frame.addEventListener("click",e=>{
+  if(state.mode!=="3d" || state.final===1 || (e.target!==frame && e.target!==$("#plan-3d")))return;
+  const now=performance.now();
+  if(last3DPointerEnd?.drag && now-last3DPointerEnd.time<700)return;
+  if(last3DOpen && now-last3DOpen.time<700 && Math.hypot(e.clientX-last3DOpen.x,e.clientY-last3DOpen.y)<10)return;
+  open3DAt(e.clientX,e.clientY);
+});
 new ResizeObserver(()=>render3D()).observe(frame);
 const initialParams = new URLSearchParams(location.search);
 state.mode = initialParams.get("view")==="3d" ? "3d" : "2d";
