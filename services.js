@@ -74,8 +74,8 @@ const SERVICE_CONTEXTS = {
 // Cadastre somente contatos reais, com autorização para publicar os dados.
 // Formato: {id, name, services:["pintura"], whatsapp:"55...", active:true}.
 const SPONSORS = [];
-// Profissionais que trabalham por conta própria. O destaque ocupa apenas vagas
-// não contratadas entre as três primeiras posições, sem cobrança adicional.
-// listingPaid identifica eventual cadastro pago para rotular a publicidade.
+// Profissionais do plano MAIS, com contrato de 90 dias. O destaque ocupa apenas
+// vagas não contratadas entre as três primeiras posições, sem cobrança adicional.
+// Cada cadastro é publicidade, inclusive quando aparece na lista inferior.
 const INDEPENDENT_PROVIDERS = [];
 const MAX_SPONSORS_PER_SERVICE = 3;

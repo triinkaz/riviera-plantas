@@ -422,7 +422,7 @@ function createProviderCard(provider,service,independent){
   const card=document.createElement("div");
   card.className=independent?"independent-card":"sponsor-card";
   const badge=document.createElement("small");
-  badge.textContent=independent?(provider.listingPaid?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":"PROFISSIONAL INDEPENDENTE"):"PUBLICIDADE";
+  badge.textContent=independent?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":"PUBLICIDADE";
   const name=document.createElement("strong");name.textContent=provider.name;
   card.append(badge,name);
   const phone=String(provider.whatsapp||"").replace(/\D/g,"");
