@@ -1,25 +1,27 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b0b0a">
+  <meta id="browser-theme-color" name="theme-color" content="#f6f2e9">
   <meta name="description" content="Consulte a planta do seu final e sobreponha arquitetura, elétrica, instalações e vistas hidráulicas do Riviera Martim de Sá.">
   <title>Plantas · Riviera Martim de Sá</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="styles.css?v=mais-1">
+  <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
+  <link rel="stylesheet" href="styles.css?v=theme-1">
   <script src="services.js?v=mais-1" defer></script>
-  <script src="view3d.js" defer></script>
+  <script src="view3d.js?v=theme-1" defer></script>
   <script src="final4.js" defer></script>
-  <script src="app.js?v=mais-1" defer></script>
+  <script src="app.js?v=theme-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#painel">Ir para a planta</a>
   <div class="app-shell">
     <header class="topbar">
       <div class="identity"><span class="identity-mark" aria-hidden="true">R</span><div><strong>Riviera Martim de Sá</strong><small>Plantas dos apartamentos</small></div></div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Tema escuro</span></button>
       <span class="edition">PLANTAS E REFORMA</span>
-      <a class="toplink" href="#documentos">Plantas originais <span aria-hidden="true">↗</span></a>
+      <a class="toplink" href="#documentos" aria-label="Plantas originais"><span class="toplink-copy">Plantas originais</span> <span aria-hidden="true">↗</span></a>
     </header>
     <main id="painel" class="app-layout">
       <aside id="control-panel" class="control-panel" aria-label="Consulta da planta">

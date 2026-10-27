@@ -15,6 +15,7 @@ function drawApartment3D(canvas, options) {
   }
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
   context.clearRect(0, 0, width, height);
+  const light = options.theme !== "dark";
 
   const { yaw, tilt, zoom, panX, panY } = options.view;
   const custom = options.custom;
@@ -63,7 +64,7 @@ function drawApartment3D(canvas, options) {
     [140,330,0],[1250,330,0],[1250,1115,0],
     [1077,1115,0],[1077,1268,0],[140,1268,0]
   ]).map(([x,y,z]) => [x,mirrorY(y),z]);
-  polygon(floor, "#191914", "#b5925b", 2);
+  polygon(floor, light ? "#fffdf7" : "#191914", light ? "#a68b64" : "#b5925b", 2);
   markSurface(floor,"dry_floor");
   context.save();
   context.beginPath();
@@ -75,30 +76,30 @@ function drawApartment3D(canvas, options) {
   context.clip();
   const gridBounds = custom ? {left:245,right:1038,top:467,bottom:955} : {left:140,right:1250,top:330,bottom:1268};
   for (let x = gridBounds.left; x <= gridBounds.right; x += 80) {
-    polygon([[x,mirrorY(gridBounds.top),1],[x,mirrorY(gridBounds.bottom),1]], null, "#343024", .7);
+    polygon([[x,mirrorY(gridBounds.top),1],[x,mirrorY(gridBounds.bottom),1]], null, light ? "#d9d1c3" : "#343024", .7);
   }
   for (let y = gridBounds.top; y <= gridBounds.bottom; y += 80) {
-    polygon([[gridBounds.left,mirrorY(y),1],[gridBounds.right,mirrorY(y),1]], null, "#343024", .7);
+    polygon([[gridBounds.left,mirrorY(y),1],[gridBounds.right,mirrorY(y),1]], null, light ? "#d9d1c3" : "#343024", .7);
   }
   context.restore();
 
   if (options.layers.architecture) {
     if(custom){
-      custom.wet.forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,"#26404b7d",null);markSurface(vertices,"wet_floor");});
-      custom.balcony.forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,"#5243295c",null);markSurface(vertices,"balcony_floor");});
-      custom.ceiling.forEach(values=>polygon(rectangle(values,3),"#99917d31",null));
+      custom.wet.forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,light?"#aed5dd8c":"#26404b7d",null);markSurface(vertices,"wet_floor");});
+      custom.balcony.forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,light?"#dac29573":"#5243295c",null);markSurface(vertices,"balcony_floor");});
+      custom.ceiling.forEach(values=>polygon(rectangle(values,3),light?"#c4b79c4d":"#99917d31",null));
     }else{
-      [[660,350,150,344],[161,714,346,151]].forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,"#26404b7d",null);markSurface(vertices,"wet_floor");});
-      {const vertices=rectangle([830,350,400,230],2);polygon(vertices,"#5243295c",null);markSurface(vertices,"balcony_floor");}
-      polygon(rectangle([830,600,390,28],2), "#99917d31", null);
-      polygon(rectangle([830,1095,390,28],2), "#99917d31", null);
+      [[660,350,150,344],[161,714,346,151]].forEach(values=>{const vertices=rectangle(values,2);polygon(vertices,light?"#aed5dd8c":"#26404b7d",null);markSurface(vertices,"wet_floor");});
+      {const vertices=rectangle([830,350,400,230],2);polygon(vertices,light?"#dac29573":"#5243295c",null);markSurface(vertices,"balcony_floor");}
+      polygon(rectangle([830,600,390,28],2), light?"#c4b79c4d":"#99917d31", null);
+      polygon(rectangle([830,1095,390,28],2), light?"#c4b79c4d":"#99917d31", null);
     }
     options.shafts.forEach(values => {
       const corners = rectangle(values, 4);
-      polygon(corners, "#342635", "#b59cb8", 1.2);
+      polygon(corners, light?"#e7d9e9":"#342635", light?"#836d89":"#b59cb8", 1.2);
       markSurface(corners,"shaft");
-      polygon([corners[0],corners[2]], null, "#b59cb8", 1);
-      polygon([corners[1],corners[3]], null, "#b59cb8", 1);
+      polygon([corners[0],corners[2]], null, light?"#836d89":"#b59cb8", 1);
+      polygon([corners[1],corners[3]], null, light?"#836d89":"#b59cb8", 1);
     });
     const faces = [];
     const addBox = (values, material, wallHeight) => {
@@ -110,15 +111,15 @@ function drawApartment3D(canvas, options) {
         faces.push({
           vertices: face,
           depth: face.reduce((sum, point) => sum + depth(point), 0) / 4,
-          fill: material === "structural" ? (i % 2 ? "#806038d9" : "#a57c43d9") : (i % 2 ? "#355d6cd9" : "#54899ad9"),
-          stroke: material === "structural" ? "#deb67a" : "#8bc3d3", surface:material
+          fill: material === "structural" ? (light ? (i % 2 ? "#9d784c" : "#bd945d") : (i % 2 ? "#806038d9" : "#a57c43d9")) : (light ? (i % 2 ? "#638f9d" : "#86b6c0") : (i % 2 ? "#355d6cd9" : "#54899ad9")),
+          stroke: material === "structural" ? (light?"#765530":"#deb67a") : (light?"#477789":"#8bc3d3"), surface:material
         });
       }
       faces.push({
         vertices: high,
         depth: high.reduce((sum, point) => sum + depth(point), 0) / 4,
-        fill: material === "structural" ? "#d5ad6f" : "#7bb6c5",
-        stroke: material === "structural" ? "#ffe1a3" : "#b1e3ec", surface:material
+        fill: material === "structural" ? "#d5ad6f" : (light?"#a8cad2":"#7bb6c5"),
+        stroke: material === "structural" ? (light?"#765530":"#ffe1a3") : (light?"#477789":"#b1e3ec"), surface:material
       });
     };
     options.structural.forEach(values => addBox(values,"structural",155));
@@ -136,9 +137,9 @@ function drawApartment3D(canvas, options) {
     labels.forEach(([x,y,label]) => {
       const [sx,sy] = project([x,mirrorY(y),8]);
       context.lineWidth = 3;
-      context.strokeStyle = "#15130f";
+      context.strokeStyle = light ? "#fffdf7" : "#15130f";
       context.strokeText(label,sx,sy);
-      context.fillStyle = "#e7d4ae";
+      context.fillStyle = light ? "#2d322d" : "#e7d4ae";
       context.fillText(label,sx,sy);
     });
   }

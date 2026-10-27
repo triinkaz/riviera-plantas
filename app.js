@@ -81,6 +81,20 @@ const LIGHTS = [[400,515],[734,515],[998,462],[1126,675],[857,795],[1126,936],[8
 const OUTLETS = [[248,370],[499,370],[338,679],[514,679],[770,678],[1191,558],[1170,745],[1212,745],[1170,874],[1212,874],[1170,967],[1212,967],[1212,1028],[176,1056],[500,1229],[848,1229],[899,1229],[675,878],[514,898],[488,752]];
 const SWITCHES = [[248,402],[514,644],[667,581],[1026,567],[1132,478],[514,936],[708,875],[727,875],[898,1195],[1115,1068],[1115,1084],[453,751],[534,752]];
 const $ = (selector) => document.querySelector(selector);
+const themeToggle = $("#theme-toggle");
+function applyTheme(theme,save=false){
+  const dark=theme==="dark";
+  document.documentElement.dataset.theme=dark?"dark":"light";
+  themeToggle.setAttribute("aria-pressed",String(dark));
+  themeToggle.setAttribute("aria-label",dark?"Ativar tema claro":"Ativar tema escuro");
+  themeToggle.querySelector(".theme-icon").textContent=dark?"☀":"☾";
+  themeToggle.querySelector(".theme-label").textContent=dark?"Tema claro":"Tema escuro";
+  $("#browser-theme-color").content=dark?"#0b0b0a":"#f6f2e9";
+  if(save){try{localStorage.setItem("riviera-theme",dark?"dark":"light")}catch{}}
+  render3D();
+}
+themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark",true));
+applyTheme(document.documentElement.dataset.theme);
 const docName = () => state.final===4 ? "final-4-comum" : [2,5].includes(state.final) ? "finais-2-5" : "finais-3-6";
 const docUrl = (page = 1) => `assets/docs/${docName()}.pdf#page=${page}`;
 const mirrored = () => [3,6].includes(state.final);
@@ -235,6 +249,7 @@ function render3D() {
   if (state.mode !== "3d" || state.final===1 || $("#plan-3d").hidden) return;
   const result=drawApartment3D($("#plan-3d"),{
     final:state.final, mirrored:mirrored(), layers:state.layers,
+    theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
     structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
     drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
