@@ -180,5 +180,42 @@ function drawApartment3D(canvas, options) {
     }
     context.globalAlpha = 1;
   });
+  if (options.cooling && options.coolingOutline) {
+    const zone=options.coolingOutline.map(([x,y])=>[x,mirrorY(y),4]);
+    const center=zone.reduce((sum,[x,y])=>[sum[0]+x/zone.length,sum[1]+y/zone.length],[0,0]);
+    const [sx,sy]=project([center[0],center[1],7]);
+    const badgeWidth=Math.min(236,Math.max(180,width-16));
+    const badgeHeight=70;
+    const badgeX=Math.max(8,Math.min(width-badgeWidth-8,sx-badgeWidth/2));
+    const above=sy>115;
+    const badgeY=Math.max(10,Math.min(height-badgeHeight-10,above?sy-112:sy+34));
+    context.beginPath();
+    context.moveTo(badgeX+badgeWidth/2,above?badgeY+badgeHeight:badgeY);
+    context.lineTo(sx,sy);
+    context.strokeStyle=light?"#117aa4":"#80e1ff";
+    context.lineWidth=2;
+    context.stroke();
+    context.beginPath();
+    context.arc(sx,sy,5,0,Math.PI*2);
+    context.fillStyle=light?"#08789c":"#9bebff";
+    context.fill();
+    context.fillStyle=light?"#e7f9feef":"#0d2631f2";
+    context.strokeStyle=light?"#1680a4":"#80dfff";
+    context.lineWidth=2;
+    context.beginPath();
+    if (typeof context.roundRect==="function") context.roundRect(badgeX,badgeY,badgeWidth,badgeHeight,8);
+    else context.rect(badgeX,badgeY,badgeWidth,badgeHeight);
+    context.fill();
+    context.stroke();
+    context.textAlign="center";
+    context.textBaseline="middle";
+    context.fillStyle=light?"#114c65":"#e5faff";
+    context.font="bold 13px Arial";
+    context.fillText("❄ AR 9.000 BTU/h",badgeX+badgeWidth/2,badgeY+19);
+    context.font="bold 12px Arial";
+    context.fillText("10–15 m² sem sol direto",badgeX+badgeWidth/2,badgeY+39);
+    context.font="9px Arial";
+    context.fillText("CONTORNO ILUSTRATIVO",badgeX+badgeWidth/2,badgeY+57);
+  }
   return {hits,surfaces:surfaceHits};
 }

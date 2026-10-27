@@ -108,9 +108,12 @@ const coolingOutline = () => state.final===4
 function coolingOverlaySvg() {
   const shape=coolingOutline().map(([x,y])=>`${x},${y}`).join(" ");
   const transform=mirrored()? ' transform="translate(0 1570) scale(1 -1)"' : '';
-  const titleY=state.final===4?520:mirrored()?535:785;
-  const subtitleY=state.final===4?541:mirrored()?560:810;
-  return `<g id="cooling-overlay" class="cooling-overlay" aria-hidden="true"><polygon points="${shape}"${transform}/><text x="${state.final===4?510:847}" y="${titleY}" text-anchor="middle">9.000 BTU/h</text><text x="${state.final===4?510:847}" y="${subtitleY}" text-anchor="middle" class="cooling-subtitle">ALCANCE ILUSTRATIVO</text></g>`;
+  const small=state.final===4;
+  const centerX=small?510:847;
+  const top=small?503:mirrored()?502:762;
+  const width=small?224:284;
+  const height=small?64:77;
+  return `<g id="cooling-overlay" class="cooling-overlay" aria-hidden="true"><polygon points="${shape}"${transform}/><rect class="cooling-label-plate" x="${centerX-width/2}" y="${top}" width="${width}" height="${height}" rx="7"/><text x="${centerX}" y="${top+(small?18:24)}" text-anchor="middle">❄ AR 9.000 BTU/h</text><text x="${centerX}" y="${top+(small?39:48)}" text-anchor="middle" class="cooling-range">10–15 m² sem sol direto</text><text x="${centerX}" y="${top+(small?55:67)}" text-anchor="middle" class="cooling-subtitle">CONTORNO ILUSTRATIVO</text></g>`;
 }
 const rect = (x,y,w,h,cls) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" class="${cls}"/>`;
 const path = (d,cls) => `<path d="${d}" class="${cls}"/>`;
