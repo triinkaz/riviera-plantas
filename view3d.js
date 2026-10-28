@@ -109,7 +109,7 @@ function drawApartment3D(canvas, options) {
     const faces = [];
     const addBox = (values, material, wallHeight) => {
       const palette = material === "structural"
-        ? {sides:light?["#c5494e","#a8323d"]:["#ad303edc","#842633dc"],top:light?"#db6568":"#bd4652",stroke:light?"#76232b":"#f18a90"}
+        ? {sides:light?["#bd945d","#9d784c"]:["#a57c43d9","#806038d9"],top:"#d5ad6f",stroke:light?"#765530":"#deb67a"}
         : material === "masonry"
           ? {sides:light?["#b85c30","#9c4623"]:["#a94f25e8","#813718e8"],top:light?"#cc7441":"#b65c2e",stroke:light?"#713416":"#e99b62"}
           : {sides:light?["#86b6c0","#638f9d"]:["#54899ad9","#355d6cd9"],top:light?"#a8cad2":"#7bb6c5",stroke:light?"#477789":"#8bc3d3"};

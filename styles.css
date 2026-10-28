@@ -173,12 +173,7 @@ html[data-theme="light"] .service-back{background:#dfede0;color:#265738;border-c
 html[data-theme="light"] .masonry-wall{fill:#b85c30;stroke:#713416}
 html[data-theme="light"] .masonry-wall.clickable-surface:hover,html[data-theme="light"] .masonry-wall.clickable-surface.selected-point{stroke:#4c220d}
 
-/* Estrutura em vermelho, com aviso destacado ao selecionar uma parede. */
-.swatch.structural{background:#b53642}
-.structural-wall{fill:#a72835;stroke:#ed7b84;stroke-width:1.8}
-.structural-wall.clickable-surface:hover,.structural-wall.clickable-surface.selected-point{stroke:#ffd1d1;stroke-width:3}
-html[data-theme="light"] .structural-wall{fill:#c34248;stroke:#78242c}
-html[data-theme="light"] .structural-wall.clickable-surface:hover,html[data-theme="light"] .structural-wall.clickable-surface.selected-point{stroke:#571620}
+/* Aviso vermelho ao selecionar uma parede estrutural. */
 .tech-popover.is-structural{border-color:#d75a64;box-shadow:0 12px 36px #000b,0 0 0 3px #7a2635a8}
 .tech-popover.is-structural .section-kicker,.tech-popover.is-structural h2{color:#ff9ca2}
 .tech-popover.is-structural .tech-check{background:#63232b55;border:1px solid #c35760;border-radius:4px;padding:10px;margin:3px 0 12px}
