@@ -187,8 +187,8 @@ html[data-theme="light"] .tech-popover.is-structural .tech-check p{color:#772833
 /* Atalhos para profissionais que atendem o apartamento inteiro. */
 .whole-home-actions{position:absolute;z-index:6;top:54px;left:13px;right:13px;width:auto;touch-action:auto}
 .whole-home-label{display:none}
-.whole-home-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
-.whole-home-buttons button{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:33px;width:100%;padding:7px 9px;border:1px solid #836a42;background:#191711eb;color:#f0d7a7;text-align:left;font:11px Georgia,serif;line-height:1.12;box-shadow:0 2px 10px #0007;white-space:nowrap}
+.whole-home-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.whole-home-buttons button{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:42px;width:100%;padding:6px 7px;border:1px solid #836a42;background:#191711eb;color:#f0d7a7;text-align:left;font:10px Georgia,serif;line-height:1.12;box-shadow:0 2px 10px #0007;white-space:normal}
 .whole-home-buttons button span{font:17px Arial,sans-serif;line-height:.8;color:var(--gold)}
 .whole-home-buttons button:hover,.whole-home-buttons button:focus-visible,.whole-home-buttons button[aria-expanded="true"]{border-color:#e0bb79;background:#342919;color:#fff0d2}
 html[data-theme="light"] .whole-home-buttons button{background:#fffaf0ed;color:#4a3519;border-color:#b79b6c;box-shadow:0 2px 10px #4f402d44}
@@ -200,6 +200,15 @@ html[data-theme="light"] .whole-home-buttons button:hover,html[data-theme="light
 .dimension-status[hidden]+.area-status{top:96px}
 .service-popover.global-mode{left:auto!important;right:14px;top:56px;bottom:auto;width:min(330px,calc(100% - 28px));max-height:calc(100% - 70px)}
 .service-popover.global-mode .service-list{display:none}
+@media(min-width:661px) and (max-width:1150px){
+  .whole-home-buttons{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .whole-home-buttons button{grid-column:span 2;min-height:37px;padding:4px 6px}
+  .whole-home-buttons button:nth-child(n+4){grid-column:span 3}
+  .plan-stage,#plan-3d,.dimension-status{top:144px}
+  #plan-3d{height:calc(100% - 144px)}
+  .area-status{top:183px}
+  .dimension-status[hidden]+.area-status{top:144px}
+}
 
 /* Destaque da parceria especial: borda em movimento sem animar o texto. */
 .sponsor-card--premium{--premium-fill:#211c2b;border-color:#9e80bf;background:#211c2b;box-shadow:0 0 0 1px #7f6d9f44,0 8px 22px #0005}

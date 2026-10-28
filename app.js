@@ -624,7 +624,7 @@ function createProviderCard(provider,service,independent,serviceId){
     const message=provider.message||`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`;
     link.href=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     link.addEventListener("click",()=>window.rivieraAnalytics?.track("provider_contact",{service_id:serviceId,listing_type:independent?"independent":"sponsor"}));
-    link.textContent="Pedir orçamento ↗";card.append(link);
+    link.textContent=provider.cta||"Pedir orçamento ↗";card.append(link);
   }
   return card;
 }

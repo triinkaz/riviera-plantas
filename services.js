@@ -12,6 +12,7 @@ const SERVICE_CATALOG = {
   marcenaria: {name:"Móveis planejados", detail:"Projeto e execução de móveis sob medida após levantamento no imóvel e verificação das fixações."},
   interiores: {name:"Design de interiores", detail:"Planejamento dos ambientes, mobiliário, iluminação e acabamentos conforme as condições reais do apartamento."},
   engenharia: {name:"Engenharia", detail:"Avaliação técnica, projetos e acompanhamento de serviços que exigem profissional habilitado e documentação aplicável."},
+  art: {name:"ART para reforma", detail:"Converse sobre a documentação técnica adequada ao serviço que pretende fazer e confira as exigências do condomínio."},
   eletrica: {name:"Instalações elétricas", detail:"Avaliação, manutenção ou adequação por profissional habilitado, conferindo circuitos e tensão."},
   iluminacao: {name:"Iluminação", detail:"Luminárias e projeto de luz compatíveis com os pontos e circuitos existentes."},
   hidraulica: {name:"Instalações hidráulicas", detail:"Avaliação e manutenção dos pontos existentes, sem presumir trajetos ocultos."},
@@ -111,6 +112,15 @@ const SPONSORS = [
     services:["arquitetura"],
     whatsapp:"5512996130848",
     message:"Ola, gostaria de conversar sobre reforma de apartamento aqui no Riviera.",
+    active:true
+  },
+  {
+    id:"taynara-murade",
+    name:"Taynara Murade",
+    services:["art"],
+    whatsapp:"5511982772750",
+    message:"Ola, preciso de um ART para o Riviera martim de sa, vim pelo site riviera plantas.",
+    cta:"Solicitar ART ↗",
     active:true
   }
 ];
