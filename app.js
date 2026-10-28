@@ -867,7 +867,7 @@ function insidePolygon(x,y,points){
 }
 function pick3D(x,y){
   const dot=(state.hit3d||[]).filter(item=>Math.hypot(item.x-x,item.y-y)<=item.r).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
-  if(dot)return {dot,x:dot.x,y:dot.y};
+  if(dot)return {dot:dot.dot,x:dot.x,y:dot.y};
   for(let i=(state.surfaceHits3d||[]).length-1;i>=0;i--){
     const item=state.surfaceHits3d[i];
     if(insidePolygon(x,y,item.points))return {surface:item.surface,x,y};
