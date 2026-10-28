@@ -85,6 +85,15 @@ const SERVICE_CONTEXTS = {
 // Formato: {id, name, services:["pintura"], whatsapp:"55...", message:"...", active:true}.
 const SPONSORS = [
   {
+    id:"adriana-nogueira-studio",
+    name:"Adriana Nogueira Studio",
+    services:["arquitetura"],
+    whatsapp:"5512981187538",
+    message:"Olá, Adriana! Vim pelo Riviera Plantas. Quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá e vi os 5% de desconto. Pode me passar um orçamento?",
+    active:true,
+    campaign:{offer:"5% de desconto"}
+  },
+  {
     id:"mauricio-meggiolaro",
     name:"Arq Mauricio Meggiolaro",
     services:["arquitetura"],
@@ -114,15 +123,6 @@ const SPONSORS = [
         note:"Coquetel com comes e bebes. Pergunte o horário e o endereço pelo WhatsApp."
       }
     }
-  },
-  {
-    id:"adriana-nogueira-studio",
-    name:"Adriana Nogueira Studio",
-    services:["arquitetura"],
-    whatsapp:"5512981187538",
-    message:"Olá, Adriana! Vim pelo Riviera Plantas. Quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá e vi os 5% de desconto. Pode me passar um orçamento?",
-    active:true,
-    campaign:{offer:"5% de desconto"}
   },
   {
     id:"taynara-murade",
