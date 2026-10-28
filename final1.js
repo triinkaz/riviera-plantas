@@ -14,7 +14,7 @@ const FINAL1 = {
     [767,790,12,168],[767,774,12,14]
   ],
   // Rafael informou que estes trechos azuis da folha não são drywall.
-  // A função estrutural não está comprovada: tratar como alvenaria a confirmar.
+  // A indicação de não estrutural veio do proprietário e diverge da folha original.
   masonry: [[368,632,13,116],[902,493,12,69],[680,697,10,13],[765,697,10,13],[797,697,11,13],
     [755,774,12,24],[642,894,13,64]],
   drywall: [[244,640,13,57],[272,493,12,68],[272,551,56,12],[316,493,12,69]],

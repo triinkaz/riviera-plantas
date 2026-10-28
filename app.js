@@ -9,7 +9,7 @@ const LAYERS = [
 ];
 const LEGENDA = [
   ["swatch structural", "Alvenaria estrutural"],
-  ["swatch masonry", "Alvenaria (a confirmar)"],
+  ["swatch masonry", "Alvenaria (não estrutural)"],
   ["swatch drywall", "Drywall"],
   ["swatch shaft", "Shaft / vazio hidráulico"],
   ["swatch electric", "Ponto elétrico"],
@@ -369,8 +369,8 @@ function syncMode() {
   $("#map-disclaimer").textContent = !available
     ? "Cotas de arquitetura disponíveis. Demais camadas técnicas pendentes; confira medidas no imóvel."
     : state.mode==="3d"
-      ? "Vista 3D ilustrativa. Laranja escuro: alvenaria informada pelo proprietário; a planta original marca drywall. Confirme no imóvel."
-      : "Laranja escuro: alvenaria informada pelo proprietário; a planta original marca drywall. Confirme no imóvel antes de intervir.";
+      ? "Vista 3D ilustrativa. Laranja escuro: alvenaria não estrutural informada pelo proprietário; a planta original marca drywall. Confirme no imóvel."
+      : "Laranja escuro: alvenaria não estrutural informada pelo proprietário; a planta original marca drywall. Confirme no imóvel antes de intervir.";
   $("#selection-kicker").textContent = !available ? "PLANTAS" : state.mode==="3d" ? "COMO USAR" : "COMO USAR";
   const info=$("#selection-info");
   if(available && state.mode==="3d"){
@@ -500,7 +500,10 @@ function openTechPopover({title,description,page=1,layer="architecture",surface}
   const detail={title,description,page,layer,surface};
   const layerName=LAYERS.find(item=>item.id===layer)?.name||"Arquitetura";
   const sheetName=SHEETS.find(item=>item[0]===page)?.[1]||"Planta original";
-  $("#tech-layer").textContent=layerName.toUpperCase();
+  const structural=surface==="structural";
+  techPopover.classList.toggle("is-structural",structural);
+  $("#tech-layer").textContent=structural?"⚠ ATENÇÃO · PAREDE ESTRUTURAL":layerName.toUpperCase();
+  $("#tech-check-label").textContent=structural?"NÃO ALTERAR ESTA PAREDE":"ANTES DE REFORMAR";
   $("#tech-title").textContent=title;
   $("#tech-description").textContent=description;
   $("#tech-source-name").textContent=`Folha ${page} · ${sheetName}`;

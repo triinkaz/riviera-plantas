@@ -24,14 +24,14 @@ const SERVICE_CATALOG = {
 
 const SURFACE_CATALOG = {
   structural: {
-    title:"Parede estrutural", description:"A localização no desenho é aproximada.",
-    check:"Não remova nem abra vãos, nichos ou rasgos. Confira as regras antes de instalar acabamentos ou fixações.",
+    title:"Parede estrutural", description:"Atenção: esta parede é estrutural. Sua posição no desenho é aproximada; confira a planta original e o imóvel.",
+    check:"Não remova ou modifique esta parede. São proibidos novos vãos, nichos e rasgos para instalações.",
     services:["pintura","acabamento","vistoria"]
   },
   masonry: {
-    title:"Alvenaria (a confirmar)",
-    description:"O proprietário informa alvenaria neste trecho, mas a planta original o marca como drywall. A função estrutural não foi confirmada.",
-    check:"Confirme o material e a função da parede no imóvel com um profissional. Não remova, abra vãos ou faça rasgos com base neste desenho.",
+    title:"Alvenaria (não estrutural)",
+    description:"Classificação informada pelo proprietário. A planta original marca este trecho como drywall; confirme no imóvel antes de planejar mudanças.",
+    check:"A indicação de não estrutural não autoriza remover, abrir vãos ou fazer rasgos. Consulte um profissional e siga as regras de reforma.",
     services:["pintura","acabamento","vistoria"]
   },
   drywall: {
