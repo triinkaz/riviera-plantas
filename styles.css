@@ -200,3 +200,32 @@ html[data-theme="light"] .whole-home-buttons button:hover,html[data-theme="light
 .dimension-status[hidden]+.area-status{top:96px}
 .service-popover.global-mode{left:auto!important;right:14px;top:56px;bottom:auto;width:min(330px,calc(100% - 28px));max-height:calc(100% - 70px)}
 .service-popover.global-mode .service-list{display:none}
+
+/* Destaque da parceria especial: borda em movimento sem animar o texto. */
+.sponsor-card--premium{--premium-fill:#211c2b;border-color:#9e80bf;background:#211c2b;box-shadow:0 0 0 1px #7f6d9f44,0 8px 22px #0005}
+.sponsor-card--premium .premium-name{display:inline-block;max-width:100%;box-sizing:border-box;margin:8px 0 9px;padding:7px 11px;border:2px solid transparent;border-radius:999px;background:linear-gradient(var(--premium-fill),var(--premium-fill)) padding-box,linear-gradient(120deg,#d48dff,#6bc8f5,#f8d783,#99dfc1,#d48dff) border-box;background-size:100% 100%,280% 280%;background-position:0 0,0 50%;color:#fff5fd;font:600 13px/1.25 Georgia,serif;animation:premium-ring-flow 7s linear infinite}
+.sponsor-card--premium .premium-offer{display:inline-flex;align-items:center;margin:0 0 7px;padding:5px 8px;border:1px solid #bca4e1;border-radius:999px;background:#44345f;color:#fff3b9;font:700 10px/1.2 Arial,sans-serif;letter-spacing:.02em}
+.sponsor-card--premium .premium-copy{margin:2px 0 9px;color:#eadfec;font:11px/1.45 Arial,sans-serif}
+.sponsor-card--premium .premium-calendar{margin:10px 0;padding:9px;border:1px solid #8b75a7;border-radius:8px;background:#2b2438}
+.sponsor-card--premium .premium-calendar-title{display:block;margin:0 0 7px;color:#e2c6ff;font:700 10px/1.25 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.sponsor-card--premium .premium-calendar-days{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.sponsor-card--premium .premium-calendar-day{display:flex;align-items:center;justify-content:center;gap:7px;min-width:0;padding:7px 5px;border:1px solid #a18bb7;border-radius:6px;background:#3d3150;color:#fff4e8;font:700 10px/1.1 Arial,sans-serif;text-align:center}
+.sponsor-card--premium .premium-calendar-day strong{display:inline;margin:0;color:#fff;font:700 18px/1 Arial,sans-serif}
+.sponsor-card--premium .premium-calendar-note{margin:8px 0 0;color:#e3d6e8;font:10px/1.4 Arial,sans-serif}
+.sponsor-card--premium a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;box-sizing:border-box;padding:8px 12px;border:1px solid #b79bd1;border-radius:6px;background:#604777;color:#fff;text-decoration:none;font:700 11px/1.2 Arial,sans-serif}
+.sponsor-card--premium a:hover{background:#75588d}
+.sponsor-card--premium a:focus-visible{outline:3px solid #f8d783;outline-offset:2px}
+html[data-theme="light"] .sponsor-card--premium{--premium-fill:#fffafc;border-color:#a884be;background:#fffafc;box-shadow:0 0 0 1px #ba9dcc55,0 8px 22px #5b426422}
+html[data-theme="light"] .sponsor-card--premium .premium-name{color:#3d2c52}
+html[data-theme="light"] .sponsor-card--premium .premium-offer{border-color:#795797;background:#eee0f7;color:#4c2865}
+html[data-theme="light"] .sponsor-card--premium .premium-copy{color:#45394d}
+html[data-theme="light"] .sponsor-card--premium .premium-calendar{border-color:#c4a6d4;background:#f7ecfa}
+html[data-theme="light"] .sponsor-card--premium .premium-calendar-title{color:#633a7d}
+html[data-theme="light"] .sponsor-card--premium .premium-calendar-day{border-color:#c9afd6;background:#fffafc;color:#543b65}
+html[data-theme="light"] .sponsor-card--premium .premium-calendar-day strong{color:#452958}
+html[data-theme="light"] .sponsor-card--premium .premium-calendar-note{color:#564762}
+html[data-theme="light"] .sponsor-card--premium a{border-color:#765289;background:#66467e;color:#fff}
+html[data-theme="light"] .sponsor-card--premium a:hover{background:#53356d}
+@keyframes premium-ring-flow{0%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}100%{background-position:0 0,0% 50%}}
+@media(prefers-reduced-motion:reduce){.sponsor-card--premium .premium-name{animation:none}}
+@media(max-width:660px){.sponsor-card--premium .premium-calendar{padding:8px}.sponsor-card--premium .premium-calendar-day{padding:6px 4px}.sponsor-card--premium a{min-height:44px}}

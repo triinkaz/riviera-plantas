@@ -587,10 +587,32 @@ function detailForSurface(surface){
 function createProviderCard(provider,service,independent,serviceId){
   const card=document.createElement("div");
   card.className=independent?"independent-card":"sponsor-card";
+  const campaign=provider.campaign;
+  if(campaign?.premium)card.classList.add("sponsor-card--premium");
   const badge=document.createElement("small");
-  badge.textContent=independent?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":"PUBLICIDADE";
+  badge.textContent=independent?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":campaign?.premium?"PUBLICIDADE · PARCERIA ESPECIAL":"PUBLICIDADE";
   const name=document.createElement("strong");name.textContent=provider.name;
+  if(campaign?.premium)name.className="premium-name";
   card.append(badge,name);
+  if(campaign?.offer){
+    const offer=document.createElement("span");offer.className="premium-offer";offer.textContent=campaign.offer;
+    const copy=document.createElement("p");copy.className="premium-copy";copy.textContent=campaign.description;
+    card.append(offer,copy);
+  }
+  if(campaign?.event && Date.now()<Date.parse(campaign.event.endAt)){
+    const calendar=document.createElement("section");calendar.className="premium-calendar";
+    calendar.setAttribute("aria-label","Datas do coquetel");
+    const title=document.createElement("div");title.className="premium-calendar-title";title.textContent="COQUETEL · OUTUBRO 2026";
+    const days=document.createElement("div");days.className="premium-calendar-days";
+    campaign.event.days.forEach(item=>{
+      const day=document.createElement("div");day.className="premium-calendar-day";day.setAttribute("aria-label",item.label);
+      const week=document.createElement("span");week.textContent=item.week;
+      const number=document.createElement("strong");number.textContent=item.day;
+      day.append(week,number);days.append(day);
+    });
+    const note=document.createElement("p");note.className="premium-calendar-note";note.textContent=campaign.event.note;
+    calendar.append(title,days,note);card.append(calendar);
+  }
   const phone=String(provider.whatsapp||"").replace(/\D/g,"");
   if(/^55\d{10,11}$/.test(phone)){
     const link=document.createElement("a");link.target="_blank";link.rel="noopener";

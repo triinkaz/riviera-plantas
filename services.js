@@ -84,6 +84,27 @@ const SERVICE_CONTEXTS = {
 // Formato: {id, name, services:["pintura"], whatsapp:"55...", message:"...", active:true}.
 const SPONSORS = [
   {
+    id:"fernanda-souza",
+    name:"Fernanda Souza",
+    services:["arquitetura","marcenaria","interiores"],
+    whatsapp:"5512982034901",
+    message:"Olá, Fernanda! Vim pelo site Riviera Plantas e gostaria de conversar sobre seu trabalho e a oferta da cozinha com 20% de desconto e cooktop de brinde.",
+    active:true,
+    campaign:{
+      premium:true,
+      offer:"20% na cozinha",
+      description:"Quem vier pelo site e fechar uma cozinha com a Fernanda ganha 20% de desconto e um cooktop de brinde.",
+      event:{
+        endAt:"2026-11-01T00:00:00-03:00",
+        days:[
+          {week:"SEX",day:"30",label:"Sexta-feira, 30 de outubro de 2026"},
+          {week:"SÁB",day:"31",label:"Sábado, 31 de outubro de 2026"}
+        ],
+        note:"Coquetel com comes e bebes. Pergunte o horário e o endereço pelo WhatsApp."
+      }
+    }
+  },
+  {
     id:"mauricio-meggiolaro",
     name:"Arq Mauricio Meggiolaro",
     services:["arquitetura"],
