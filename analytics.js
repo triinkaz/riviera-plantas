@@ -1,6 +1,5 @@
 (() => {
-  // Preencher depois de criar o fluxo da Web no Google Analytics 4.
-  const measurementId = "";
+  const measurementId = "G-583S2XR92X";
   const configured = /^G-[A-Z0-9]+$/.test(measurementId);
   const consentKey = "riviera-analytics-consent-v1";
   const banner = document.getElementById("analytics-consent");
