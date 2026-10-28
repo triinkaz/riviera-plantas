@@ -81,8 +81,17 @@ const SERVICE_CONTEXTS = {
 };
 
 // Cadastre somente contatos reais, com autorização para publicar os dados.
-// Formato: {id, name, services:["pintura"], whatsapp:"55...", active:true}.
-const SPONSORS = [];
+// Formato: {id, name, services:["pintura"], whatsapp:"55...", message:"...", active:true}.
+const SPONSORS = [
+  {
+    id:"mauricio-meggiolaro",
+    name:"Arq Mauricio Meggiolaro",
+    services:["arquitetura"],
+    whatsapp:"5512996130848",
+    message:"Ola, gostaria de conversar sobre reforma de apartamento aqui no Riviera.",
+    active:true
+  }
+];
 // Profissionais do plano MAIS, com vigência acordada. O destaque ocupa apenas
 // vagas não contratadas entre as três primeiras posições, sem cobrança adicional.
 // Cada cadastro é publicidade, inclusive quando aparece na lista inferior.

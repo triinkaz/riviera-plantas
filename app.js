@@ -594,7 +594,8 @@ function createProviderCard(provider,service,independent,serviceId){
   const phone=String(provider.whatsapp||"").replace(/\D/g,"");
   if(/^55\d{10,11}$/.test(phone)){
     const link=document.createElement("a");link.target="_blank";link.rel="noopener";
-    link.href=`https://wa.me/${phone}?text=${encodeURIComponent(`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`)}`;
+    const message=provider.message||`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`;
+    link.href=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     link.addEventListener("click",()=>window.rivieraAnalytics?.track("provider_contact",{service_id:serviceId,listing_type:independent?"independent":"sponsor"}));
     link.textContent="Pedir orçamento ↗";card.append(link);
   }
