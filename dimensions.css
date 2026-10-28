@@ -5,13 +5,17 @@
 .dimension-markers .dimension-value{font-size:30px;font-weight:700}
 .final4-plan .dimension-markers .dimension-room{font-size:13px}
 .final4-plan .dimension-markers .dimension-value{font-size:21px}
-.dimension-markers .segment-marker rect{fill:#44321be8;stroke:#c59b59;stroke-width:1.5}
+.dimension-markers .segment-measure>line,.dimension-markers .segment-measure>path{fill:none;stroke:#f0c878;stroke-width:3;stroke-linecap:round}
+.dimension-markers .segment-measure>.measure-leader{stroke-width:2;stroke-dasharray:5 4}
+.dimension-markers .segment-measure rect{fill:#44321bf2;stroke:#f0c878;stroke-width:1.5}
 .dimension-markers .segment-room{font-size:10px;font-weight:700;letter-spacing:.5px}
 .dimension-markers .segment-value{font-size:19px;font-weight:700}
 .final4-plan .dimension-markers .segment-room{font-size:8px}
 .final4-plan .dimension-markers .segment-value{font-size:14px}
 html[data-theme="light"] .dimension-markers rect{fill:#fff9eaea;stroke:#9a743c}
 html[data-theme="light"] .dimension-markers text{fill:#664a25}
+html[data-theme="light"] .dimension-markers .segment-measure>line,html[data-theme="light"] .dimension-markers .segment-measure>path{stroke:#8c5920}
+html[data-theme="light"] .dimension-markers .segment-measure rect{fill:#fff9eaf5;stroke:#8c5920}
 .measurement-panel h3{margin:15px 0 7px;font:13px Georgia,serif;color:#e8c98e}
 .dimension-list small{display:block;margin-top:2px;font:10px Arial,sans-serif;opacity:.7}
 .segment-list strong{font-size:11px}

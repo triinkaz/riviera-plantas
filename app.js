@@ -1,7 +1,7 @@
 const LAYERS = [
   { id: "architecture", name: "Paredes e pisos", detail: "ambientes e shafts", color: "#cba56a", page: 1 },
   { id: "areas", name: "Áreas", detail: "m² aproximados", color: "#8bd4a3", page: 1 },
-  { id: "dimensions", name: "Medidas", detail: "quartos e trechos cotados", color: "#d8c69e", page: 1 },
+  { id: "dimensions", name: "Medidas", detail: "quartos e paredes identificadas", color: "#d8c69e", page: 1 },
   { id: "electric", name: "Elétrica", detail: "pontos e comandos", color: "#61c9ec", page: 2 },
   { id: "hydraulic", name: "Hidráulica", detail: "pontos por ambiente", color: "#4f9cf4", page: 6 },
   { id: "systems", name: "Ar, gás e prumadas", detail: "pontos e cuidados", color: "#e99559", page: 4 },
@@ -73,29 +73,29 @@ const ROOM_DIMENSIONS = {
 // Cotas de trechos legíveis nas folhas, sem tratá-las como dimensões totais de ambientes irregulares.
 const SEGMENT_DIMENSIONS = {
   pair: [
-    { name:"Sala", detail:"trecho reto junto à entrada", size:"3,16 m", x:877, y:829 },
-    { name:"Cozinha", detail:"trecho ao longo da bancada", size:"3,17 m", x:1125, y:927 },
-    { name:"Área de serviço", detail:"trecho da divisória com a sala", size:"1,40 m" },
-    { name:"Banho social", detail:"trecho longitudinal cotado", size:"2,71 m" },
-    { name:"Banho da suíte", detail:"trecho longitudinal cotado", size:"2,70 m" },
-    { name:"Varanda", detail:"trecho frontal cotado", size:"2,20 m", x:1010, y:540 },
-    { name:"Hall", detail:"largura cotada", size:"1,05 m" }
+    { name:"Sala", detail:"parede da sala junto à entrada", size:"3,16 m", label:"SALA · PAREDE DA ENTRADA", line:[660,1226,953,1226], plate:[805,1167,214] },
+    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"3,17 m", label:"COZINHA · PAREDE DA BANCADA", line:[1208,780,1208,1080], plate:[1085,1010,218] },
+    { name:"Área de serviço", detail:"parede que separa o serviço da sala", size:"1,40 m" },
+    { name:"Banho social", detail:"parede do banheiro junto à porta", size:"2,71 m" },
+    { name:"Banho da suíte", detail:"parede lateral entre banheiro e suíte", size:"2,70 m" },
+    { name:"Varanda", detail:"borda externa reta da varanda", size:"2,20 m", label:"VARANDA · BORDA EXTERNA", line:[835,358,1108,358], plate:[972,411,196] },
+    { name:"Hall", detail:"passagem entre dormitório e banho social", size:"1,05 m" }
   ],
   four: [
-    { name:"Sala", detail:"trecho lateral cotado", size:"2,25 m", x:533, y:668 },
-    { name:"Cozinha", detail:"trecho junto à bancada", size:"1,65 m", x:352, y:557 },
-    { name:"Área de serviço", detail:"trecho longitudinal cotado", size:"1,40 m" },
-    { name:"Banho social", detail:"trecho transversal cotado", size:"1,19 m" },
-    { name:"Banho da suíte", detail:"trecho transversal cotado", size:"1,04 m" },
-    { name:"Varanda", detail:"trecho lateral cotado", size:"1,81 m", x:402, y:922 }
+    { name:"Sala", detail:"parede entre sala e banho social", size:"2,25 m", label:"SALA · PAREDE DO BANHO", line:[639,484,639,637], plate:[545,555,150] },
+    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"1,65 m", label:"COZINHA · BANCADA", line:[257,508,370,508], plate:[314,551,142] },
+    { name:"Área de serviço", detail:"parede lateral da área de serviço", size:"1,40 m" },
+    { name:"Banho social", detail:"parede curta entre suíte e shaft", size:"1,19 m" },
+    { name:"Banho da suíte", detail:"parede curta junto ao shaft", size:"1,04 m" },
+    { name:"Varanda", detail:"parede lateral junto ao dormitório", size:"1,81 m", label:"VARANDA · LATERAL", line:[484,813,484,942], plate:[396,915,140] }
   ],
   one: [
-    { name:"Sala", detail:"trecho de parede junto à entrada", size:"2,45 m" },
-    { name:"Cozinha", detail:"trecho ao longo da bancada", size:"3,17 m" },
-    { name:"Área de serviço", detail:"trecho longitudinal cotado", size:"1,40 m" },
-    { name:"Banho social", detail:"trecho transversal cotado", size:"1,04 m" },
-    { name:"Banho da suíte", detail:"trecho transversal cotado", size:"1,19 m" },
-    { name:"Varanda", detail:"trecho frontal cotado", size:"2,20 m" }
+    { name:"Sala", detail:"parede da sala junto à entrada", size:"2,45 m" },
+    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"3,17 m" },
+    { name:"Área de serviço", detail:"parede lateral da área de serviço", size:"1,40 m" },
+    { name:"Banho social", detail:"parede curta junto ao shaft", size:"1,04 m" },
+    { name:"Banho da suíte", detail:"parede curta junto ao shaft", size:"1,19 m" },
+    { name:"Varanda", detail:"borda externa reta da varanda", size:"2,20 m" }
   ]
 };
 const state = {
@@ -153,9 +153,17 @@ function dimensionMarkers() {
   return `<g id="layer-dimensions" class="plan-layer overlay-layer dimension-markers" aria-label="Medidas cotadas de cômodos e trechos">${dimensionData().map(item=>{
     const x=item.x,y=small?item.y:yy(item.y),width=small?205:278,height=small?47:62;
     return `<g transform="translate(${x} ${y})"><rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="6"/><text y="${small?-5:-7}" text-anchor="middle" class="dimension-room">${item.name.toUpperCase()}</text><text y="${small?16:22}" text-anchor="middle" class="dimension-value">${item.size}</text></g>`;
-  }).join("")}${segmentData().filter(item=>item.x!=null).map(item=>{
-    const x=item.x,y=small?item.y:yy(item.y),width=small?140:190,height=small?33:44;
-    return `<g class="segment-marker" transform="translate(${x} ${y})"><rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="6"/><text y="${small?-3:-4}" text-anchor="middle" class="segment-room">${item.name.toUpperCase()} · TRECHO</text><text y="${small?11:15}" text-anchor="middle" class="segment-value">${item.size}</text></g>`;
+  }).join("")}${segmentData().filter(item=>item.line).map(item=>{
+    const [x1,rawY1,x2,rawY2]=item.line,[cx,rawCy,width]=item.plate;
+    const y1=small?rawY1:yy(rawY1),y2=small?rawY2:yy(rawY2),cy=small?rawCy:yy(rawCy);
+    const horizontal=y1===y2,height=small?36:48,tick=small?7:10;
+    const ticks=horizontal
+      ? `<path d="M${x1} ${y1-tick}V${y1+tick}M${x2} ${y2-tick}V${y2+tick}"/>`
+      : `<path d="M${x1-tick} ${y1}H${x1+tick}M${x2-tick} ${y2}H${x2+tick}"/>`;
+    const leader=horizontal
+      ? `M${cx} ${cy+(cy<y1?height/2:-height/2)}V${y1}`
+      : `M${cx+(cx<x1?width/2:-width/2)} ${cy}H${x1}`;
+    return `<g class="segment-measure" aria-label="${item.name}: ${item.detail}, ${item.size}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><path d="${ticks}"/><path class="measure-leader" d="${leader}"/><rect x="${cx-width/2}" y="${cy-height/2}" width="${width}" height="${height}" rx="5"/><text x="${cx}" y="${cy-(small?3:5)}" text-anchor="middle" class="segment-room">${item.label}</text><text x="${cx}" y="${cy+(small?11:16)}" text-anchor="middle" class="segment-value">${item.size}</text></g>`;
   }).join("")}</g>`;
 }
 const coolingOutline = () => state.final===4
@@ -643,7 +651,10 @@ function renderDimensions() {
     ? "Há planta cotada de arquitetura para este final; as demais camadas técnicas ainda não estão disponíveis."
     : paired?`Estas cotas vêm da tipologia compartilhada com o final ${sourceFinal}; não recebemos folha cotada com o número ${state.final}.`
     : "Cotas lidas da planta recebida para este final.";
-  $("#measurement-content").innerHTML=`<p>${note}</p><h3>Cômodos</h3><div class="dimension-list">${dimensionData().map(item=>`<div><span>${item.name}</span><strong>${item.size}</strong></div>`).join("")}</div><h3>Outros trechos cotados</h3><p>São medidas de trechos indicados na folha, não do ambiente inteiro.</p><div class="dimension-list segment-list">${segmentData().map(item=>`<div><span><b>${item.name}</b><small>${item.detail}</small></span><strong>${item.size}</strong></div>`).join("")}</div><p><strong>Desenho cotado, não medição no imóvel.</strong> Os ambientes com recortes não têm uma única largura × profundidade. Confira as dimensões no apartamento antes de comprar materiais ou encomendar móveis.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada · final ${sourceFinal} ↗</a>`;
+  const guide=state.final===1
+    ? "Cada número abaixo se refere à parede ou borda descrita, não ao ambiente inteiro."
+    : `Na vista 2D, as linhas douradas apontam as paredes da sala e cozinha e ${state.final===4?"a parede lateral":"a borda externa"} da varanda. As demais medidas estão descritas abaixo e na folha cotada.`;
+  $("#measurement-content").innerHTML=`<p>${note}</p><h3>Quartos</h3><div class="dimension-list">${dimensionData().map(item=>`<div><span>${item.name}</span><strong>${item.size}</strong></div>`).join("")}</div><h3>${[1,4].includes(state.final)?"Paredes e varanda":"Paredes, varanda e passagem"}</h3><p>${guide}</p><div class="dimension-list segment-list">${segmentData().map(item=>`<div><span><b>${item.name}</b><small>${item.detail}</small></span><strong>${item.size}</strong></div>`).join("")}</div><p><strong>Desenho cotado, não medição no imóvel.</strong> Os ambientes com recortes não têm uma única largura × profundidade. Confira as dimensões no apartamento antes de comprar materiais ou encomendar móveis.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada · final ${sourceFinal} ↗</a>`;
 }
 function renderAreas() {
   const panel=$("#area-section");
