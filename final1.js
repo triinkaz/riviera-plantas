@@ -15,9 +15,9 @@ const FINAL1 = {
   ],
   // Rafael informou que estes trechos azuis da folha não são drywall.
   // A função estrutural não está comprovada: tratar como alvenaria a confirmar.
-  masonry: [[244,640,13,57],[902,493,12,69],[680,697,10,13],[765,697,10,13],[797,697,11,13],
+  masonry: [[368,632,13,116],[902,493,12,69],[680,697,10,13],[765,697,10,13],[797,697,11,13],
     [755,774,12,24],[642,894,13,64]],
-  drywall: [[368,632,13,116],[272,493,12,68],[272,551,56,12],[316,493,12,69]],
+  drywall: [[244,640,13,57],[272,493,12,68],[272,551,56,12],[316,493,12,69]],
   shafts: [[252,493,26,69],[244,642,22,55],[879,493,26,68],[642,894,26,65]],
   wet: [[803,493,100,204],[654,800,113,158],[256,641,111,105]],
   balcony: [[256,494,237,134]],
@@ -62,8 +62,8 @@ function final1Svg() {
     <g class="windows">${line(330,487,493,487,"guard-line")}${line(310,633,493,633,"window-line")}${line(610,487,700,487,"window-line")}${line(914,704,1026,704,"window-line")}</g>
     <g class="structural-walls">${walls(FINAL1.structural,"structural-wall","structural")}</g>
     <g class="masonry-walls">${walls(FINAL1.masonry,"masonry-wall","masonry")}</g>
-    <g class="drywall-walls">${walls(FINAL1.drywall,"drywall-wall","drywall")}</g>
     <g class="shaft-areas">${walls(FINAL1.shafts,"shaft-box","shaft")}${FINAL1.shafts.map(([x,y,w,h])=>path(`M${x} ${y}l${w} ${h}m0 -${h}l-${w} ${h}`,"shaft-cross")).join("")}</g>
+    <g class="drywall-walls">${walls(FINAL1.drywall,"drywall-wall","drywall")}</g>
     <g class="fixtures"><rect x="257" y="767" width="42" height="119" class="fixture"/><ellipse cx="853" cy="613" rx="16" ry="12" class="fixture"/><ellipse cx="873" cy="666" rx="13" ry="18" class="fixture"/><ellipse cx="687" cy="827" rx="16" ry="12" class="fixture"/><ellipse cx="685" cy="874" rx="12" ry="18" class="fixture"/><circle cx="283" cy="583" r="15" class="fixture"/></g>
     <g class="door-swing">${path("M380 949A75 75 0 0 1 455 874M380 949h75","door-line")}${path("M684 697A63 63 0 0 1 747 634M684 697h63","door-line")}${path("M804 708A55 55 0 0 1 859 653M804 708h55","door-line")}${path("M767 775A69 69 0 0 1 836 706M767 775h69","door-line")}${path("M708 789A58 58 0 0 1 766 847M708 789h58","door-line")}</g>
   </g>`;

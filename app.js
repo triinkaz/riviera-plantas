@@ -124,13 +124,14 @@ const STRUCTURAL_WALLS = [
   [1057,1095,193,20],[1057,1095,20,28]
 ];
 // Rafael informou em 28/10/2026 que, nos finais comuns de todas as torres,
-// só churrasqueira e serviço são drywall. A planta original diverge; tipo estrutural pendente.
+// Na churrasqueira e no serviço, só os trechos colados às paredes são drywall.
+// A divisória central do serviço é alvenaria informada; a planta original diverge.
 const MASONRY_WALLS = [
   [160,735,128,20],[160,865,365,20],[506,714,20,53],[506,850,20,35],
   [770,350,10,129],
-  [1210,600,20,112],[1210,710,20,8],[638,679,20,15]
+  [1020,580,20,198],[638,679,20,15]
 ];
-const DRYWALL_WALLS = [[1020,580,20,198],[1210,350,20,120],[1110,350,20,120]];
+const DRYWALL_WALLS = [[1210,600,20,112],[1210,710,20,8],[1210,350,20,120],[1110,350,20,120]];
 const SHAFTS = [[161,714,121,40],[772,352,39,125],[1201,351,30,119],[1212,600,32,114]];
 const LIGHTS = [[400,515],[734,515],[998,462],[1126,675],[857,795],[1126,936],[857,1070],[400,1070],[590,780],[334,780]];
 const OUTLETS = [[248,370],[499,370],[338,679],[514,679],[770,678],[1191,558],[1170,745],[1212,745],[1170,874],[1212,874],[1170,967],[1212,967],[1212,1028],[176,1056],[500,1229],[848,1229],[899,1229],[675,878],[514,898],[488,752]];
@@ -222,8 +223,8 @@ const baseShape = () => {
     '</g>';
   svg += '<g class="structural-walls">' + STRUCTURAL_WALLS.map(v => surfaceRect(...v,'structural-wall','structural')).join('') + '</g>';
   svg += '<g class="masonry-walls">' + MASONRY_WALLS.map(v => surfaceRect(...v,'masonry-wall','masonry')).join('') + '</g>';
-  svg += '<g class="drywall-walls">' + DRYWALL_WALLS.map(v => surfaceRect(...v,'drywall-wall','drywall')).join('') + '</g>';
   svg += '<g class="shaft-areas">' + SHAFTS.map(v => surfaceRect(...v,'shaft-box','shaft')).join('') + SHAFTS.map(([x,y,w,h]) => path(`M${x} ${y}l${w} ${h}m0 -${h}l-${w} ${h}`,'shaft-cross')).join('') + '</g>';
+  svg += '<g class="drywall-walls">' + DRYWALL_WALLS.map(v => surfaceRect(...v,'drywall-wall','drywall')).join('') + '</g>';
   svg += '<g class="fixtures">' +
     '<circle cx="1180" cy="520" r="23" class="fixture"/><circle cx="1180" cy="520" r="7" class="fixture"/>' +
     '<rect x="1151" y="852" width="75" height="150" rx="3" class="fixture"/><rect x="1169" y="895" width="42" height="62" rx="8" class="fixture"/>' +

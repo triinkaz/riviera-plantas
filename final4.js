@@ -12,8 +12,8 @@ const FINAL4 = {
     [789,728,13,227],[789,944,114,11],
     [245,797,65,12]
   ],
-  masonry: [[258,744,11,51],[655,479,15,65],[879,870,12,73]],
-  drywall: [[369,690,13,118],[271,874,55,11],[315,885,11,57]],
+  masonry: [[369,690,13,118],[655,479,15,65],[879,870,12,73]],
+  drywall: [[258,744,11,51],[271,874,55,11],[315,885,11,57]],
   shafts: [[255,744,20,53],[255,874,20,71],[652,479,20,64],[879,868,23,76]],
   wet: [[649,479,117,160],[802,740,101,204],[257,510,236,287]],
   balcony: [[257,811,236,133]],
@@ -52,8 +52,8 @@ function final4Svg() {
     <g class="windows">${line(310,803,368,803,"window-line")}${line(382,803,493,803,"window-line")}${line(611,949,700,949,"window-line")}${line(916,732,1026,732,"window-line")}${line(326,950,493,950,"guard-line")}</g>
     <g class="structural-walls">${walls(FINAL4.structural,"structural-wall","structural")}</g>
     <g class="masonry-walls">${walls(FINAL4.masonry,"masonry-wall","masonry")}</g>
-    <g class="drywall-walls">${walls(FINAL4.drywall,"drywall-wall","drywall")}</g>
     <g class="shaft-areas">${walls(FINAL4.shafts,"shaft-box","shaft")}${FINAL4.shafts.map(([x,y,w,h])=>path(`M${x} ${y}l${w} ${h}m0 -${h}l-${w} ${h}`,"shaft-cross")).join("")}</g>
+    <g class="drywall-walls">${walls(FINAL4.drywall,"drywall-wall","drywall")}</g>
     <g class="fixtures"><rect x="257" y="555" width="45" height="89" class="fixture"/><ellipse cx="686" cy="571" rx="17" ry="12" class="fixture"/><ellipse cx="667" cy="610" rx="13" ry="19" class="fixture"/><ellipse cx="871" cy="804" rx="16" ry="17" class="fixture"/><ellipse cx="872" cy="865" rx="21" ry="13" class="fixture"/></g>
     <g class="door-swing">${path("M390 467A65 65 0 0 1 455 532M390 467v65","door-line")}${path("M708 639A57 57 0 0 1 765 582M708 639h57","door-line")}${path("M777 660A62 62 0 0 1 839 722M777 660v62","door-line")}${path("M683 728A63 63 0 0 0 746 791M683 728h63","door-line")}${path("M806 728A52 52 0 0 0 858 780M806 728h52","door-line")}</g>
   </g>`;
