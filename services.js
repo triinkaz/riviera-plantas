@@ -85,6 +85,14 @@ const SERVICE_CONTEXTS = {
 // Formato: {id, name, services:["pintura"], whatsapp:"55...", message:"...", active:true}.
 const SPONSORS = [
   {
+    id:"mauricio-meggiolaro",
+    name:"Arq Mauricio Meggiolaro",
+    services:["arquitetura"],
+    whatsapp:"5512996130848",
+    message:"Ola, gostaria de conversar sobre reforma de apartamento aqui no Riviera.",
+    active:true
+  },
+  {
     id:"fernanda-souza",
     name:"Fernanda Souza",
     services:["arquitetura","marcenaria","interiores"],
@@ -105,14 +113,6 @@ const SPONSORS = [
         note:"Coquetel com comes e bebes. Pergunte o horário e o endereço pelo WhatsApp."
       }
     }
-  },
-  {
-    id:"mauricio-meggiolaro",
-    name:"Arq Mauricio Meggiolaro",
-    services:["arquitetura"],
-    whatsapp:"5512996130848",
-    message:"Ola, gostaria de conversar sobre reforma de apartamento aqui no Riviera.",
-    active:true
   },
   {
     id:"taynara-murade",

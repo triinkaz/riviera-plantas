@@ -589,15 +589,14 @@ function createProviderCard(provider,service,independent,serviceId){
   card.className=independent?"independent-card":"sponsor-card";
   const campaign=provider.campaign;
   const compactPremium=campaign?.premium && campaign.compactServices?.includes(serviceId);
-  if(campaign?.premium)card.classList.add("sponsor-card--premium");
+  if(campaign?.premium && !compactPremium)card.classList.add("sponsor-card--premium");
   const badge=document.createElement("small");
   badge.textContent=independent?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":campaign?.premium&&!compactPremium?"PUBLICIDADE · PARCERIA ESPECIAL":"PUBLICIDADE";
   const name=document.createElement("strong");name.textContent=provider.name;
-  if(campaign?.premium)name.className="premium-name";
+  if(campaign?.premium && !compactPremium)name.className="premium-name";
   card.append(badge,name);
   if(campaign?.offer){
-    const offer=document.createElement("span");offer.className="premium-offer";offer.textContent=compactPremium?"20% de desconto":campaign.offer;
-    if(compactPremium)offer.setAttribute("aria-label",campaign.offer);
+    const offer=document.createElement("span");offer.className=compactPremium?"sponsor-discount":"premium-offer";offer.textContent=campaign.offer;
     card.append(offer);
     if(!compactPremium){
       const copy=document.createElement("p");copy.className="premium-copy";copy.textContent=campaign.description;
