@@ -154,6 +154,7 @@ function drawApartment3D(canvas, options) {
     systems:"#e99559", drains:"#ca82e7"
   };
   const hits = [];
+  const occupiedBadges=[];
   options.dots.forEach(dot => {
     if (!options.layers[dot.layer]) return;
     const [sx,sy] = project([dot.x,mirrorY(dot.y),18]);
@@ -217,6 +218,7 @@ function drawApartment3D(canvas, options) {
     context.fillText("10–15 m² sem sol direto",badgeX+badgeWidth/2,badgeY+39);
     context.font="9px Arial";
     context.fillText("CONTORNO ILUSTRATIVO",badgeX+badgeWidth/2,badgeY+57);
+    occupiedBadges.push({x:badgeX,y:badgeY,w:badgeWidth,h:badgeHeight});
   }
   if (options.layers.areas && options.areas) {
     options.areas.forEach(area => {
@@ -239,10 +241,12 @@ function drawApartment3D(canvas, options) {
       context.textAlign="center";
       context.textBaseline="middle";
       context.fillText(label,sx,badgeY+badgeHeight/2);
+      occupiedBadges.push({x:badgeX,y:badgeY,w:badgeWidth,h:badgeHeight});
       hits.push({x:sx,y:badgeY+badgeHeight/2,r:Math.max(21,badgeWidth/2),dot:{layer:"areas",title:`${area.name}: ${label}`,description:area.open?"Sala, cozinha, serviço e circulação formam um espaço sem paredes separando esses usos. Valor aproximado; confira as medidas no imóvel.":"Valor aproximado obtido da planta. Confira as medidas no imóvel.",page:1}});
     });
   }
   if (options.layers.dimensions && options.dimensions) {
+    const occupied=[...occupiedBadges];
     options.dimensions.forEach(item => {
       const [sx,sy]=project([item.x,mirrorY(item.y),18]);
       const title=item.name.toUpperCase();
@@ -267,7 +271,64 @@ function drawApartment3D(canvas, options) {
       context.fillText(title,sx,badgeY+12);
       context.font="bold 12px Arial";
       context.fillText(value,sx,badgeY+29);
+      occupied.push({x:badgeX,y:badgeY,w:badgeWidth,h:badgeHeight});
     });
+    if(options.segments?.length){
+      const segments=options.segments.map(item=>{
+        const [x1,y1,x2,y2]=item.line;
+        return {
+          item,
+          a:project([x1,mirrorY(y1),14]),
+          b:project([x2,mirrorY(y2),14]),
+          preferred:project([item.plate[0],mirrorY(item.plate[1]),18])
+        };
+      });
+      context.save();
+      context.strokeStyle=light?"#8c5920":"#f0c878";
+      context.fillStyle=light?"#8c5920":"#f0c878";
+      context.lineWidth=3;
+      segments.forEach(({a,b})=>{
+        context.beginPath();context.moveTo(a[0],a[1]);context.lineTo(b[0],b[1]);context.stroke();
+        [a,b].forEach(([x,y])=>{context.beginPath();context.arc(x,y,3,0,Math.PI*2);context.fill();});
+      });
+      const compact=width<480,badgeWidth=compact?116:146,badgeHeight=compact?35:42;
+      const offsets=[[0,0],[0,-52],[0,52],[-115,0],[115,0],[-115,-52],[115,-52],[-115,52],[115,52],[0,-104],[0,104]];
+      const overlaps=(a,b)=>a.x<b.x+b.w+5&&a.x+a.w+5>b.x&&a.y<b.y+b.h+5&&a.y+a.h+5>b.y;
+      segments.forEach(({item,a,b,preferred})=>{
+        const anchor=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+        let chosen=null,best=Infinity;
+        offsets.forEach(([dx,dy])=>{
+          const x=Math.max(8,Math.min(width-badgeWidth-8,preferred[0]+dx-badgeWidth/2));
+          const y=Math.max(56,Math.min(height-badgeHeight-58,preferred[1]+dy-badgeHeight/2));
+          const box={x,y,w:badgeWidth,h:badgeHeight};
+          const clashes=occupied.reduce((count,used)=>count+(overlaps(box,used)?1:0),0);
+          const coversAnchor=anchor[0]>x-6&&anchor[0]<x+badgeWidth+6&&anchor[1]>y-6&&anchor[1]<y+badgeHeight+6;
+          const score=clashes*10000+(coversAnchor?500:0)+Math.hypot(dx,dy)*.8+Math.hypot(x+badgeWidth/2-anchor[0],y+badgeHeight/2-anchor[1])*.2;
+          if(score<best){best=score;chosen=box;}
+        });
+        const box=chosen;
+        occupied.push(box);
+        const nearX=Math.max(box.x,Math.min(anchor[0],box.x+box.w));
+        const nearY=Math.max(box.y,Math.min(anchor[1],box.y+box.h));
+        context.beginPath();context.moveTo(anchor[0],anchor[1]);context.lineTo(nearX,nearY);
+        context.lineWidth=1.5;context.setLineDash([4,3]);context.stroke();context.setLineDash([]);
+        context.fillStyle=light?"#fff9eaf5":"#2b2114f5";
+        context.strokeStyle=light?"#8c5920":"#f0c878";
+        context.lineWidth=1.5;
+        context.beginPath();
+        if(typeof context.roundRect==="function")context.roundRect(box.x,box.y,box.w,box.h,5);
+        else context.rect(box.x,box.y,box.w,box.h);
+        context.fill();context.stroke();
+        context.fillStyle=light?"#664a25":"#f8e8c9";
+        context.textAlign="center";context.textBaseline="middle";
+        context.font=compact?"bold 8px Arial":"bold 9px Arial";
+        context.fillText(item.short3d,box.x+box.w/2,box.y+(compact?10:12));
+        context.font=compact?"bold 11px Arial":"bold 13px Arial";
+        context.fillText(item.size,box.x+box.w/2,box.y+(compact?25:29));
+        context.strokeStyle=light?"#8c5920":"#f0c878";
+      });
+      context.restore();
+    }
   }
   return {hits,surfaces:surfaceHits};
 }

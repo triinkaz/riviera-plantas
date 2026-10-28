@@ -11,7 +11,7 @@ Em 27/10/2026, Rafael confirmou que as folhas `cotada-Model` recebidas valem par
 | 5 | 3,76 × 2,71 m | 3,76 × 2,86 m | `assets/docs/cotadas/final-5.pdf` |
 | 6 | 3,76 × 2,71 m | 3,76 × 2,86 m | `assets/docs/cotadas/final-3.pdf`, mesma tipologia 3/6 |
 
-As folhas da Torre B para os finais 1 e 4 corroboram as duas cotas de quartos. Há também números legíveis para **trechos** de sala, cozinha, área de serviço, banheiros, varanda e, nos finais 2/3/5/6, hall. O painel do site identifica a parede, borda ou passagem a que cada número se refere. Na vista 2D, linhas douradas indicam a posição aproximada de três cotas (sala, cozinha e varanda). Elas não equivalem à largura ou profundidade total dos ambientes, sobretudo onde há recortes ou ambientes abertos.
+As folhas da Torre B para os finais 1 e 4 corroboram as duas cotas de quartos. Há também números legíveis para **trechos** de sala, cozinha, área de serviço, banheiros, varanda e, nos finais 2/3/5/6, hall. O painel do site identifica a parede, borda ou passagem a que cada número se refere. Nas vistas 2D e 3D, linhas douradas indicam a posição aproximada de três cotas (sala, cozinha e varanda). Elas não equivalem à largura ou profundidade total dos ambientes, sobretudo onde há recortes ou ambientes abertos.
 
 | Folha cotada | Trechos adicionais mostrados no site |
 | --- | --- |

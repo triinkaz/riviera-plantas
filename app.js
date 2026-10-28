@@ -73,21 +73,21 @@ const ROOM_DIMENSIONS = {
 // Cotas de trechos legíveis nas folhas, sem tratá-las como dimensões totais de ambientes irregulares.
 const SEGMENT_DIMENSIONS = {
   pair: [
-    { name:"Sala", detail:"parede da sala junto à entrada", size:"3,16 m", label:"SALA · PAREDE DA ENTRADA", line:[660,1226,953,1226], plate:[805,1167,214] },
-    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"3,17 m", label:"COZINHA · PAREDE DA BANCADA", line:[1208,780,1208,1080], plate:[1085,1010,218] },
+    { name:"Sala", detail:"parede da sala junto à entrada", size:"3,16 m", label:"SALA · PAREDE DA ENTRADA", short3d:"SALA · ENTRADA", line:[660,1226,953,1226], plate:[805,1167,214] },
+    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"3,17 m", label:"COZINHA · PAREDE DA BANCADA", short3d:"COZINHA · BANCADA", line:[1208,780,1208,1080], plate:[1085,1010,218] },
     { name:"Área de serviço", detail:"parede que separa o serviço da sala", size:"1,40 m" },
     { name:"Banho social", detail:"parede do banheiro junto à porta", size:"2,71 m" },
     { name:"Banho da suíte", detail:"parede lateral entre banheiro e suíte", size:"2,70 m" },
-    { name:"Varanda", detail:"borda externa reta da varanda", size:"2,20 m", label:"VARANDA · BORDA EXTERNA", line:[835,358,1108,358], plate:[972,411,196] },
+    { name:"Varanda", detail:"borda externa reta da varanda", size:"2,20 m", label:"VARANDA · BORDA EXTERNA", short3d:"VARANDA · BORDA", line:[835,358,1108,358], plate:[972,411,196] },
     { name:"Hall", detail:"passagem entre dormitório e banho social", size:"1,05 m" }
   ],
   four: [
-    { name:"Sala", detail:"parede entre sala e banho social", size:"2,25 m", label:"SALA · PAREDE DO BANHO", line:[639,484,639,637], plate:[545,555,150] },
-    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"1,65 m", label:"COZINHA · BANCADA", line:[257,508,370,508], plate:[314,551,142] },
+    { name:"Sala", detail:"parede entre sala e banho social", size:"2,25 m", label:"SALA · PAREDE DO BANHO", short3d:"SALA · BANHO", line:[639,484,639,637], plate:[545,555,150] },
+    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"1,65 m", label:"COZINHA · BANCADA", short3d:"COZINHA · BANCADA", line:[257,508,370,508], plate:[314,551,142] },
     { name:"Área de serviço", detail:"parede lateral da área de serviço", size:"1,40 m" },
     { name:"Banho social", detail:"parede curta entre suíte e shaft", size:"1,19 m" },
     { name:"Banho da suíte", detail:"parede curta junto ao shaft", size:"1,04 m" },
-    { name:"Varanda", detail:"parede lateral junto ao dormitório", size:"1,81 m", label:"VARANDA · LATERAL", line:[484,813,484,942], plate:[396,915,140] }
+    { name:"Varanda", detail:"parede lateral junto ao dormitório", size:"1,81 m", label:"VARANDA · LATERAL", short3d:"VARANDA · LATERAL", line:[484,813,484,942], plate:[396,915,140] }
   ],
   one: [
     { name:"Sala", detail:"parede da sala junto à entrada", size:"2,45 m" },
@@ -329,7 +329,7 @@ function render3D() {
     final:state.final, mirrored:mirrored(), layers:state.layers,
     theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
-    cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(), dimensions:dimensionData(),
+    cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(), dimensions:dimensionData(), segments:segmentData().filter(item=>item.line),
     structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
     drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
     shafts:state.final===4?FINAL4.shafts:SHAFTS,
@@ -653,7 +653,7 @@ function renderDimensions() {
     : "Cotas lidas da planta recebida para este final.";
   const guide=state.final===1
     ? "Cada número abaixo se refere à parede ou borda descrita, não ao ambiente inteiro."
-    : `Na vista 2D, as linhas douradas apontam as paredes da sala e cozinha e ${state.final===4?"a parede lateral":"a borda externa"} da varanda. As demais medidas estão descritas abaixo e na folha cotada.`;
+    : `Nas vistas 2D e 3D, as linhas douradas apontam as paredes da sala e cozinha e ${state.final===4?"a parede lateral":"a borda externa"} da varanda. As demais medidas estão descritas abaixo e na folha cotada.`;
   $("#measurement-content").innerHTML=`<p>${note}</p><h3>Quartos</h3><div class="dimension-list">${dimensionData().map(item=>`<div><span>${item.name}</span><strong>${item.size}</strong></div>`).join("")}</div><h3>${[1,4].includes(state.final)?"Paredes e varanda":"Paredes, varanda e passagem"}</h3><p>${guide}</p><div class="dimension-list segment-list">${segmentData().map(item=>`<div><span><b>${item.name}</b><small>${item.detail}</small></span><strong>${item.size}</strong></div>`).join("")}</div><p><strong>Desenho cotado, não medição no imóvel.</strong> Os ambientes com recortes não têm uma única largura × profundidade. Confira as dimensões no apartamento antes de comprar materiais ou encomendar móveis.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada · final ${sourceFinal} ↗</a>`;
 }
 function renderAreas() {
