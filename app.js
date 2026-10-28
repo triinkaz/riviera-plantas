@@ -327,12 +327,24 @@ function get3DDots() {
   if(state.final===1)return FINAL1.dots;
   if(state.final===4)return FINAL4.dots;
   const make = (pairs,layer,label) => pairs.map(([x,y])=>({x,y,layer,label}));
+  const stacks = [
+    [188,727,"AP","Água pluvial"],[207,727,"V","Ventilação"],[225,727,"E","Esgoto"],
+    [802,359,"AP","Água pluvial"],[802,413,"V","Ventilação"],[802,462,"E","Esgoto"],
+    [1235,626,"E","Esgoto"],[1237,677,"G","Gás"]
+  ];
   return [
     ...make(LIGHTS,"electric",""),
     ...make(OUTLETS,"electric","T"),
     ...make(SWITCHES,"electric","I"),
+    {x:754,y:415,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito no imóvel.",page:2},
+    {x:221,y:767,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito no imóvel.",page:2},
+    {x:989,y:1244,layer:"electric",label:"Q",title:"Quadro de luz e força",description:"Não execute furos na região do quadro. Consulte também a folha 3 e confira a posição real.",page:3},
+    {x:853,y:465,layer:"electric",label:"C",title:"Ponto para condensadora",description:"Ponto indicado na folha elétrica. Confira a folha de ar condicionado e preserve ventilação e acesso de manutenção.",page:2},
     ...[[735,555,6,"Banho da suíte"],[335,798,7,"Banho social"],[1107,881,8,"Cozinha e serviço"],[991,493,9,"Varanda"]].map(([x,y,page,room])=>({x,y,layer:"hydraulic",label:"H",page,title:`Vista hidráulica: ${room}`})),
-    ...make([[188,727],[207,727],[225,727],[802,359],[802,413],[802,462],[1235,626],[1237,677],[853,465],[740,727],[1204,727]],"systems",""),
+    ...stacks.map(([x,y,label,title])=>({x,y,layer:"systems",label,title,description:title==="Gás"?"Prumada de gás indicada na folha 4. Não fure; confira a posição real antes de intervir.":"Prumada indicada na folha 4. Preserve o acesso e consulte as vistas técnicas antes de intervir.",page:4})),
+    {x:864,y:452,layer:"systems",label:"C",title:"Condensadora de ar condicionado",description:"Local previsto na folha 4. Preserve ventilação e acesso de manutenção; confirme a posição no imóvel.",page:4},
+    {x:741,y:728,layer:"systems",label:"EV",title:"Evaporadora de ar condicionado",description:"Local previsto na folha 4. Confirme instalação, dreno e medidas no imóvel.",page:4},
+    {x:1204,y:727,layer:"systems",label:"!",title:"Tubulação de gás",description:"A folha 4 alerta sobre tubulação de gás nesta parede. Não fure; confira a localização real e consulte as vistas.",page:4},
     {x:783,y:783,layer:"drains",label:"D",title:"Ponto de dreno da sala",page:5},
     {x:783,y:466,layer:"drains",label:"D",title:"Dreno do banho da suíte",page:6}
   ];

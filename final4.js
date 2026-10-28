@@ -39,8 +39,13 @@ FINAL4.dots = [
   ...FINAL4.hydraulic.map(([x,y,page,room])=>({x,y,layer:"hydraulic",label:"H",title:`Vista hidráulica: ${room}`,page})),
   ...FINAL4.stacks.map(([x,y,,title])=>({x,y,layer:"systems",label:"",title,page:4})),
   ...FINAL4.drains.map(([x,y,,title,page])=>({x,y,layer:"drains",label:"D",title,page})),
-  {x:487,y:881,layer:"systems",label:"C",title:"Condensadora de ar condicionado",page:4},
-  {x:253,y:720,layer:"systems",label:"G",title:"Tubulação de gás",page:4}
+  {x:720,y:520,layer:"electric",label:"EX",title:"Exaustor de teto",description:"Ponto indicado na folha elétrica. Confirme a posição e preserve a ventilação prevista no imóvel.",page:2},
+  {x:252,y:864,layer:"electric",label:"Q",title:"Quadro de luz e força",description:"Não execute furos na região do quadro. Consulte também a folha 3 e confira a posição real.",page:3},
+  {x:681,y:544,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto 220 V indicado na folha elétrica; confirme instalação e circuito no imóvel.",page:2},
+  {x:893,y:904,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto 220 V indicado na folha elétrica; confirme instalação e circuito no imóvel.",page:2},
+  {x:487,y:881,layer:"systems",label:"C",title:"Condensadora de ar condicionado",description:"Local previsto na varanda pela folha 4. Preserve ventilação e acesso de manutenção.",page:4},
+  {x:635,y:567,layer:"systems",label:"EV",title:"Evaporadora de ar condicionado",description:"Local previsto na folha 4. Confirme instalação, dreno e medidas no imóvel.",page:4},
+  {x:253,y:720,layer:"systems",label:"G",title:"Tubulação de gás",description:"A folha 4 alerta para tubulação de gás nesta parede. Não fure; confira o traçado real.",page:4}
 ];
 
 function final4Svg() {
