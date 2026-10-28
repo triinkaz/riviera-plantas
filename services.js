@@ -129,7 +129,7 @@ const SPONSORS = [
     name:"Taynara Murade",
     services:["art"],
     whatsapp:"5511982772750",
-    message:"Ola, preciso de um ART para o Riviera martim de sa, vim pelo site riviera plantas.",
+    message:"Olá, Taynara! Encontrei seu contato no Riviera Plantas. Vou reformar meu apartamento no Riviera Martim de Sá e preciso de uma ART. Você pode me orientar sobre o que precisa para avaliar a obra, o prazo e o valor?",
     cta:"Solicitar ART ↗",
     active:true
   }
