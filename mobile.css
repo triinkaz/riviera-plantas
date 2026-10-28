@@ -55,6 +55,14 @@
   .tech-popover-body,.service-popover-body{padding:16px}
   .tech-popover h2,.service-popover h2{font-size:18px}
   .tech-description,.service-intro{font-size:12px}
+  .map-frame:after{height:148px}
+  .plan-stage{bottom:148px}
+  #plan-3d{bottom:148px;height:calc(100% - 196px)}
+  .whole-home-actions{top:auto;left:0;right:0;bottom:63px;width:100%;z-index:4;overflow:hidden}
+  .whole-home-label{display:none}
+  .whole-home-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:4px 8px}
+  .whole-home-buttons button{min-width:0;width:100%;min-height:35px;padding:6px 8px;font-size:11px;line-height:1.12;white-space:normal;box-shadow:none}
+  .service-popover.global-mode{position:fixed;left:0!important;right:0!important;top:auto!important;bottom:0!important;width:100%;max-height:min(65dvh,520px);border-radius:14px 14px 0 0;z-index:40}
   .bottom-bar{padding:16px}
 }
 @keyframes drawer-in{from{opacity:.7;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
@@ -66,6 +74,13 @@
   .mode-controls{grid-column:3;grid-row:1;width:auto}
   .cooling-toggle{font-size:10px}
   .mode-switch button{min-width:38px}
-  .app-layout>.map-section .map-frame{height:calc(100dvh - 118px);min-height:220px;max-height:none}
+  .app-layout>.map-section .map-frame{height:max(340px,calc(100dvh - 118px));min-height:340px;max-height:none}
+  .map-frame:after{height:90px}
+  .plan-stage{top:48px;bottom:90px}
+  #plan-3d{top:48px;bottom:90px;height:calc(100% - 138px)}
+  .whole-home-actions{bottom:51px}
+  .whole-home-buttons{grid-template-columns:repeat(4,minmax(0,1fr));padding:2px 8px}
+  .whole-home-buttons button{min-height:32px;font-size:10px;white-space:nowrap}
+  .map-tools{bottom:4px}
 }
 @media(max-width:660px) and (prefers-reduced-motion:reduce), (max-width:900px) and (max-height:500px) and (prefers-reduced-motion:reduce){.app-layout>.control-panel,.app-layout>.info-panel{animation:none}}

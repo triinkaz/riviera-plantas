@@ -449,6 +449,9 @@ function serviceIdsFor(detail){
 }
 function renderServices(detail){
   const ids=serviceIdsFor(detail);
+  servicePopover.classList.remove("global-mode");
+  servicePopover.querySelector(".section-kicker").textContent="SERVIÇOS PARA ESTA ÁREA";
+  $("#service-title").textContent="O que você quer fazer aqui?";
   $("#service-intro").textContent=`Para ${detail.title.toLowerCase()}, escolha um serviço:`;
   $("#service-list").innerHTML=ids.map(id=>{
     const service=SERVICE_CATALOG[id];
@@ -497,6 +500,7 @@ function positionPopovers(point){
 }
 function openTechPopover({title,description,page=1,layer="architecture",surface},point,source=null){
   window.rivieraAnalytics?.track("detail_opened",{plan_layer:layer,surface_type:surface||"point"});
+  globalServiceButtons.forEach(button=>button.setAttribute("aria-expanded","false"));
   const detail={title,description,page,layer,surface};
   const layerName=LAYERS.find(item=>item.id===layer)?.name||"Arquitetura";
   const sheetName=SHEETS.find(item=>item[0]===page)?.[1]||"Planta original";
@@ -588,9 +592,39 @@ function showService(serviceId){
     independentList.append(empty);
   }
   independentList.hidden=true;
-  const toggle=$("#independent-toggle");toggle.hidden=false;toggle.setAttribute("aria-expanded","false");
+  const toggle=$("#independent-toggle");toggle.hidden=!independents.length;toggle.setAttribute("aria-expanded","false");
   if(activePoint)requestAnimationFrame(()=>positionPopovers(activePoint));
 }
+const globalServiceButtons=[...document.querySelectorAll("[data-global-service]")];
+function openGlobalService(button){
+  const serviceId=button.dataset.globalService;
+  if(!SERVICE_CATALOG[serviceId])return;
+  if(!servicePopover.hidden && servicePopover.classList.contains("global-mode") && button.getAttribute("aria-expanded")==="true"){
+    closeTechPopover(true);
+    return;
+  }
+  closeTechPopover();
+  techPopover.hidden=true;
+  techSource=button;
+  activePoint=null;
+  compactServiceOpen=false;
+  servicePopover.classList.add("global-mode");
+  servicePopover.classList.remove("is-appearing");
+  servicePopover.style.left="";
+  servicePopover.style.top="";
+  servicePopover.querySelector(".section-kicker").textContent="PROFISSIONAIS PARA SUA REFORMA";
+  $("#service-title").textContent="Para todo o apartamento";
+  $("#service-intro").textContent="Escolha quem pode ajudar no seu projeto.";
+  $("#service-list").replaceChildren();
+  $("#service-back").hidden=true;
+  servicePopover.hidden=false;
+  globalServiceButtons.forEach(item=>item.setAttribute("aria-expanded",String(item===button)));
+  showService(serviceId);
+  void servicePopover.offsetWidth;
+  servicePopover.classList.add("is-appearing");
+  $("#service-close").focus();
+}
+globalServiceButtons.forEach(button=>button.addEventListener("click",()=>openGlobalService(button)));
 $("#independent-toggle").addEventListener("click",()=>{
   const toggle=$("#independent-toggle");
   const expanded=toggle.getAttribute("aria-expanded")!=="true";
@@ -615,13 +649,14 @@ $("#service-back").addEventListener("click",()=>{
 function closeTechPopover(restoreFocus=false){
   if(techPopover.hidden && servicePopover.hidden)return;
   techPopover.hidden=true;servicePopover.hidden=true;
-  techPopover.classList.remove("is-appearing");servicePopover.classList.remove("is-appearing");
+  techPopover.classList.remove("is-appearing");servicePopover.classList.remove("is-appearing","global-mode");
   if(restoreFocus)(techSource?.isConnected?techSource:$(state.mode==="3d"?"#view-3d":"#view-2d")).focus();
+  globalServiceButtons.forEach(button=>button.setAttribute("aria-expanded","false"));
   techSource=null;activePoint=null;compactServiceOpen=false;
 }
 $("#tech-close").addEventListener("click",()=>closeTechPopover(true));
 $("#service-close").addEventListener("click",()=>closeTechPopover(true));
-document.addEventListener("pointerdown",e=>{if((!techPopover.hidden||!servicePopover.hidden) && !techPopover.contains(e.target) && !servicePopover.contains(e.target) && !e.target.closest("[data-title]"))closeTechPopover();});
+document.addEventListener("pointerdown",e=>{if((!techPopover.hidden||!servicePopover.hidden) && !techPopover.contains(e.target) && !servicePopover.contains(e.target) && !e.target.closest("[data-title],[data-global-service]"))closeTechPopover();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape" && (!techPopover.hidden||!servicePopover.hidden)){e.preventDefault();closeTechPopover(true);}});
 function applyLayers() {
   LAYERS.forEach(({id}) => {
@@ -849,7 +884,7 @@ $("#zoom-fit").addEventListener("click",()=>{
   updateTransform();
 });
 $("#map-frame").addEventListener("wheel",e=>{
-  if(e.target.closest("#tech-popover,#service-popover"))return;
+  if(e.target.closest("#tech-popover,#service-popover,.whole-home-actions"))return;
   e.preventDefault();
   changeZoom(e.deltaY<0?1.1:1/1.1);
 },{passive:false});
@@ -912,7 +947,7 @@ function beginTwoFingerGesture2D(){
   drag2d=null;
 }
 frame.addEventListener("pointerdown",e=>{
-  if (e.target.closest("button,a,#tech-popover,#service-popover")) return;
+  if (e.target.closest("button,a,#tech-popover,#service-popover,.whole-home-actions")) return;
   const onPoint=!!e.target.closest("[data-title]");
   if(onPoint && e.pointerType!=="touch")return;
   const capture=!onPoint;
