@@ -93,11 +93,11 @@ const SPONSORS = [
     active:true
   },
   {
-    id:"fernanda-souza",
-    name:"Fernanda Souza",
+    id:"lais",
+    name:"Lais",
     services:["arquitetura","marcenaria","interiores"],
-    whatsapp:"5512982034901",
-    message:"Olá, Fernanda! Vim pelo site Riviera Plantas. Vi o cooktop de brinde para quem fecha uma cozinha e os 20% de desconto em qualquer projeto. Gostaria de conversar.",
+    whatsapp:"5512988064651",
+    message:"Olá, Lais! Vim pelo site Riviera Plantas. Vi o cooktop de brinde para quem fecha uma cozinha e os 20% de desconto em qualquer projeto. Gostaria de conversar.",
     active:true,
     campaign:{
       premium:true,
