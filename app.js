@@ -673,6 +673,7 @@ function setFinal(value) {
   renderAreas();
   state.zoom=1; state.panX=0; state.panY=0; syncMode();
   const url = new URL(location.href); url.searchParams.set("final",String(n)); url.searchParams.delete("folha"); if(!available)url.searchParams.delete("view"); history.replaceState(null,"",url);
+  if(mobileView.matches && !drawerBackdrop.hidden)closeMobilePanels();
 }
 function updateTransform() {
   $("#plan-stage").style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.zoom})`;
@@ -685,19 +686,93 @@ function changeZoom(factor) {
   updateTransform();
 }
 const layout=$(".app-layout");
+const mobileView=window.matchMedia("(max-width:660px), (max-width:900px) and (max-height:500px)");
+const drawerBackdrop=document.createElement("button");
+drawerBackdrop.id="mobile-drawer-backdrop";
+drawerBackdrop.type="button";
+drawerBackdrop.setAttribute("aria-label","Fechar menu lateral");
+drawerBackdrop.hidden=true;
+layout.prepend(drawerBackdrop);
+[["#control-panel","Final e camadas"],["#info-panel","Detalhes da planta"]].forEach(([selector,title])=>{
+  const header=document.createElement("div");
+  header.className="drawer-header";
+  header.innerHTML=`<strong>${title}</strong><button type="button" class="drawer-close" aria-label="Fechar ${title.toLowerCase()}">×</button>`;
+  $(selector).prepend(header);
+  header.querySelector("button").addEventListener("click",closeMobilePanels);
+});
+const mobileFinalButton=document.createElement("button");
+mobileFinalButton.id="mobile-final-button";
+mobileFinalButton.type="button";
+mobileFinalButton.textContent="Trocar final";
+$(".map-heading").firstElementChild.after(mobileFinalButton);
+mobileFinalButton.addEventListener("click",()=>openMobilePanel("left"));
+let mobileReturnFocus=null;
+function updatePanelButtons(){
+  const mobile=mobileView.matches;
+  [["left","#toggle-controls","controles"],["right","#toggle-details","detalhes"]].forEach(([side,selector,name])=>{
+    const button=$(selector);
+    const expanded=!layout.classList.contains(side==="left"?"hide-left":"hide-right");
+    button.setAttribute("aria-expanded",String(expanded));
+    button.setAttribute("aria-label",`${expanded?"Recolher":"Abrir"} ${mobile&&side==="left"?"final e camadas":name}`);
+    button.querySelector(".toggle-icon").textContent=side==="left"?(expanded?"◀":"▶"):(expanded?"▶":"◀");
+    button.querySelector(".panel-label").textContent=side==="left"?(mobile?"Camadas":"Controles"):"Detalhes";
+  });
+  const open=mobile && (!layout.classList.contains("hide-left")||!layout.classList.contains("hide-right"));
+  drawerBackdrop.hidden=!open;
+  document.body.classList.toggle("mobile-drawer-open",open);
+}
+function closeMobilePanels(){
+  if(!mobileView.matches)return;
+  const wasOpen=!drawerBackdrop.hidden;
+  layout.classList.add("hide-left","hide-right");
+  updatePanelButtons();
+  if(wasOpen&&mobileReturnFocus?.isConnected)mobileReturnFocus.focus();
+  mobileReturnFocus=null;
+  requestAnimationFrame(render3D);
+}
+function openMobilePanel(side){
+  if(!mobileView.matches)return;
+  mobileReturnFocus=document.activeElement;
+  layout.classList.add("hide-left","hide-right");
+  layout.classList.remove(side==="left"?"hide-left":"hide-right");
+  updatePanelButtons();
+  const panel=$(side==="left"?"#control-panel":"#info-panel");
+  panel.scrollTop=0;
+  panel.querySelector(".drawer-close").focus();
+  requestAnimationFrame(render3D);
+}
+function syncMobileView(){
+  layout.classList.toggle("mobile-mode",mobileView.matches);
+  layout.classList.remove("hide-left","hide-right");
+  if(mobileView.matches)layout.classList.add("hide-left","hide-right");
+  updatePanelButtons();
+  requestAnimationFrame(render3D);
+}
 function togglePanel(side){
+  if(mobileView.matches){
+    const hidden=layout.classList.contains(side==="left"?"hide-left":"hide-right");
+    if(hidden)openMobilePanel(side);else closeMobilePanels();
+    return;
+  }
   const isLeft=side==="left";
   const className=isLeft?"hide-left":"hide-right";
-  const button=$(isLeft?"#toggle-controls":"#toggle-details");
   const willHide=!layout.classList.contains(className);
   layout.classList.toggle(className,willHide);
-  button.setAttribute("aria-expanded",String(!willHide));
-  button.setAttribute("aria-label",`${willHide?"Abrir":"Recolher"} ${isLeft?"controles":"detalhes"}`);
-  button.querySelector(".toggle-icon").textContent=isLeft?(willHide?"▶":"◀"):(willHide?"◀":"▶");
+  updatePanelButtons();
   requestAnimationFrame(render3D);
 }
 $("#toggle-controls").addEventListener("click",()=>togglePanel("left"));
 $("#toggle-details").addEventListener("click",()=>togglePanel("right"));
+drawerBackdrop.addEventListener("click",closeMobilePanels);
+mobileView.addEventListener("change",syncMobileView);
+syncMobileView();
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&mobileView.matches&&!drawerBackdrop.hidden)closeMobilePanels();});
+document.querySelectorAll("#dimension-status,#area-status").forEach(link=>link.addEventListener("click",e=>{
+  if(!mobileView.matches)return;
+  e.preventDefault();
+  openMobilePanel("right");
+  $(link.getAttribute("href")).scrollIntoView({block:"start"});
+}));
 renderLayerControls();
 $("#final-submit").addEventListener("click",()=>setFinal($("#final-input").value));
 $("#final-input").addEventListener("keydown",e=>{ if(e.key==="Enter") setFinal(e.currentTarget.value); });
@@ -732,6 +807,7 @@ $("#map-frame").addEventListener("wheel",e=>{
 },{passive:false});
 let drag2d=null;
 const activePointers=new Map();
+let gesture2d=null;
 let gesture3d=null;
 let tap3d=null;
 let last3DOpen=null;
@@ -776,13 +852,32 @@ function beginTwoFingerGesture(){
     ...state.view3d
   };
 }
+function beginTwoFingerGesture2D(){
+  const points=[...activePointers.values()];
+  if(points.length<2)return;
+  const [a,b]=points;
+  gesture2d={
+    centerX:(a.x+b.x)/2,centerY:(a.y+b.y)/2,
+    distance:Math.max(20,Math.hypot(b.x-a.x,b.y-a.y)),
+    zoom:state.zoom,panX:state.panX,panY:state.panY
+  };
+  drag2d=null;
+}
 frame.addEventListener("pointerdown",e=>{
-  if (state.final===1 || e.target.closest("button,a,[data-title],#tech-popover,#service-popover")) return;
-  frame.setPointerCapture(e.pointerId);
-  frame.classList.add("dragging");
+  if (state.final===1 || e.target.closest("button,a,#tech-popover,#service-popover")) return;
+  const onPoint=!!e.target.closest("[data-title]");
+  if(onPoint && e.pointerType!=="touch")return;
+  const capture=!onPoint;
+  if(capture)frame.setPointerCapture(e.pointerId);
   if(state.mode==="2d"){
-    drag2d={id:e.pointerId,x:e.clientX,y:e.clientY,panX:state.panX,panY:state.panY};
+    activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
+    if(activePointers.size>=2){
+      for(const id of activePointers.keys())if(!frame.hasPointerCapture(id))frame.setPointerCapture(id);
+      frame.classList.add("dragging");
+      beginTwoFingerGesture2D();
+    }else drag2d={id:e.pointerId,x:e.clientX,y:e.clientY,panX:state.panX,panY:state.panY,captured:capture};
   }else{
+    frame.classList.add("dragging");
     activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
     if(activePointers.size>=2){tap3d=null;beginTwoFingerGesture();}
     else tap3d={id:e.pointerId,x:e.clientX,y:e.clientY};
@@ -790,7 +885,31 @@ frame.addEventListener("pointerdown",e=>{
 });
 frame.addEventListener("pointermove",e=>{
   if(state.mode==="2d"){
+    if(!activePointers.has(e.pointerId))return;
+    activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
+    if(activePointers.size>=2 && gesture2d){
+      const [a,b]=[...activePointers.values()];
+      const centerX=(a.x+b.x)/2,centerY=(a.y+b.y)/2;
+      const distance=Math.hypot(b.x-a.x,b.y-a.y);
+      const nextZoom=clamp(gesture2d.zoom*distance/gesture2d.distance,.7,3.4);
+      const frameBounds=frame.getBoundingClientRect();
+      const frameCenterX=frameBounds.left+frameBounds.width/2;
+      const stage=$("#plan-stage");
+      const frameCenterY=frameBounds.top+stage.offsetTop+stage.offsetHeight/2;
+      const ratio=nextZoom/gesture2d.zoom;
+      state.zoom=nextZoom;
+      state.panX=centerX-frameCenterX-ratio*(gesture2d.centerX-frameCenterX-gesture2d.panX);
+      state.panY=centerY-frameCenterY-ratio*(gesture2d.centerY-frameCenterY-gesture2d.panY);
+      updateTransform();
+      return;
+    }
     if(!drag2d || drag2d.id!==e.pointerId)return;
+    if(!drag2d.captured){
+      if(Math.hypot(e.clientX-drag2d.x,e.clientY-drag2d.y)<7)return;
+      frame.setPointerCapture(e.pointerId);
+      drag2d.captured=true;
+    }
+    frame.classList.add("dragging");
     state.panX=drag2d.panX+e.clientX-drag2d.x;
     state.panY=drag2d.panY+e.clientY-drag2d.y;
     updateTransform();
@@ -829,6 +948,17 @@ frame.addEventListener("pointermove",e=>{
   updateTransform();
 });
 function endPointer(e){
+  if(state.mode==="2d"){
+    activePointers.delete(e.pointerId);
+    gesture2d=null;
+    drag2d=null;
+    if(activePointers.size===1){
+      const [id,point]=activePointers.entries().next().value;
+      drag2d={id,x:point.x,y:point.y,panX:state.panX,panY:state.panY,captured:frame.hasPointerCapture(id)};
+    }else if(activePointers.size>=2)beginTwoFingerGesture2D();
+    if(!activePointers.size)frame.classList.remove("dragging");
+    return;
+  }
   const was3DPointer=state.mode==="3d" && activePointers.has(e.pointerId);
   const was3DGesture=was3DPointer && (e.type==="pointercancel" || !tap3d);
   if(e.type==="pointerup" && state.mode==="3d" && tap3d?.id===e.pointerId && activePointers.size===1){
@@ -848,6 +978,7 @@ frame.addEventListener("lostpointercapture",e=>{
   if(drag2d?.id===e.pointerId)drag2d=null;
   if(activePointers.delete(e.pointerId)){
     tap3d=null;
+    gesture2d=null;
     gesture3d=null;
   }
   if(!activePointers.size)frame.classList.remove("dragging");

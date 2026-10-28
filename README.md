@@ -10,6 +10,8 @@ O botão **Área do ar** destaca uma região ilustrativa da sala em 2D e 3D. O m
 
 A camada **Medidas** exibe as cotas legíveis de suíte e dormitório nas vistas 2D e 3D, com link para as folhas cotadas recebidas. Para os finais 2 e 6, a consulta usa respectivamente a tipologia compartilhada com os finais 5 e 3. As medidas não são levantamento no imóvel nem cotas de cada parede. Veja [MEDIDAS_COTADAS.md](MEDIDAS_COTADAS.md) para fontes e limites.
 
+No celular, a planta abre primeiro. **Camadas** e **Detalhes** ficam em gavetas acionadas pelas setas laterais; os botões de zoom ocupam uma faixa separada do desenho. A vista 2D também aceita gesto de pinça para aproximar e afastar.
+
 Os documentos de origem estão em `assets/docs/`. Nenhum morador, unidade ou prestador foi cadastrado. Há até três posições em destaque por serviço: anunciantes do pacote principal têm prioridade e profissionais independentes do plano MAIS podem ocupar vagas livres sem cobrança adicional. O botão **Mais** abre a lista de independentes daquele serviço. Anúncios pagos aparecem identificados como **PUBLICIDADE**; a presença de um serviço ou profissional não significa indicação técnica nem que uma intervenção esteja autorizada.
 
 ## Executar localmente
