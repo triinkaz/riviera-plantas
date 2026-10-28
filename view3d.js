@@ -108,6 +108,11 @@ function drawApartment3D(canvas, options) {
     });
     const faces = [];
     const addBox = (values, material, wallHeight) => {
+      const palette = material === "structural"
+        ? {sides:light?["#bd945d","#9d784c"]:["#a57c43d9","#806038d9"],top:"#d5ad6f",stroke:light?"#765530":"#deb67a"}
+        : material === "masonry"
+          ? {sides:light?["#b85c30","#9c4623"]:["#a94f25e8","#813718e8"],top:light?"#cc7441":"#b65c2e",stroke:light?"#713416":"#e99b62"}
+          : {sides:light?["#86b6c0","#638f9d"]:["#54899ad9","#355d6cd9"],top:light?"#a8cad2":"#7bb6c5",stroke:light?"#477789":"#8bc3d3"};
       const low = rectangle(values, 3);
       const high = rectangle(values, wallHeight);
       for (let i = 0; i < 4; i++) {
@@ -116,18 +121,17 @@ function drawApartment3D(canvas, options) {
         faces.push({
           vertices: face,
           depth: face.reduce((sum, point) => sum + depth(point), 0) / 4,
-          fill: material === "structural" ? (light ? (i % 2 ? "#9d784c" : "#bd945d") : (i % 2 ? "#806038d9" : "#a57c43d9")) : (light ? (i % 2 ? "#638f9d" : "#86b6c0") : (i % 2 ? "#355d6cd9" : "#54899ad9")),
-          stroke: material === "structural" ? (light?"#765530":"#deb67a") : (light?"#477789":"#8bc3d3"), surface:material
+          fill: palette.sides[i % 2], stroke:palette.stroke, surface:material
         });
       }
       faces.push({
         vertices: high,
         depth: high.reduce((sum, point) => sum + depth(point), 0) / 4,
-        fill: material === "structural" ? "#d5ad6f" : (light?"#a8cad2":"#7bb6c5"),
-        stroke: material === "structural" ? (light?"#765530":"#ffe1a3") : (light?"#477789":"#b1e3ec"), surface:material
+        fill:palette.top,stroke:palette.stroke,surface:material
       });
     };
     options.structural.forEach(values => addBox(values,"structural",155));
+    (options.masonry||[]).forEach(values => addBox(values,"masonry",145));
     options.drywall.forEach(values => addBox(values,"drywall",135));
     faces.sort((a,b)=>a.depth-b.depth);
     faces.forEach(face => {polygon(face.vertices,face.fill,face.stroke,.9);markSurface(face.vertices,face.surface);});

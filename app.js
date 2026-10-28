@@ -9,6 +9,7 @@ const LAYERS = [
 ];
 const LEGENDA = [
   ["swatch structural", "Alvenaria estrutural"],
+  ["swatch masonry", "Alvenaria (a confirmar)"],
   ["swatch drywall", "Drywall"],
   ["swatch shaft", "Shaft / vazio hidráulico"],
   ["swatch electric", "Ponto elétrico"],
@@ -114,11 +115,14 @@ const STRUCTURAL_WALLS = [
   [1230,330,20,270],[1138,580,112,20],[1230,600,20,515],
   [1057,1095,193,20],[1057,1095,20,28]
 ];
-const DRYWALL_WALLS = [
+// Rafael informou em 28/10/2026 que, nos finais comuns de todas as torres,
+// só churrasqueira e serviço são drywall. A planta original diverge; tipo estrutural pendente.
+const MASONRY_WALLS = [
   [160,735,128,20],[160,865,365,20],[506,714,20,53],[506,850,20,35],
-  [770,350,10,129],[1020,580,20,198],[1210,350,20,120],[1110,350,20,120],
+  [770,350,10,129],
   [1210,600,20,112],[1210,710,20,8],[638,679,20,15]
 ];
+const DRYWALL_WALLS = [[1020,580,20,198],[1210,350,20,120],[1110,350,20,120]];
 const SHAFTS = [[161,714,121,40],[772,352,39,125],[1201,351,30,119],[1212,600,32,114]];
 const LIGHTS = [[400,515],[734,515],[998,462],[1126,675],[857,795],[1126,936],[857,1070],[400,1070],[590,780],[334,780]];
 const OUTLETS = [[248,370],[499,370],[338,679],[514,679],[770,678],[1191,558],[1170,745],[1212,745],[1170,874],[1212,874],[1170,967],[1212,967],[1212,1028],[176,1056],[500,1229],[848,1229],[899,1229],[675,878],[514,898],[488,752]];
@@ -209,6 +213,7 @@ const baseShape = () => {
     line(830,351,1108,351,'guard-line')+
     '</g>';
   svg += '<g class="structural-walls">' + STRUCTURAL_WALLS.map(v => surfaceRect(...v,'structural-wall','structural')).join('') + '</g>';
+  svg += '<g class="masonry-walls">' + MASONRY_WALLS.map(v => surfaceRect(...v,'masonry-wall','masonry')).join('') + '</g>';
   svg += '<g class="drywall-walls">' + DRYWALL_WALLS.map(v => surfaceRect(...v,'drywall-wall','drywall')).join('') + '</g>';
   svg += '<g class="shaft-areas">' + SHAFTS.map(v => surfaceRect(...v,'shaft-box','shaft')).join('') + SHAFTS.map(([x,y,w,h]) => path(`M${x} ${y}l${w} ${h}m0 -${h}l-${w} ${h}`,'shaft-cross')).join('') + '</g>';
   svg += '<g class="fixtures">' +
@@ -331,6 +336,7 @@ function render3D() {
     opacity:state.opacity, view:state.view3d,
     cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(), dimensions:dimensionData(), segments:segmentData().filter(item=>item.line),
     structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
+    masonry:state.final===4?FINAL4.masonry:MASONRY_WALLS,
     drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
     shafts:state.final===4?FINAL4.shafts:SHAFTS,
     custom:state.final===4?FINAL4:null,
@@ -353,8 +359,8 @@ function syncMode() {
   $("#map-disclaimer").textContent = !available
     ? "Cotas de arquitetura disponíveis. Demais camadas técnicas pendentes; confira medidas no imóvel."
     : state.mode==="3d"
-      ? "Vista 3D ilustrativa. Confira medidas e instalações no imóvel antes de reformar."
-      : "As posições são aproximadas. Confira medidas e instalações no imóvel antes de reformar.";
+      ? "Vista 3D ilustrativa. Laranja escuro: alvenaria informada pelo proprietário; a planta original marca drywall. Confirme no imóvel."
+      : "Laranja escuro: alvenaria informada pelo proprietário; a planta original marca drywall. Confirme no imóvel antes de intervir.";
   $("#selection-kicker").textContent = !available ? "PLANTAS" : state.mode==="3d" ? "COMO USAR" : "COMO USAR";
   const info=$("#selection-info");
   if(available && state.mode==="3d"){

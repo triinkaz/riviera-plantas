@@ -28,6 +28,12 @@ const SURFACE_CATALOG = {
     check:"Não remova nem abra vãos, nichos ou rasgos. Confira as regras antes de instalar acabamentos ou fixações.",
     services:["pintura","acabamento","vistoria"]
   },
+  masonry: {
+    title:"Alvenaria (a confirmar)",
+    description:"O proprietário informa alvenaria neste trecho, mas a planta original o marca como drywall. A função estrutural não foi confirmada.",
+    check:"Confirme o material e a função da parede no imóvel com um profissional. Não remova, abra vãos ou faça rasgos com base neste desenho.",
+    services:["pintura","acabamento","vistoria"]
+  },
   drywall: {
     title:"Parede de drywall", description:"Confira a parede no apartamento antes de planejar mudanças.",
     check:"Remover ou mudar a divisória exige análise técnica e o procedimento de reforma do condomínio.",
