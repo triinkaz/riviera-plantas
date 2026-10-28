@@ -411,7 +411,7 @@ function syncMode() {
   const info=$("#selection-info");
   if(available && state.mode==="3d"){
     info.dataset.view3d="true";
-    info.innerHTML='<h2>Explore o 3D</h2><p>Arraste para girar. Toque em uma área ou ponto para ver detalhes e serviços.</p>';
+    info.innerHTML='<h2>Explore o 3D</h2><p>Arraste com um dedo para girar e inclinar. Use dois dedos para aproximar. Toque em uma área ou ponto para ver detalhes e serviços.</p>';
   }else if(available && info.dataset.view3d){
     delete info.dataset.view3d;
     info.innerHTML='<h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p>';
@@ -1071,12 +1071,10 @@ frame.addEventListener("pointermove",e=>{
     state.view3d.tilt=clamp(gesture3d.tilt+(centerY-gesture3d.centerY)*.006,.08,1.25);
     state.view3d.zoom=clamp(gesture3d.zoom*distance/gesture3d.distance,.55,3.5);
     state.view3d.panX=gesture3d.panX+(centerX-gesture3d.centerX);
-  }else if(e.pointerType==="mouse" || e.pointerType==="pen"){
+  }else{
+    if(e.pointerType==="touch" && tap3d?.id===e.pointerId)return;
     state.view3d.yaw+=(e.clientX-previous.x)*.008;
     state.view3d.tilt=clamp(state.view3d.tilt+(e.clientY-previous.y)*.006,.08,1.25);
-  }else{
-    state.view3d.panX+=e.clientX-previous.x;
-    state.view3d.panY+=e.clientY-previous.y;
   }
   updateTransform();
 });
