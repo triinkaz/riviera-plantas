@@ -40,6 +40,14 @@ const MANUAL_TIPS = [
   { id:"vidros", title:"Envidraçamento", text:"Consulte a padronização e as regras do condomínio; o manual exige análise do local e responsabilidade técnica.", page:25, layers:["systems"] }
 ];
 const AREA_ESTIMATES = {
+  one: [
+    { name:"Dormitório", approx:10.2, x:646, y:578 },
+    { name:"Suíte", approx:11.0, x:901, y:858 },
+    { name:"Banho da suíte", approx:3.7, x:851, y:579 },
+    { name:"Banho social", approx:3.2, x:706, y:860 },
+    { name:"Varanda", approx:5.7, x:403, y:566 },
+    { name:"Sala, cozinha, serviço e circulação", approx:26.5, x:515, y:840, open:true }
+  ],
   pair: [
     { name:"Suíte", approx:10.2, x:400, y:566 },
     { name:"Dormitório", approx:10.8, x:390, y:1138 },
@@ -67,8 +75,8 @@ const ROOM_DIMENSIONS = {
     { name:"Dormitório", size:"3,76 × 2,71 m", x:637, y:800 }
   ],
   one: [
-    { name:"Suíte", size:"3,31 × 3,31 m" },
-    { name:"Dormitório", size:"3,76 × 2,71 m" }
+    { name:"Suíte", size:"3,31 × 3,31 m", x:904, y:780 },
+    { name:"Dormitório", size:"3,76 × 2,71 m", x:644, y:551 }
   ]
 };
 // Cotas de trechos legíveis nas folhas, sem tratá-las como dimensões totais de ambientes irregulares.
@@ -91,12 +99,12 @@ const SEGMENT_DIMENSIONS = {
     { name:"Varanda", detail:"parede lateral junto ao dormitório", size:"1,81 m", label:"VARANDA · LATERAL", short3d:"VARANDA · LATERAL", line:[484,813,484,942], plate:[396,915,140] }
   ],
   one: [
-    { name:"Sala", detail:"parede da sala junto à entrada", size:"2,45 m" },
-    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"3,17 m" },
+    { name:"Sala", detail:"parede da sala junto à entrada", size:"2,45 m", label:"SALA · ENTRADA", short3d:"SALA · ENTRADA", line:[455,960,642,960], plate:[550,913,150] },
+    { name:"Cozinha", detail:"parede da cozinha junto à bancada", size:"3,17 m", label:"COZINHA · BANCADA", short3d:"COZINHA · BANCADA", line:[250,715,250,940], plate:[339,841,156] },
     { name:"Área de serviço", detail:"parede lateral da área de serviço", size:"1,40 m" },
     { name:"Banho social", detail:"parede curta junto ao shaft", size:"1,04 m" },
     { name:"Banho da suíte", detail:"parede curta junto ao shaft", size:"1,19 m" },
-    { name:"Varanda", detail:"borda externa reta da varanda", size:"2,20 m" }
+    { name:"Varanda", detail:"borda externa reta da varanda", size:"2,20 m", label:"VARANDA · BORDA", short3d:"VARANDA · BORDA", line:[330,486,492,486], plate:[408,535,150] }
   ]
 };
 const state = {
@@ -142,18 +150,17 @@ function applyTheme(theme,save=false){
 }
 themeToggle.addEventListener("click",()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark",true));
 applyTheme(document.documentElement.dataset.theme);
-const docName = () => state.final===4 ? "final-4-comum" : [2,5].includes(state.final) ? "finais-2-5" : "finais-3-6";
+const docName = () => state.final===1 ? "final-1-comum" : state.final===4 ? "final-4-comum" : [2,5].includes(state.final) ? "finais-2-5" : "finais-3-6";
 const docUrl = (page = 1) => `assets/docs/${docName()}.pdf#page=${page}`;
 const mirrored = () => [3,6].includes(state.final);
 const yy = (y) => mirrored() ? 1570 - y : y;
-const areaData = () => state.final===4 ? AREA_ESTIMATES.four : AREA_ESTIMATES.pair;
+const areaData = () => state.final===1 ? AREA_ESTIMATES.one : state.final===4 ? AREA_ESTIMATES.four : AREA_ESTIMATES.pair;
 const areaLabel = (approx) => `≈${Math.round(approx)} m²`;
 const dimensionData = () => state.final===1?ROOM_DIMENSIONS.one:state.final===4?ROOM_DIMENSIONS.four:ROOM_DIMENSIONS.pair;
 const segmentData = () => state.final===1?SEGMENT_DIMENSIONS.one:state.final===4?SEGMENT_DIMENSIONS.four:SEGMENT_DIMENSIONS.pair;
 const dimensionDocUrl = () => `assets/docs/cotadas/final-${({2:5,6:3})[state.final]||state.final}.pdf`;
 function dimensionMarkers() {
-  if(state.final===1)return "";
-  const small=state.final===4;
+  const small=[1,4].includes(state.final);
   return `<g id="layer-dimensions" class="plan-layer overlay-layer dimension-markers" aria-label="Medidas cotadas de cômodos e trechos">${dimensionData().map(item=>{
     const x=item.x,y=small?item.y:yy(item.y),width=small?205:278,height=small?47:62;
     return `<g transform="translate(${x} ${y})"><rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="6"/><text y="${small?-5:-7}" text-anchor="middle" class="dimension-room">${item.name.toUpperCase()}</text><text y="${small?16:22}" text-anchor="middle" class="dimension-value">${item.size}</text></g>`;
@@ -170,15 +177,16 @@ function dimensionMarkers() {
     return `<g class="segment-measure" aria-label="${item.name}: ${item.detail}, ${item.size}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><path d="${ticks}"/><path class="measure-leader" d="${leader}"/><rect x="${cx-width/2}" y="${cy-height/2}" width="${width}" height="${height}" rx="5"/><text x="${cx}" y="${cy-(small?3:5)}" text-anchor="middle" class="segment-room">${item.label}</text><text x="${cx}" y="${cy+(small?11:16)}" text-anchor="middle" class="segment-value">${item.size}</text></g>`;
   }).join("")}</g>`;
 }
-const coolingOutline = () => state.final===4
-  ? [[390,493],[630,493],[630,710],[390,710]]
+const coolingOutline = () => state.final===1
+  ? [[395,740],[637,740],[637,929],[395,929]]
+  : state.final===4 ? [[390,493],[630,493],[630,710],[390,710]]
   : [[680,750],[1015,750],[1015,1080],[680,1080]];
 function coolingOverlaySvg() {
   const shape=coolingOutline().map(([x,y])=>`${x},${y}`).join(" ");
   const transform=mirrored()? ' transform="translate(0 1570) scale(1 -1)"' : '';
-  const small=state.final===4;
-  const centerX=small?510:847;
-  const top=small?503:mirrored()?502:762;
+  const small=[1,4].includes(state.final);
+  const centerX=state.final===1?515:small?510:847;
+  const top=state.final===1?748:small?503:mirrored()?502:762;
   const width=small?224:284;
   const height=small?64:77;
   return `<g id="cooling-overlay" class="cooling-overlay" aria-hidden="true"><polygon points="${shape}"${transform}/><rect class="cooling-label-plate" x="${centerX-width/2}" y="${top}" width="${width}" height="${height}" rx="7"/><text x="${centerX}" y="${top+(small?18:24)}" text-anchor="middle">❄ AR 9.000 BTU/h</text><text x="${centerX}" y="${top+(small?39:48)}" text-anchor="middle" class="cooling-range">10–15 m² sem sol direto</text><text x="${centerX}" y="${top+(small?55:67)}" text-anchor="middle" class="cooling-subtitle">CONTORNO ILUSTRATIVO</text></g>`;
@@ -245,12 +253,11 @@ function point(x,y,label,type,title,description,page) {
   return `<g class="poi poi-${type}" role="button" tabindex="0" aria-label="${title}" data-title="${title}" data-description="${description}" data-page="${page}" transform="translate(${x} ${yy(y)})"><circle r="15" class="poi-hit"/><circle r="10" class="poi-disc"/><text text-anchor="middle" y="4.5">${label}</text></g>`;
 }
 function areaMarkers() {
-  if(state.final===1)return '';
   return `<g id="layer-areas" class="plan-layer overlay-layer">${areaData().map(item=>{
     const description=item.open
       ? "Sala, cozinha, serviço e circulação aparecem juntos porque não há paredes separando esses usos. Valor aproximado."
       : "Valor aproximado, calculado a partir da planta. Meça no apartamento antes de comprar materiais.";
-    return `<g class="area-marker" role="button" tabindex="0" aria-label="${item.name}: ${areaLabel(item.approx)}" data-title="${item.name}: ${areaLabel(item.approx)}" data-description="${description}" data-page="1" transform="translate(${item.x} ${state.final===4?item.y:yy(item.y)})"><rect x="-48" y="-15" width="96" height="30" rx="4"/><text text-anchor="middle" y="5">${areaLabel(item.approx)}</text></g>`;
+    return `<g class="area-marker" role="button" tabindex="0" aria-label="${item.name}: ${areaLabel(item.approx)}" data-title="${item.name}: ${areaLabel(item.approx)}" data-description="${description}" data-page="1" transform="translate(${item.x} ${[1,4].includes(state.final)?item.y:yy(item.y)})"><rect x="-48" y="-15" width="96" height="30" rx="4"/><text text-anchor="middle" y="5">${areaLabel(item.approx)}</text></g>`;
   }).join('')}</g>`;
 }
 const electricPoints = () => {
@@ -289,8 +296,8 @@ const systemsPoints = () => {
 };
 const drainPoints = () => `<g id="layer-drains" class="plan-layer overlay-layer">${point(783,783,"PD","drain","Ponto de dreno da sala","Indicado na folha 4. A folha 5 mostra o detalhe e a vista do dreno; o trajeto não está desenhado aqui.",5)}${point(783,466,"D","drain","Dreno do banho da suíte","Indicado na folha 4, próximo ao shaft. Consulte a vista hidráulica antes de intervir.",6)}</g>`;
 function renderSvg() {
-  if(state.final===4){
-    $("#plan-stage").innerHTML=final4Svg();
+  if([1,4].includes(state.final)){
+    $("#plan-stage").innerHTML=state.final===1?final1Svg():final4Svg();
     applyLayers();
     $("#plan-stage").querySelectorAll("[data-title]").forEach(el => {
       el.addEventListener("click", () => selectPoint(el));
@@ -316,6 +323,7 @@ function renderSvg() {
   });
 }
 function get3DDots() {
+  if(state.final===1)return FINAL1.dots;
   if(state.final===4)return FINAL4.dots;
   const make = (pairs,layer,label) => pairs.map(([x,y])=>({x,y,layer,label}));
   return [
@@ -329,24 +337,25 @@ function get3DDots() {
   ];
 }
 function render3D() {
-  if (state.mode !== "3d" || state.final===1 || $("#plan-3d").hidden) return;
+  if (state.mode !== "3d" || $("#plan-3d").hidden) return;
+  const custom=state.final===1?FINAL1:state.final===4?FINAL4:null;
   const result=drawApartment3D($("#plan-3d"),{
     final:state.final, mirrored:mirrored(), layers:state.layers,
     theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
     cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(), dimensions:dimensionData(), segments:segmentData().filter(item=>item.line),
-    structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
-    masonry:state.final===4?FINAL4.masonry:MASONRY_WALLS,
-    drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
-    shafts:state.final===4?FINAL4.shafts:SHAFTS,
-    custom:state.final===4?FINAL4:null,
+    structural:custom?.structural||STRUCTURAL_WALLS,
+    masonry:custom?.masonry||MASONRY_WALLS,
+    drywall:custom?.drywall||DRYWALL_WALLS,
+    shafts:custom?.shafts||SHAFTS,
+    custom,
     dots:get3DDots()
   });
   state.hit3d=result?.hits||[];
   state.surfaceHits3d=result?.surfaces||[];
 }
 function syncMode() {
-  const available = state.final!==1;
+  const available = true;
   $("#cooling-toggle").disabled = !available;
   $("#view-2d").disabled = !available;
   $("#view-3d").disabled = !available;
@@ -374,7 +383,7 @@ function syncMode() {
   if (state.mode==="3d" && available) requestAnimationFrame(render3D);
 }
 function setMode(mode) {
-  if (state.final!==1) {
+  if (state.final>=1) {
     const changed=state.mode!==mode;
     state.mode = mode;
     syncMode();
@@ -646,37 +655,28 @@ function renderSources() {
   $("#source-list").innerHTML = SHEETS.map(([page,title,detail])=>`<a href="${docUrl(page)}" target="_blank" rel="noopener"><b>${String(page).padStart(2,"0")}</b><span><strong>${title}</strong><small>${detail}</small></span><i aria-hidden="true">↗</i></a>`).join("");
 }
 function renderManualTips() {
-  const available=state.final!==1;
-  const selected=MANUAL_TIPS.filter(tip=>tip.always || (available && tip.layers.some(layer=>state.layers[layer])) || (!available && ["estrutura","furacao"].includes(tip.id)));
+  const selected=MANUAL_TIPS.filter(tip=>tip.always || tip.layers.some(layer=>state.layers[layer]));
   $("#manual-tip-list").innerHTML=selected.map(tip=>`<a class="manual-tip" href="assets/docs/manual-proprietario.pdf#page=${tip.page}" target="_blank" rel="noopener"><strong>${tip.title}</strong><span>${tip.text}</span><small>Manual · p. ${tip.page} ↗</small></a>`).join("");
 }
 function renderDimensions() {
   const panel=$("#measurement-section");
   const badge=$("#dimension-status");
   panel.hidden=!state.layers.dimensions;
-  badge.hidden=!state.layers.dimensions || state.final===1;
+  badge.hidden=!state.layers.dimensions;
   if(panel.hidden)return;
   const paired=state.final===2||state.final===6;
   const sourceFinal=state.final===2?5:state.final===6?3:state.final;
-  const note=state.final===1
-    ? "Há planta cotada de arquitetura para este final; as demais camadas técnicas ainda não estão disponíveis."
-    : paired?`Estas cotas vêm da tipologia compartilhada com o final ${sourceFinal}; não recebemos folha cotada com o número ${state.final}.`
+  const note=paired?`Estas cotas vêm da tipologia compartilhada com o final ${sourceFinal}; não recebemos folha cotada com o número ${state.final}.`
     : "Cotas lidas da planta recebida para este final.";
-  const guide=state.final===1
-    ? "Cada número abaixo se refere à parede ou borda descrita, não ao ambiente inteiro."
-    : `Nas vistas 2D e 3D, as linhas douradas apontam as paredes da sala e cozinha e ${state.final===4?"a parede lateral":"a borda externa"} da varanda. As demais medidas estão descritas abaixo e na folha cotada.`;
+  const guide=`Nas vistas 2D e 3D, as linhas douradas apontam as paredes da sala e cozinha e ${state.final===4?"a parede lateral":"a borda externa"} da varanda. As demais medidas estão descritas abaixo e na folha cotada.`;
   $("#measurement-content").innerHTML=`<p>${note}</p><h3>Quartos</h3><div class="dimension-list">${dimensionData().map(item=>`<div><span>${item.name}</span><strong>${item.size}</strong></div>`).join("")}</div><h3>${[1,4].includes(state.final)?"Paredes e varanda":"Paredes, varanda e passagem"}</h3><p>${guide}</p><div class="dimension-list segment-list">${segmentData().map(item=>`<div><span><b>${item.name}</b><small>${item.detail}</small></span><strong>${item.size}</strong></div>`).join("")}</div><p><strong>Desenho cotado, não medição no imóvel.</strong> Os ambientes com recortes não têm uma única largura × profundidade. Confira as dimensões no apartamento antes de comprar materiais ou encomendar móveis.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada · final ${sourceFinal} ↗</a>`;
 }
 function renderAreas() {
   const panel=$("#area-section");
   const badge=$("#area-status");
   panel.hidden=!state.layers.areas;
-  badge.hidden=!state.layers.areas || state.final===1;
+  badge.hidden=!state.layers.areas;
   if(panel.hidden)return;
-  if(state.final===1){
-    $("#area-content").innerHTML='<p>Ainda não temos áreas verificadas para o final 1.</p>';
-    return;
-  }
   $("#area-content").innerHTML=`<p>Valores aproximados para planejamento inicial. Meça no apartamento antes de comprar materiais.</p><div class="area-list">${areaData().map(item=>`<div><span>${item.name}</span><strong>${areaLabel(item.approx)}</strong></div>`).join('')}</div><p>Sala, cozinha, serviço e circulação aparecem juntos porque não há paredes separando esses usos.</p><a href="${docUrl(1)}" target="_blank" rel="noopener">Abrir planta original ↗</a>`;
 }
 function setFinal(value) {
@@ -687,47 +687,36 @@ function setFinal(value) {
   }
   const changed=state.final!==n;
   state.final = n;
-  if(n===1)state.layers.dimensions=true;
   state.cooling=false;
   syncCooling();
   $("#final-input").value = String(n);
-  const available = n!==1;
-  if (!available) state.mode = "2d";
-  $("#final-result").innerHTML = available
-    ? `<strong>Final ${n}</strong><span>Plantas disponíveis.</span>`
-    : '<strong>Final 1</strong><span>Arquitetura cotada disponível.</span>';
-  $("#final-result").classList.toggle("pending", !available);
+  $("#final-result").innerHTML = `<strong>Final ${n}</strong><span>Plantas disponíveis.</span>`;
+  $("#final-result").classList.remove("pending");
   document.querySelectorAll("[data-final]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.final)===n)));
-  $("#map-title").textContent = available ? `Planta do final ${n}` : `Final ${n} comum`;
-  $("#map-description").textContent = available ? (n===4 ? "Apartamento comum · final 4" : `Plantas dos finais ${[2,5].includes(n) ? "2 e 5" : "3 e 6"}`) : "Arquitetura cotada disponível · demais plantas pendentes";
-  $(".layers-section").classList.toggle("has-limited-layers", !available);
+  $("#map-title").textContent = `Planta do final ${n}`;
+  $("#map-description").textContent = [1,4].includes(n) ? `Apartamento comum · final ${n}` : `Plantas dos finais ${[2,5].includes(n) ? "2 e 5" : "3 e 6"}`;
+  $(".layers-section").classList.remove("has-limited-layers");
   $("#layer-list").querySelectorAll("input").forEach(input => {
-    input.disabled = !available && input.dataset.layer!=="dimensions";
+    input.disabled = false;
     input.checked = !!state.layers[input.dataset.layer];
   });
-  $("#show-all").disabled = !available;
-  $("#show-base").disabled = !available;
-  $("#overlay-opacity").disabled = !available;
-  $("#empty-state").hidden = available;
-  $(".map-tools").hidden = !available;
-  $("#main-source").hidden = !available;
-  if (available) {
-    $("#main-source").href = docUrl(1);
-    $("#cooling-electric-source").href=docUrl(3);
-    $("#cooling-open-area").textContent=String(Math.round(areaData().find(item=>item.open).approx));
-    renderSvg();
-    renderSources();
-    $("#selection-info").innerHTML = '<h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p>';
-  } else {
-    $("#empty-state").innerHTML = `<div class="empty-symbol">◇</div><h2>Final 1</h2><p>Já temos a planta cotada de arquitetura. As camadas de elétrica, hidráulica e instalações deste final ainda não estão completas.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada ↗</a>`;
-    $("#source-list").innerHTML = `<a href="${dimensionDocUrl()}" target="_blank" rel="noopener"><b>01</b><span><strong>Arquitetura cotada</strong><small>Final 1 · desenho recebido</small></span><i aria-hidden="true">↗</i></a>`;
-    $("#selection-info").innerHTML = '<h2>Consulta parcial</h2><p>Veja as cotas disponíveis à direita e confira as medidas no apartamento.</p>';
-  }
+  $("#show-all").disabled = false;
+  $("#show-base").disabled = false;
+  $("#overlay-opacity").disabled = false;
+  $("#empty-state").hidden = true;
+  $(".map-tools").hidden = false;
+  $("#main-source").hidden = false;
+  $("#main-source").href = docUrl(1);
+  $("#cooling-electric-source").href=docUrl(3);
+  $("#cooling-open-area").textContent=String(Math.round(areaData().find(item=>item.open).approx));
+  renderSvg();
+  renderSources();
+  $("#selection-info").innerHTML = '<h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p>';
   renderManualTips();
   renderDimensions();
   renderAreas();
   state.zoom=1; state.panX=0; state.panY=0; syncMode();
-  const url = new URL(location.href); url.searchParams.set("final",String(n)); url.searchParams.delete("folha"); if(!available)url.searchParams.delete("view"); history.replaceState(null,"",url);
+  const url = new URL(location.href); url.searchParams.set("final",String(n)); url.searchParams.delete("folha"); history.replaceState(null,"",url);
   if(mobileView.matches && !drawerBackdrop.hidden)closeMobilePanels();
   if(changed)window.rivieraAnalytics?.track("final_selected",{final_type:String(n)});
 }
@@ -842,7 +831,7 @@ $("#view-3d").addEventListener("click",()=>setMode("3d"));
 function syncCooling(){
   $("#cooling-toggle").setAttribute("aria-pressed",String(state.cooling));
   $("#cooling-toggle").textContent=state.cooling?"❄ Ocultar área do ar":"❄ Área do ar";
-  $("#cooling-panel").hidden=!state.cooling || state.final===1;
+  $("#cooling-panel").hidden=!state.cooling;
   const overlay=$("#cooling-overlay");
   if(overlay)overlay.style.display=state.cooling?"":"none";
   render3D();
@@ -857,7 +846,6 @@ $("#zoom-fit").addEventListener("click",()=>{
 });
 $("#map-frame").addEventListener("wheel",e=>{
   if(e.target.closest("#tech-popover,#service-popover"))return;
-  if (state.final===1) return;
   e.preventDefault();
   changeZoom(e.deltaY<0?1.1:1/1.1);
 },{passive:false});
@@ -920,7 +908,7 @@ function beginTwoFingerGesture2D(){
   drag2d=null;
 }
 frame.addEventListener("pointerdown",e=>{
-  if (state.final===1 || e.target.closest("button,a,#tech-popover,#service-popover")) return;
+  if (e.target.closest("button,a,#tech-popover,#service-popover")) return;
   const onPoint=!!e.target.closest("[data-title]");
   if(onPoint && e.pointerType!=="touch")return;
   const capture=!onPoint;
@@ -1041,7 +1029,7 @@ frame.addEventListener("lostpointercapture",e=>{
 });
 // Mantém o clique no 3D funcional quando o navegador não entrega o pointerup capturado.
 frame.addEventListener("click",e=>{
-  if(state.mode!=="3d" || state.final===1 || (e.target!==frame && e.target!==$("#plan-3d")))return;
+  if(state.mode!=="3d" || (e.target!==frame && e.target!==$("#plan-3d")))return;
   const now=performance.now();
   if(last3DPointerEnd?.drag && now-last3DPointerEnd.time<700)return;
   if(last3DOpen && now-last3DOpen.time<700 && Math.hypot(e.clientX-last3DOpen.x,e.clientY-last3DOpen.y)<10)return;
