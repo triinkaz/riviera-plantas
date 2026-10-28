@@ -97,13 +97,14 @@ const SPONSORS = [
     name:"Fernanda Souza",
     services:["arquitetura","marcenaria","interiores"],
     whatsapp:"5512982034901",
-    message:"Olá, Fernanda! Vim pelo site Riviera Plantas e gostaria de conversar sobre um projeto com 20% de desconto. Também vi o cooktop de brinde para quem fecha uma cozinha.",
+    message:"Olá, Fernanda! Vim pelo site Riviera Plantas. Vi o cooktop de brinde para quem fecha uma cozinha e os 20% de desconto em qualquer projeto. Gostaria de conversar.",
     active:true,
     campaign:{
       premium:true,
       compactServices:["arquitetura"],
+      gift:{title:"Cooktop de brinde",condition:"Ao fechar uma cozinha pelo site."},
       offer:"20% de desconto no projeto inteiro",
-      description:"Quem vier pelo site e contratar qualquer projeto com a Fernanda ganha 20% de desconto no projeto inteiro. Ao fechar uma cozinha, ganha também um cooktop de brinde.",
+      description:"O desconto vale para qualquer projeto vindo do site.",
       event:{
         endAt:"2026-11-01T00:00:00-03:00",
         days:[

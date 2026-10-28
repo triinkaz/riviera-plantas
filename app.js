@@ -595,6 +595,15 @@ function createProviderCard(provider,service,independent,serviceId){
   const name=document.createElement("strong");name.textContent=provider.name;
   if(campaign?.premium && !compactPremium)name.className="premium-name";
   card.append(badge,name);
+  if(campaign?.gift && !compactPremium){
+    const gift=document.createElement("div");gift.className="premium-gift";
+    const mark=document.createElement("span");mark.className="premium-gift-mark";mark.setAttribute("aria-hidden","true");mark.textContent="✦";
+    const copy=document.createElement("div");
+    const eyebrow=document.createElement("span");eyebrow.className="premium-gift-eyebrow";eyebrow.textContent="BRINDE ESPECIAL";
+    const title=document.createElement("strong");title.className="premium-gift-title";title.textContent=campaign.gift.title;
+    const condition=document.createElement("span");condition.className="premium-gift-condition";condition.textContent=campaign.gift.condition;
+    copy.append(eyebrow,title,condition);gift.append(mark,copy);card.append(gift);
+  }
   if(campaign?.offer){
     const offer=document.createElement("span");offer.className=compactPremium?"sponsor-discount":"premium-offer";offer.textContent=campaign.offer;
     card.append(offer);
@@ -602,6 +611,14 @@ function createProviderCard(provider,service,independent,serviceId){
       const copy=document.createElement("p");copy.className="premium-copy";copy.textContent=campaign.description;
       card.append(copy);
     }
+  }
+  const phone=String(provider.whatsapp||"").replace(/\D/g,"");
+  if(/^55\d{10,11}$/.test(phone)){
+    const link=document.createElement("a");link.target="_blank";link.rel="noopener";
+    const message=provider.message||`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`;
+    link.href=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    link.addEventListener("click",()=>window.rivieraAnalytics?.track("provider_contact",{service_id:serviceId,listing_type:independent?"independent":"sponsor"}));
+    link.textContent=provider.cta||"Pedir orçamento ↗";card.append(link);
   }
   if(!compactPremium && campaign?.event && Date.now()<Date.parse(campaign.event.endAt)){
     const calendar=document.createElement("section");calendar.className="premium-calendar";
@@ -616,14 +633,6 @@ function createProviderCard(provider,service,independent,serviceId){
     });
     const note=document.createElement("p");note.className="premium-calendar-note";note.textContent=campaign.event.note;
     calendar.append(title,days,note);card.append(calendar);
-  }
-  const phone=String(provider.whatsapp||"").replace(/\D/g,"");
-  if(/^55\d{10,11}$/.test(phone)){
-    const link=document.createElement("a");link.target="_blank";link.rel="noopener";
-    const message=provider.message||`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`;
-    link.href=`https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-    link.addEventListener("click",()=>window.rivieraAnalytics?.track("provider_contact",{service_id:serviceId,listing_type:independent?"independent":"sponsor"}));
-    link.textContent=provider.cta||"Pedir orçamento ↗";card.append(link);
   }
   return card;
 }
