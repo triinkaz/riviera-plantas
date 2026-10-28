@@ -369,12 +369,14 @@ function syncMode() {
 }
 function setMode(mode) {
   if (state.final!==1) {
+    const changed=state.mode!==mode;
     state.mode = mode;
     syncMode();
     const url=new URL(location.href);
     if(mode==="3d")url.searchParams.set("view","3d");
     else url.searchParams.delete("view");
     history.replaceState(null,"",url);
+    if(changed)window.rivieraAnalytics?.track("view_changed",{view_mode:mode});
   }
 }
 function selectPoint(el) {
@@ -478,6 +480,7 @@ function positionPopovers(point){
   if(compact){techPopover.hidden=compactServiceOpen;servicePopover.hidden=!compactServiceOpen;}
 }
 function openTechPopover({title,description,page=1,layer="architecture",surface},point,source=null){
+  window.rivieraAnalytics?.track("detail_opened",{plan_layer:layer,surface_type:surface||"point"});
   const detail={title,description,page,layer,surface};
   const layerName=LAYERS.find(item=>item.id===layer)?.name||"Arquitetura";
   const sheetName=SHEETS.find(item=>item[0]===page)?.[1]||"Planta original";
@@ -514,7 +517,7 @@ function detailForSurface(surface){
   const item=SURFACE_CATALOG[surface];
   return item?{layer:"architecture",surface,title:item.title,description:item.description,page:1}:null;
 }
-function createProviderCard(provider,service,independent){
+function createProviderCard(provider,service,independent,serviceId){
   const card=document.createElement("div");
   card.className=independent?"independent-card":"sponsor-card";
   const badge=document.createElement("small");
@@ -525,6 +528,7 @@ function createProviderCard(provider,service,independent){
   if(/^55\d{10,11}$/.test(phone)){
     const link=document.createElement("a");link.target="_blank";link.rel="noopener";
     link.href=`https://wa.me/${phone}?text=${encodeURIComponent(`Olá, vi seu contato para ${service.name} no site das plantas do Riviera.`)}`;
+    link.addEventListener("click",()=>window.rivieraAnalytics?.track("provider_contact",{service_id:serviceId,listing_type:independent?"independent":"sponsor"}));
     link.textContent="Pedir orçamento ↗";card.append(link);
   }
   return card;
@@ -532,6 +536,7 @@ function createProviderCard(provider,service,independent){
 function showService(serviceId){
   const service=SERVICE_CATALOG[serviceId];
   if(!service)return;
+  window.rivieraAnalytics?.track("service_selected",{service_id:serviceId});
   $("#service-list").querySelectorAll("button[data-service]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.service===serviceId)));
   const results=$("#service-results");
   results.replaceChildren();
@@ -550,14 +555,14 @@ function showService(serviceId){
     empty.textContent="Ainda não há profissionais cadastrados neste serviço.";
     results.append(empty);
   }else{
-    sponsors.forEach(sponsor=>results.append(createProviderCard(sponsor,service,false)));
-    featured.slice(sponsors.length).forEach(provider=>results.append(createProviderCard(provider,service,true)));
+    sponsors.forEach(sponsor=>results.append(createProviderCard(sponsor,service,false,serviceId)));
+    featured.slice(sponsors.length).forEach(provider=>results.append(createProviderCard(provider,service,true,serviceId)));
   }
   results.hidden=false;
   const independentList=$("#independent-list");
   independentList.replaceChildren();
   if(independents.length){
-    independents.forEach(provider=>independentList.append(createProviderCard(provider,service,true)));
+    independents.forEach(provider=>independentList.append(createProviderCard(provider,service,true,serviceId)));
   }else{
     const empty=document.createElement("p");empty.className="service-empty";
     empty.textContent="Ainda não há profissionais independentes cadastrados para este serviço.";
@@ -628,7 +633,7 @@ function applyLayers() {
 }
 function renderLayerControls() {
   $("#layer-list").innerHTML = LAYERS.map(layer => `<label class="layer-row"><span class="layer-color" style="--layer-color:${layer.color}"></span><span class="layer-copy"><strong>${layer.name}</strong><small>${layer.detail}</small></span><input type="checkbox" data-layer="${layer.id}" ${state.layers[layer.id] ? "checked" : ""}><span class="switch" aria-hidden="true"></span></label>`).join("");
-  $("#layer-list").addEventListener("change", e => { if (e.target.matches("input[data-layer]")) { state.layers[e.target.dataset.layer] = e.target.checked; applyLayers(); } });
+  $("#layer-list").addEventListener("change", e => { if (e.target.matches("input[data-layer]")) { state.layers[e.target.dataset.layer] = e.target.checked; applyLayers(); window.rivieraAnalytics?.track("layer_toggled",{plan_layer:e.target.dataset.layer,enabled:e.target.checked?"yes":"no"}); } });
   $("#legend").innerHTML = LEGENDA.map(([cls,name])=>`<div><i class="${cls}"></i><span>${name}</span></div>`).join("");
 }
 function renderSources() {
@@ -674,6 +679,7 @@ function setFinal(value) {
     $("#final-result").innerHTML = '<strong>Digite um final de 1 a 6.</strong>';
     return;
   }
+  const changed=state.final!==n;
   state.final = n;
   if(n===1)state.layers.dimensions=true;
   state.cooling=false;
@@ -717,6 +723,7 @@ function setFinal(value) {
   state.zoom=1; state.panX=0; state.panY=0; syncMode();
   const url = new URL(location.href); url.searchParams.set("final",String(n)); url.searchParams.delete("folha"); if(!available)url.searchParams.delete("view"); history.replaceState(null,"",url);
   if(mobileView.matches && !drawerBackdrop.hidden)closeMobilePanels();
+  if(changed)window.rivieraAnalytics?.track("final_selected",{final_type:String(n)});
 }
 function updateTransform() {
   $("#plan-stage").style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.zoom})`;
