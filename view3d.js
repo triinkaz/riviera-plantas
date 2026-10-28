@@ -242,5 +242,32 @@ function drawApartment3D(canvas, options) {
       hits.push({x:sx,y:badgeY+badgeHeight/2,r:Math.max(21,badgeWidth/2),dot:{layer:"areas",title:`${area.name}: ${label}`,description:area.open?"Sala, cozinha, serviço e circulação formam um espaço sem paredes separando esses usos. Valor aproximado; confira as medidas no imóvel.":"Valor aproximado obtido da planta. Confira as medidas no imóvel.",page:1}});
     });
   }
+  if (options.layers.dimensions && options.dimensions) {
+    options.dimensions.forEach(item => {
+      const [sx,sy]=project([item.x,mirrorY(item.y),18]);
+      const title=item.name.toUpperCase();
+      const value=item.size;
+      context.font="bold 12px Arial";
+      const badgeWidth=Math.max(116,context.measureText(value).width+22);
+      const badgeHeight=43;
+      const badgeX=sx-badgeWidth/2;
+      const badgeY=sy-badgeHeight/2;
+      context.fillStyle=light?"#fff9eaf2":"#2b2114f2";
+      context.strokeStyle=light?"#9a743c":"#e9c688";
+      context.lineWidth=1.5;
+      context.beginPath();
+      if (typeof context.roundRect==="function") context.roundRect(badgeX,badgeY,badgeWidth,badgeHeight,6);
+      else context.rect(badgeX,badgeY,badgeWidth,badgeHeight);
+      context.fill();
+      context.stroke();
+      context.textAlign="center";
+      context.textBaseline="middle";
+      context.fillStyle=light?"#664a25":"#f8e8c9";
+      context.font="bold 9px Arial";
+      context.fillText(title,sx,badgeY+12);
+      context.font="bold 12px Arial";
+      context.fillText(value,sx,badgeY+29);
+    });
+  }
   return {hits,surfaces:surfaceHits};
 }

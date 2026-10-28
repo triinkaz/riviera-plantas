@@ -1,7 +1,7 @@
 const LAYERS = [
   { id: "architecture", name: "Paredes e pisos", detail: "ambientes e shafts", color: "#cba56a", page: 1 },
   { id: "areas", name: "Áreas", detail: "m² aproximados", color: "#8bd4a3", page: 1 },
-  { id: "dimensions", name: "Medidas", detail: "comprimento das paredes", color: "#d8c69e", page: 1 },
+  { id: "dimensions", name: "Medidas", detail: "cotas disponíveis dos cômodos", color: "#d8c69e", page: 1 },
   { id: "electric", name: "Elétrica", detail: "pontos e comandos", color: "#61c9ec", page: 2 },
   { id: "hydraulic", name: "Hidráulica", detail: "pontos por ambiente", color: "#4f9cf4", page: 6 },
   { id: "systems", name: "Ar, gás e prumadas", detail: "pontos e cuidados", color: "#e99559", page: 4 },
@@ -56,6 +56,20 @@ const AREA_ESTIMATES = {
     { name:"Sala, cozinha, serviço e circulação", approx:21.3, x:536, y:658, open:true }
   ]
 };
+const ROOM_DIMENSIONS = {
+  pair: [
+    { name:"Suíte", size:"3,76 × 2,71 m", x:400, y:450 },
+    { name:"Dormitório", size:"3,76 × 2,86 m", x:390, y:1010 }
+  ],
+  four: [
+    { name:"Suíte", size:"3,31 × 3,31 m", x:904, y:530 },
+    { name:"Dormitório", size:"3,76 × 2,71 m", x:637, y:800 }
+  ],
+  one: [
+    { name:"Suíte", size:"3,31 × 3,31 m" },
+    { name:"Dormitório", size:"3,76 × 2,71 m" }
+  ]
+};
 const state = {
   final: 2,
   layers: { architecture: true, electric: false, hydraulic: false, systems: false, drains: false, dimensions: false, areas: false },
@@ -102,6 +116,16 @@ const mirrored = () => [3,6].includes(state.final);
 const yy = (y) => mirrored() ? 1570 - y : y;
 const areaData = () => state.final===4 ? AREA_ESTIMATES.four : AREA_ESTIMATES.pair;
 const areaLabel = (approx) => `≈${Math.round(approx)} m²`;
+const dimensionData = () => state.final===1?ROOM_DIMENSIONS.one:state.final===4?ROOM_DIMENSIONS.four:ROOM_DIMENSIONS.pair;
+const dimensionDocUrl = () => `assets/docs/cotadas/final-${({2:5,6:3})[state.final]||state.final}.pdf`;
+function dimensionMarkers() {
+  if(state.final===1)return "";
+  const small=state.final===4;
+  return `<g id="layer-dimensions" class="plan-layer overlay-layer dimension-markers" aria-label="Medidas cotadas de suíte e dormitório">${dimensionData().map(item=>{
+    const x=item.x,y=small?item.y:yy(item.y),width=small?205:278,height=small?47:62;
+    return `<g transform="translate(${x} ${y})"><rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="6"/><text y="${small?-5:-7}" text-anchor="middle" class="dimension-room">${item.name.toUpperCase()}</text><text y="${small?16:22}" text-anchor="middle" class="dimension-value">${item.size}</text></g>`;
+  }).join("")}</g>`;
+}
 const coolingOutline = () => state.final===4
   ? [[390,493],[630,493],[630,710],[390,710]]
   : [[680,750],[1015,750],[1015,1080],[680,1080]];
@@ -235,7 +259,7 @@ function renderSvg() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 260 1200 1080" role="group" aria-label="Planta vetorial do final ${state.final} com camadas selecionáveis">
   <defs><pattern id="drawing-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#29251d" stroke-width="0.6"/></pattern></defs>
   <rect x="100" y="260" width="1200" height="1080" fill="url(#drawing-grid)"/>
-  ${structure}${coolingOverlaySvg()}${roomLabels()}${hydraulicPoints()}${systemsPoints()}${drainPoints()}${electricPoints()}
+  ${structure}${coolingOverlaySvg()}${roomLabels()}${dimensionMarkers()}${hydraulicPoints()}${systemsPoints()}${drainPoints()}${electricPoints()}
   ${areaMarkers()}
   <text x="160" y="296" class="plate-title">FINAL ${state.final} <tspan> / </tspan> ${mirrored() ? "TIPO 3/6" : "TIPO 2/5"}</text>
   </svg>`;
@@ -265,7 +289,7 @@ function render3D() {
     final:state.final, mirrored:mirrored(), layers:state.layers,
     theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
-    cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(),
+    cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(), dimensions:dimensionData(),
     structural:state.final===4?FINAL4.structural:STRUCTURAL_WALLS,
     drywall:state.final===4?FINAL4.drywall:DRYWALL_WALLS,
     shafts:state.final===4?FINAL4.shafts:SHAFTS,
@@ -285,9 +309,9 @@ function syncMode() {
   $("#plan-stage").hidden = !available || state.mode!=="2d";
   $("#plan-3d").hidden = !available || state.mode!=="3d";
   $("#gesture-hint").hidden = !available || state.mode!=="3d";
-  $("#map-status").textContent = !available ? "INDISPONÍVEL" : state.mode==="3d" ? "VISTA 3D" : "PLANTA 2D";
+  $("#map-status").textContent = !available ? "CONSULTA PARCIAL" : state.mode==="3d" ? "VISTA 3D" : "PLANTA 2D";
   $("#map-disclaimer").textContent = !available
-    ? "Ainda não temos as plantas completas deste final."
+    ? "Cotas de arquitetura disponíveis. Demais camadas técnicas pendentes; confira medidas no imóvel."
     : state.mode==="3d"
       ? "Vista 3D ilustrativa. Confira medidas e instalações no imóvel antes de reformar."
       : "As posições são aproximadas. Confira medidas e instalações no imóvel antes de reformar.";
@@ -581,11 +605,13 @@ function renderDimensions() {
   panel.hidden=!state.layers.dimensions;
   badge.hidden=!state.layers.dimensions || state.final===1;
   if(panel.hidden)return;
-  if(state.final===1){
-    $("#measurement-content").innerHTML='<p>Ainda não temos medidas verificadas para o final 1.</p>';
-    return;
-  }
-  $("#measurement-content").innerHTML=`<p><strong>A planta não informa o comprimento de cada parede.</strong> Meça no apartamento antes de comprar materiais ou encomendar móveis.</p><a href="${docUrl(1)}" target="_blank" rel="noopener">Abrir planta original ↗</a>`;
+  const paired=state.final===2||state.final===6;
+  const sourceFinal=state.final===2?5:state.final===6?3:state.final;
+  const note=state.final===1
+    ? "Há planta cotada de arquitetura para este final; as demais camadas técnicas ainda não estão disponíveis."
+    : paired?`Estas cotas vêm da tipologia compartilhada com o final ${sourceFinal}; não recebemos folha cotada com o número ${state.final}.`
+    : "Cotas lidas da planta recebida para este final.";
+  $("#measurement-content").innerHTML=`<p>${note}</p><div class="dimension-list">${dimensionData().map(item=>`<div><span>${item.name}</span><strong>${item.size}</strong></div>`).join("")}</div><p><strong>Desenho cotado, não medição no imóvel.</strong> Alguns ambientes têm recortes; ainda não há medida confiável para cada parede. Confira as dimensões no apartamento antes de comprar materiais ou encomendar móveis.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada · final ${sourceFinal} ↗</a>`;
 }
 function renderAreas() {
   const panel=$("#area-section");
@@ -606,6 +632,7 @@ function setFinal(value) {
     return;
   }
   state.final = n;
+  if(n===1)state.layers.dimensions=true;
   state.cooling=false;
   syncCooling();
   $("#final-input").value = String(n);
@@ -613,13 +640,16 @@ function setFinal(value) {
   if (!available) state.mode = "2d";
   $("#final-result").innerHTML = available
     ? `<strong>Final ${n}</strong><span>Plantas disponíveis.</span>`
-    : '<strong>Final 1</strong><span>Plantas completas ainda indisponíveis.</span>';
+    : '<strong>Final 1</strong><span>Arquitetura cotada disponível.</span>';
   $("#final-result").classList.toggle("pending", !available);
   document.querySelectorAll("[data-final]").forEach(b=>b.setAttribute("aria-pressed",String(Number(b.dataset.final)===n)));
   $("#map-title").textContent = available ? `Planta do final ${n}` : `Final ${n} comum`;
-  $("#map-description").textContent = available ? (n===4 ? "Apartamento comum · final 4" : `Plantas dos finais ${[2,5].includes(n) ? "2 e 5" : "3 e 6"}`) : "Plantas completas ainda indisponíveis";
-  $(".layers-section").classList.toggle("is-disabled", !available);
-  $("#layer-list").querySelectorAll("input").forEach(input => input.disabled = !available);
+  $("#map-description").textContent = available ? (n===4 ? "Apartamento comum · final 4" : `Plantas dos finais ${[2,5].includes(n) ? "2 e 5" : "3 e 6"}`) : "Arquitetura cotada disponível · demais plantas pendentes";
+  $(".layers-section").classList.toggle("has-limited-layers", !available);
+  $("#layer-list").querySelectorAll("input").forEach(input => {
+    input.disabled = !available && input.dataset.layer!=="dimensions";
+    input.checked = !!state.layers[input.dataset.layer];
+  });
   $("#show-all").disabled = !available;
   $("#show-base").disabled = !available;
   $("#overlay-opacity").disabled = !available;
@@ -634,9 +664,9 @@ function setFinal(value) {
     renderSources();
     $("#selection-info").innerHTML = '<h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p>';
   } else {
-    $("#empty-state").innerHTML = '<div class="empty-symbol">◇</div><h2>Final 1</h2><p>Ainda não temos as plantas completas deste final. Não use a planta de outro final para planejar a reforma.</p>';
-    $("#source-list").innerHTML = '<p class="no-sources">As plantas do final 1 ainda não estão disponíveis.</p>';
-    $("#selection-info").innerHTML = '<h2>Plantas indisponíveis</h2><p>Peça as plantas oficiais do seu apartamento à administração.</p>';
+    $("#empty-state").innerHTML = `<div class="empty-symbol">◇</div><h2>Final 1</h2><p>Já temos a planta cotada de arquitetura. As camadas de elétrica, hidráulica e instalações deste final ainda não estão completas.</p><a href="${dimensionDocUrl()}" target="_blank" rel="noopener">Abrir planta cotada ↗</a>`;
+    $("#source-list").innerHTML = `<a href="${dimensionDocUrl()}" target="_blank" rel="noopener"><b>01</b><span><strong>Arquitetura cotada</strong><small>Final 1 · desenho recebido</small></span><i aria-hidden="true">↗</i></a>`;
+    $("#selection-info").innerHTML = '<h2>Consulta parcial</h2><p>Veja as cotas disponíveis à direita e confira as medidas no apartamento.</p>';
   }
   renderManualTips();
   renderDimensions();

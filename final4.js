@@ -72,7 +72,7 @@ function final4Svg() {
   return `<svg xmlns="http://www.w3.org/2000/svg" class="final4-plan" viewBox="180 390 930 640" role="group" aria-label="Planta vetorial do final 4 comum com camadas selecionáveis">
     <defs><pattern id="drawing-grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#29251d" stroke-width="0.5"/></pattern></defs>
     <rect x="180" y="390" width="930" height="640" fill="url(#drawing-grid)"/>
-    ${architecture}${coolingOverlaySvg()}${labels}<g id="layer-hydraulic" class="plan-layer overlay-layer">${hydro}</g><g id="layer-systems" class="plan-layer overlay-layer">${systems}</g><g id="layer-drains" class="plan-layer overlay-layer">${drains}</g><g id="layer-electric" class="plan-layer overlay-layer">${electric}</g>${areaMarkers()}
+    ${architecture}${coolingOverlaySvg()}${labels}${dimensionMarkers()}<g id="layer-hydraulic" class="plan-layer overlay-layer">${hydro}</g><g id="layer-systems" class="plan-layer overlay-layer">${systems}</g><g id="layer-drains" class="plan-layer overlay-layer">${drains}</g><g id="layer-electric" class="plan-layer overlay-layer">${electric}</g>${areaMarkers()}
     <text x="245" y="437" class="plate-title">FINAL 4 <tspan> / </tspan> APARTAMENTO COMUM</text>
   </svg>`;
 }
