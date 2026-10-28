@@ -605,9 +605,9 @@ function createProviderCard(provider,service,independent,serviceId){
     copy.append(eyebrow,title,condition);gift.append(mark,copy);card.append(gift);
   }
   if(campaign?.offer){
-    const offer=document.createElement("span");offer.className=compactPremium?"sponsor-discount":"premium-offer";offer.textContent=campaign.offer;
+    const offer=document.createElement("span");offer.className=compactPremium||!campaign.premium?"sponsor-discount":"premium-offer";offer.textContent=campaign.offer;
     card.append(offer);
-    if(!compactPremium){
+    if(!compactPremium && campaign.description){
       const copy=document.createElement("p");copy.className="premium-copy";copy.textContent=campaign.description;
       card.append(copy);
     }

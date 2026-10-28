@@ -116,6 +116,15 @@ const SPONSORS = [
     }
   },
   {
+    id:"adriana-nogueira-studio",
+    name:"Adriana Nogueira Studio",
+    services:["arquitetura"],
+    whatsapp:"5512981187538",
+    message:"Olá, Adriana! Vim pelo Riviera Plantas. Quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá e vi os 5% de desconto. Pode me passar um orçamento?",
+    active:true,
+    campaign:{offer:"5% de desconto"}
+  },
+  {
     id:"taynara-murade",
     name:"Taynara Murade",
     services:["art"],
