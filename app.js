@@ -826,7 +826,9 @@ function setFinal(value) {
   renderManualTips();
   renderDimensions();
   renderAreas();
-  state.zoom=1; state.panX=0; state.panY=0; syncMode();
+  state.zoom=fitZoom("2d"); state.panX=0; state.panY=0;
+  state.view3d.zoom=fitZoom("3d"); state.view3d.panX=0; state.view3d.panY=0;
+  syncMode();
   const url = new URL(location.href); url.searchParams.set("final",String(n)); url.searchParams.delete("folha"); history.replaceState(null,"",url);
   if(mobileView.matches && !drawerBackdrop.hidden)closeMobilePanels();
   if(changed)window.rivieraAnalytics?.track("final_selected",{final_type:String(n)});
@@ -843,6 +845,10 @@ function changeZoom(factor) {
 }
 const layout=$(".app-layout");
 const mobileView=window.matchMedia("(max-width:660px), (max-width:900px) and (max-height:500px)");
+function fitZoom(mode){
+  if(!mobileView.matches || ![1,4].includes(state.final))return 1;
+  return mode==="3d"?1.14:1.1;
+}
 const drawerBackdrop=document.createElement("button");
 drawerBackdrop.id="mobile-drawer-backdrop";
 drawerBackdrop.type="button";
@@ -953,8 +959,8 @@ $("#cooling-toggle").addEventListener("click",()=>{state.cooling=!state.cooling;
 $("#zoom-in").addEventListener("click",()=>changeZoom(1.2));
 $("#zoom-out").addEventListener("click",()=>changeZoom(1/1.2));
 $("#zoom-fit").addEventListener("click",()=>{
-  if(state.mode==="3d") state.view3d={yaw:-.5,tilt:.77,zoom:1,panX:0,panY:0};
-  else {state.zoom=1;state.panX=0;state.panY=0;}
+  if(state.mode==="3d") state.view3d={yaw:-.5,tilt:.77,zoom:fitZoom("3d"),panX:0,panY:0};
+  else {state.zoom=fitZoom("2d");state.panX=0;state.panY=0;}
   updateTransform();
 });
 $("#map-frame").addEventListener("wheel",e=>{
