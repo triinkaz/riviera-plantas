@@ -978,6 +978,7 @@ $("#map-frame").addEventListener("wheel",e=>{
   changeZoom(e.deltaY<0?1.1:1/1.1);
 },{passive:false});
 let drag2d=null;
+let suppress2dPointerClick=false;
 const activePointers=new Map();
 let gesture2d=null;
 let gesture3d=null;
@@ -1036,21 +1037,22 @@ function beginTwoFingerGesture2D(){
     distance:Math.max(20,Math.hypot(b.x-a.x,b.y-a.y)),
     zoom:state.zoom,panX:state.panX,panY:state.panY
   };
+  suppress2dPointerClick=true;
   drag2d=null;
 }
 frame.addEventListener("pointerdown",e=>{
   if (e.target.closest("button,a,#tech-popover,#service-popover,.whole-home-actions")) return;
   const onPoint=!!e.target.closest("[data-title]");
-  if(onPoint && e.pointerType!=="touch")return;
   const capture=!onPoint;
   if(capture)frame.setPointerCapture(e.pointerId);
   if(state.mode==="2d"){
+    if(!activePointers.size)suppress2dPointerClick=false;
     activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
     if(activePointers.size>=2){
       for(const id of activePointers.keys())if(!frame.hasPointerCapture(id))frame.setPointerCapture(id);
       frame.classList.add("dragging");
       beginTwoFingerGesture2D();
-    }else drag2d={id:e.pointerId,x:e.clientX,y:e.clientY,panX:state.panX,panY:state.panY,captured:capture};
+    }else drag2d={id:e.pointerId,x:e.clientX,y:e.clientY,panX:state.panX,panY:state.panY,captured:capture,moved:false};
   }else{
     frame.classList.add("dragging");
     activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY,type:e.pointerType});
@@ -1079,11 +1081,13 @@ frame.addEventListener("pointermove",e=>{
       return;
     }
     if(!drag2d || drag2d.id!==e.pointerId)return;
+    const moved=Math.hypot(e.clientX-drag2d.x,e.clientY-drag2d.y)>=7;
     if(!drag2d.captured){
-      if(Math.hypot(e.clientX-drag2d.x,e.clientY-drag2d.y)<7)return;
+      if(!moved)return;
       frame.setPointerCapture(e.pointerId);
       drag2d.captured=true;
     }
+    if(moved)drag2d.moved=true;
     frame.classList.add("dragging");
     state.panX=drag2d.panX+e.clientX-drag2d.x;
     state.panY=drag2d.panY+e.clientY-drag2d.y;
@@ -1122,12 +1126,13 @@ frame.addEventListener("pointermove",e=>{
 });
 function endPointer(e){
   if(state.mode==="2d"){
+    if(gesture2d || (drag2d?.id===e.pointerId && drag2d.moved))suppress2dPointerClick=true;
     activePointers.delete(e.pointerId);
     gesture2d=null;
     drag2d=null;
     if(activePointers.size===1){
       const [id,point]=activePointers.entries().next().value;
-      drag2d={id,x:point.x,y:point.y,panX:state.panX,panY:state.panY,captured:frame.hasPointerCapture(id)};
+      drag2d={id,x:point.x,y:point.y,panX:state.panX,panY:state.panY,captured:frame.hasPointerCapture(id),moved:false};
     }else if(activePointers.size>=2)beginTwoFingerGesture2D();
     if(!activePointers.size)frame.classList.remove("dragging");
     return;
@@ -1148,6 +1153,7 @@ function endPointer(e){
 frame.addEventListener("pointerup",endPointer);
 frame.addEventListener("pointercancel",endPointer);
 frame.addEventListener("lostpointercapture",e=>{
+  if(e.target!==frame || frame.hasPointerCapture(e.pointerId))return;
   if(drag2d?.id===e.pointerId)drag2d=null;
   if(activePointers.delete(e.pointerId)){
     tap3d=null;
@@ -1156,6 +1162,13 @@ frame.addEventListener("lostpointercapture",e=>{
   }
   if(!activePointers.size)frame.classList.remove("dragging");
 });
+frame.addEventListener("click",e=>{
+  if(state.mode==="2d" && e.detail>0 && suppress2dPointerClick && e.target.closest?.("[data-title]")){
+    suppress2dPointerClick=false;
+    e.preventDefault();
+    e.stopPropagation();
+  }
+},true);
 // Mantém o clique no 3D funcional quando o navegador não entrega o pointerup capturado.
 frame.addEventListener("click",e=>{
   if(state.mode!=="3d" || (e.target!==frame && e.target!==$("#plan-3d")))return;
