@@ -158,12 +158,30 @@ function drawApartment3D(canvas, options) {
     systems:"#e99559", drains:"#ca82e7"
   };
   const hits = [];
+  const compact=width<=660;
   const occupiedBadges=[];
-  options.dots.forEach(dot => {
-    if (!options.layers[dot.layer]) return;
+  const overlaps=(a,b,pad=5)=>a.x<b.x+b.w+pad&&a.x+a.w+pad>b.x&&a.y<b.y+b.h+pad&&a.y+a.h+pad>b.y;
+  const placeMeasure=(cx,cy,w,h,occupied,minY=8,bottom=8)=>{
+    const offsets=[[0,0],[0,-52],[0,52],[-115,0],[115,0],[-115,-52],[115,-52],[-115,52],[115,52],[0,-104],[0,104]];
+    let chosen=null,best=Infinity;
+    offsets.forEach(([dx,dy])=>{
+      const x=Math.max(8,Math.min(width-w-8,cx+dx-w/2));
+      const y=Math.max(minY,Math.min(height-h-bottom,cy+dy-h/2));
+      const box={x,y,w,h};
+      const clashes=occupied.reduce((count,used)=>count+(overlaps(box,used)?1:0),0);
+      const score=clashes*10000+Math.hypot(dx,dy)*.8+Math.hypot(x+w/2-cx,y+h/2-cy)*.2;
+      if(score<best){best=score;chosen=box;}
+    });
+    return chosen;
+  };
+  const visibleDots=options.dots.filter(dot=>options.layers[dot.layer]).map(dot=>{
     const [sx,sy] = project([dot.x,mirrorY(dot.y),18]);
     const radius = dot.layer === "hydraulic" ? 10 : 6;
-    hits.push({x:sx,y:sy,r:Math.max(radius+7,14),dot});
+    hits.push({x:sx,y:sy,r:Math.max(radius+7,14),priority:3,dot});
+    occupiedBadges.push({x:sx-radius-4,y:sy-radius-4,w:(radius+4)*2,h:(radius+4)*2});
+    return {dot,sx,sy,radius};
+  });
+  const drawVisibleDots=()=>visibleDots.forEach(({dot,sx,sy,radius})=>{
     context.globalAlpha = options.opacity;
     context.beginPath();
     context.arc(sx,sy,radius+4,0,Math.PI*2);
@@ -225,57 +243,95 @@ function drawApartment3D(canvas, options) {
     occupiedBadges.push({x:badgeX,y:badgeY,w:badgeWidth,h:badgeHeight});
   }
   if (options.layers.areas && options.areas) {
-    options.areas.forEach(area => {
-      const [sx,sy]=project([area.x,mirrorY(area.y),18]);
+    const areas=options.areas.map(area=>({area,point:project([area.x,mirrorY(area.y),18])}));
+    if(compact)areas.sort((a,b)=>a.point[1]-b.point[1]);
+    areas.forEach(({area,point:[sx,sy]}) => {
+      if(compact&&(sx< -24||sx>width+24||sy< -24||sy>height+24))return;
       const label=`≈${Math.round(area.approx)} m²`;
-      context.font="bold 12px Arial";
-      const badgeWidth=Math.max(62,context.measureText(label).width+18);
-      const badgeHeight=25;
-      const badgeX=sx-badgeWidth/2;
-      const badgeY=sy+8;
+      context.font=compact?"bold 11px Arial":"bold 12px Arial";
+      const badgeWidth=Math.max(compact?54:62,context.measureText(label).width+(compact?10:18));
+      const badgeHeight=compact?22:25;
+      let box={x:sx-badgeWidth/2,y:sy+8,w:badgeWidth,h:badgeHeight};
+      let moved=false;
+      if(compact){
+        let chosen=null,best=Infinity;
+        const sides=[8,width-badgeWidth-8];
+        const shifts=[0,-24,24,-48,48,-72,72,-96,96,-120,120,-144,144];
+        sides.forEach(x=>shifts.forEach(shift=>{
+          const y=Math.max(8,Math.min(height-badgeHeight-8,sy-badgeHeight/2+shift));
+          const candidate={x,y,w:badgeWidth,h:badgeHeight};
+          const clashes=occupiedBadges.reduce((count,used)=>count+(overlaps(candidate,used)?1:0),0);
+          const score=clashes*10000+Math.abs(y+badgeHeight/2-sy)*.8+Math.abs(x+badgeWidth/2-sx)*.18;
+          if(score<best){best=score;chosen=candidate;}
+        }));
+        box=chosen;
+        moved=true;
+      }else if(occupiedBadges.some(used=>overlaps(box,used))){
+        box=placeMeasure(sx,sy+8+badgeHeight/2,badgeWidth,badgeHeight,occupiedBadges,56,58);
+        moved=true;
+      }
+      if(moved){
+        const nearX=sx<box.x?box.x:sx>box.x+box.w?box.x+box.w:box.x+box.w/2;
+        const nearY=Math.max(box.y,Math.min(sy,box.y+box.h));
+        context.beginPath();context.moveTo(sx,sy);context.lineTo(nearX,nearY);
+        context.strokeStyle=light?"#3d9461":"#8fe1ac";context.lineWidth=1;context.stroke();
+        context.beginPath();context.arc(sx,sy,3,0,Math.PI*2);
+        context.fillStyle=light?"#3d9461":"#8fe1ac";context.fill();
+      }
       context.fillStyle=light?"#e5f6e9f2":"#143824f2";
       context.strokeStyle=light?"#3d9461":"#8fe1ac";
       context.lineWidth=1.5;
       context.beginPath();
-      if (typeof context.roundRect==="function") context.roundRect(badgeX,badgeY,badgeWidth,badgeHeight,6);
-      else context.rect(badgeX,badgeY,badgeWidth,badgeHeight);
+      if (typeof context.roundRect==="function") context.roundRect(box.x,box.y,box.w,box.h,6);
+      else context.rect(box.x,box.y,box.w,box.h);
       context.fill();
       context.stroke();
       context.fillStyle=light?"#1c6237":"#e7ffed";
       context.textAlign="center";
       context.textBaseline="middle";
-      context.fillText(label,sx,badgeY+badgeHeight/2);
-      occupiedBadges.push({x:badgeX,y:badgeY,w:badgeWidth,h:badgeHeight});
-      hits.push({x:sx,y:badgeY+badgeHeight/2,r:Math.max(21,badgeWidth/2),dot:{layer:"areas",title:`${area.name}: ${label}`,description:area.open?"Sala, cozinha, serviço e circulação formam um espaço sem paredes separando esses usos. Valor aproximado; confira as medidas no imóvel.":"Valor aproximado obtido da planta. Confira as medidas no imóvel.",page:1}});
+      context.fillText(label,box.x+box.w/2,box.y+box.h/2);
+      occupiedBadges.push(box);
+      const detail={layer:"areas",title:`${area.name}: ${label}`,description:area.open?"Sala, cozinha, serviço e circulação formam um espaço sem paredes separando esses usos. Área estimada; confira no imóvel.":"Área estimada a partir da planta, para planejamento inicial. Confira no apartamento antes de comprar materiais.",page:1};
+      hits.push({x:box.x+box.w/2,y:box.y+box.h/2,box,priority:2,dot:detail});
+      if(moved)hits.push({x:sx,y:sy,r:8,priority:2,dot:detail});
     });
   }
   if (options.layers.dimensions && options.dimensions) {
     const occupied=[...occupiedBadges];
-    options.dimensions.forEach(item => {
+    const selected=Number.isInteger(options.activeDimension3d)?options.activeDimension3d:0;
+    const source={sourceUrl:options.dimensionSource,sourceName:options.dimensionSourceName||"Planta cotada",sourceLinkText:"Abrir planta cotada ↗"};
+    options.dimensions.forEach((item,index) => {
+      if(compact&&index!==selected)return;
       const [sx,sy]=project([item.x,mirrorY(item.y),18]);
       const title=item.name.toUpperCase();
       const value=item.size;
       context.font="bold 12px Arial";
       const badgeWidth=Math.max(116,context.measureText(value).width+22);
       const badgeHeight=43;
-      const badgeX=sx-badgeWidth/2;
-      const badgeY=sy-badgeHeight/2;
+      const box=placeMeasure(sx,sy,badgeWidth,badgeHeight,occupied,compact?8:56,compact?8:58);
+      if(Math.hypot(box.x+box.w/2-sx,box.y+box.h/2-sy)>3){
+        const nearX=Math.max(box.x,Math.min(sx,box.x+box.w));
+        const nearY=Math.max(box.y,Math.min(sy,box.y+box.h));
+        context.beginPath();context.moveTo(sx,sy);context.lineTo(nearX,nearY);
+        context.strokeStyle=light?"#8c5920":"#f0c878";context.lineWidth=1.5;context.stroke();
+      }
       context.fillStyle=light?"#fff9eaf2":"#2b2114f2";
       context.strokeStyle=light?"#9a743c":"#e9c688";
       context.lineWidth=1.5;
       context.beginPath();
-      if (typeof context.roundRect==="function") context.roundRect(badgeX,badgeY,badgeWidth,badgeHeight,6);
-      else context.rect(badgeX,badgeY,badgeWidth,badgeHeight);
+      if (typeof context.roundRect==="function") context.roundRect(box.x,box.y,box.w,box.h,6);
+      else context.rect(box.x,box.y,box.w,box.h);
       context.fill();
       context.stroke();
       context.textAlign="center";
       context.textBaseline="middle";
       context.fillStyle=light?"#664a25":"#f8e8c9";
       context.font="bold 9px Arial";
-      context.fillText(title,sx,badgeY+12);
+      context.fillText(title,box.x+box.w/2,box.y+12);
       context.font="bold 12px Arial";
-      context.fillText(value,sx,badgeY+29);
-      occupied.push({x:badgeX,y:badgeY,w:badgeWidth,h:badgeHeight});
+      context.fillText(value,box.x+box.w/2,box.y+29);
+      occupied.push(box);
+      hits.push({x:box.x+box.w/2,y:box.y+box.h/2,box,priority:2,dot:{layer:"dimensions",title:`${item.name}: ${item.size}`,description:"Cota da planta para este cômodo. A posição no 3D é esquemática. Confira a medida no apartamento antes de comprar ou executar.",page:1,...source}});
     });
     if(options.segments?.length){
       const segments=options.segments.map(item=>{
@@ -291,26 +347,17 @@ function drawApartment3D(canvas, options) {
       context.strokeStyle=light?"#8c5920":"#f0c878";
       context.fillStyle=light?"#8c5920":"#f0c878";
       context.lineWidth=3;
-      segments.forEach(({a,b})=>{
+      segments.forEach(({a,b},index)=>{
+        context.globalAlpha=compact&&selected!==options.dimensions.length+index?.45:1;
         context.beginPath();context.moveTo(a[0],a[1]);context.lineTo(b[0],b[1]);context.stroke();
         [a,b].forEach(([x,y])=>{context.beginPath();context.arc(x,y,3,0,Math.PI*2);context.fill();});
       });
-      const compact=width<480,badgeWidth=compact?116:146,badgeHeight=compact?35:42;
-      const offsets=[[0,0],[0,-52],[0,52],[-115,0],[115,0],[-115,-52],[115,-52],[-115,52],[115,52],[0,-104],[0,104]];
-      const overlaps=(a,b)=>a.x<b.x+b.w+5&&a.x+a.w+5>b.x&&a.y<b.y+b.h+5&&a.y+a.h+5>b.y;
-      segments.forEach(({item,a,b,preferred})=>{
+      context.globalAlpha=1;
+      const badgeWidth=compact?116:146,badgeHeight=compact?35:42;
+      segments.forEach(({item,a,b,preferred},index)=>{
+        if(compact&&selected!==options.dimensions.length+index)return;
         const anchor=[(a[0]+b[0])/2,(a[1]+b[1])/2];
-        let chosen=null,best=Infinity;
-        offsets.forEach(([dx,dy])=>{
-          const x=Math.max(8,Math.min(width-badgeWidth-8,preferred[0]+dx-badgeWidth/2));
-          const y=Math.max(56,Math.min(height-badgeHeight-58,preferred[1]+dy-badgeHeight/2));
-          const box={x,y,w:badgeWidth,h:badgeHeight};
-          const clashes=occupied.reduce((count,used)=>count+(overlaps(box,used)?1:0),0);
-          const coversAnchor=anchor[0]>x-6&&anchor[0]<x+badgeWidth+6&&anchor[1]>y-6&&anchor[1]<y+badgeHeight+6;
-          const score=clashes*10000+(coversAnchor?500:0)+Math.hypot(dx,dy)*.8+Math.hypot(x+badgeWidth/2-anchor[0],y+badgeHeight/2-anchor[1])*.2;
-          if(score<best){best=score;chosen=box;}
-        });
-        const box=chosen;
+        const box=placeMeasure(preferred[0],preferred[1],badgeWidth,badgeHeight,occupied,compact?8:56,compact?8:58);
         occupied.push(box);
         const nearX=Math.max(box.x,Math.min(anchor[0],box.x+box.w));
         const nearY=Math.max(box.y,Math.min(anchor[1],box.y+box.h));
@@ -330,9 +377,12 @@ function drawApartment3D(canvas, options) {
         context.font=compact?"bold 11px Arial":"bold 13px Arial";
         context.fillText(item.size,box.x+box.w/2,box.y+(compact?25:29));
         context.strokeStyle=light?"#8c5920":"#f0c878";
+        hits.push({x:box.x+box.w/2,y:box.y+box.h/2,box,priority:2,dot:{layer:"dimensions",title:`${item.name}: ${item.detail} · ${item.size}`,description:"Cota da planta para este trecho; o traço no 3D é esquemático. Confira a medida no apartamento antes de comprar ou executar.",page:1,...source}});
       });
       context.restore();
     }
   }
+  // Pontos técnicos ficam por cima das etiquetas e mantêm a prioridade do toque.
+  drawVisibleDots();
   return {hits,surfaces:surfaceHits};
 }

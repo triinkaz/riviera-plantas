@@ -112,6 +112,7 @@ const state = {
   layers: { architecture: true, electric: false, hydraulic: false, systems: false, drains: false, dimensions: false, areas: false },
   cooling: false,
   opacity: 0.85, zoom: 1, panX: 0, panY: 0, mode: "2d",
+  activeDimension3d: 0,
   view3d: { yaw: -0.5, tilt: 0.77, zoom: 1, panX: 0, panY: 0 }
 };
 const STRUCTURAL_WALLS = [
@@ -332,31 +333,54 @@ function get3DDots() {
     [802,359,"AP","Água pluvial"],[802,413,"V","Ventilação"],[802,462,"E","Esgoto"],
     [1235,626,"E","Esgoto"],[1237,677,"G","Gás"]
   ];
-  return [
+  const dots=[
     ...make(LIGHTS,"electric",""),
     ...make(OUTLETS,"electric","T"),
     ...make(SWITCHES,"electric","I"),
     {x:754,y:415,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito no imóvel.",page:2},
     {x:221,y:767,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito no imóvel.",page:2},
     {x:989,y:1244,layer:"electric",label:"Q",title:"Quadro de luz e força",description:"Não execute furos na região do quadro. Consulte também a folha 3 e confira a posição real.",page:3},
-    {x:853,y:465,layer:"electric",label:"C",title:"Ponto para condensadora",description:"Ponto indicado na folha elétrica. Confira a folha de ar condicionado e preserve ventilação e acesso de manutenção.",page:2},
+    {x:853,y:465,id:"condenser-electric",layer:"electric",label:"C",title:"Ponto para condensadora",description:"Ponto indicado na folha elétrica. Confira a folha de ar condicionado e preserve ventilação e acesso de manutenção.",page:2},
     ...[[735,555,6,"Banho da suíte"],[335,798,7,"Banho social"],[1107,881,8,"Cozinha e serviço"],[991,493,9,"Varanda"]].map(([x,y,page,room])=>({x,y,layer:"hydraulic",label:"H",page,title:`Vista hidráulica: ${room}`})),
     ...stacks.map(([x,y,label,title])=>({x,y,layer:"systems",label,title,description:title==="Gás"?"Prumada de gás indicada na folha 4. Não fure; confira a posição real antes de intervir.":"Prumada indicada na folha 4. Preserve o acesso e consulte as vistas técnicas antes de intervir.",page:4})),
-    {x:864,y:452,layer:"systems",label:"C",title:"Condensadora de ar condicionado",description:"Local previsto na folha 4. Preserve ventilação e acesso de manutenção; confirme a posição no imóvel.",page:4},
+    {x:864,y:452,id:"condenser-systems",layer:"systems",label:"C",title:"Condensadora de ar condicionado",description:"Local previsto na folha 4. Preserve ventilação e acesso de manutenção; confirme a posição no imóvel.",page:4},
     {x:741,y:728,layer:"systems",label:"EV",title:"Evaporadora de ar condicionado",description:"Local previsto na folha 4. Confirme instalação, dreno e medidas no imóvel.",page:4},
     {x:1204,y:727,layer:"systems",label:"!",title:"Tubulação de gás",description:"A folha 4 alerta sobre tubulação de gás nesta parede. Não fure; confira a localização real e consulte as vistas.",page:4},
     {x:783,y:783,layer:"drains",label:"D",title:"Ponto de dreno da sala",page:5},
     {x:783,y:466,layer:"drains",label:"D",title:"Dreno do banho da suíte",page:6}
   ];
+  if(state.layers.electric&&state.layers.systems){
+    return dots.filter(dot=>dot.id!=="condenser-electric"&&dot.id!=="condenser-systems").concat({x:859,y:459,layer:"systems",label:"C",title:"Condensadora: elétrica e local previsto",description:"A folha 2 indica o ponto elétrico; a folha 4 mostra o local previsto para a condensadora. Confirme posição, circuito, ventilação e acesso no imóvel.",page:4,secondaryPage:2});
+  }
+  return dots;
+}
+function dimensionEntries3D(){
+  return [...dimensionData().map(item=>({name:item.name,size:item.size,detail:"medida do cômodo"})),...segmentData().filter(item=>item.line).map(item=>({name:item.name,size:item.size,detail:item.detail}))];
+}
+function updateDimensionNav(){
+  const entries=dimensionEntries3D();
+  state.activeDimension3d=Math.max(0,Math.min(entries.length-1,state.activeDimension3d));
+  const selected=entries[state.activeDimension3d];
+  const setText=(selector,value)=>{const element=$(selector);if(element.textContent!==value)element.textContent=value;};
+  setText("#measure-count",`MEDIDAS · ${state.activeDimension3d+1}/${entries.length}`);
+  setText("#measure-name",`${selected.name} · ${selected.size}`);
+  setText("#measure-detail",selected.detail);
+  $("#measure-prev").disabled=state.activeDimension3d===0;
+  $("#measure-next").disabled=state.activeDimension3d===entries.length-1;
 }
 function render3D() {
-  if (state.mode !== "3d" || $("#plan-3d").hidden) return;
+  const canvas=$("#plan-3d");
+  const compact=state.mode==="3d"&&!canvas.hidden&&canvas.getBoundingClientRect().width<=660;
+  $("#measure-nav").hidden=!(compact&&state.layers.dimensions);
+  if(!$("#measure-nav").hidden)updateDimensionNav();
+  if (state.mode !== "3d" || canvas.hidden) return;
   const custom=state.final===1?FINAL1:state.final===4?FINAL4:null;
-  const result=drawApartment3D($("#plan-3d"),{
+  const result=drawApartment3D(canvas,{
     final:state.final, mirrored:mirrored(), layers:state.layers,
     theme:document.documentElement.dataset.theme,
     opacity:state.opacity, view:state.view3d,
     cooling:state.cooling, coolingOutline:coolingOutline(), areas:areaData(), dimensions:dimensionData(), segments:segmentData().filter(item=>item.line),
+    activeDimension3d:state.activeDimension3d,dimensionSource:dimensionDocUrl(),dimensionSourceName:`Planta cotada · final ${({2:5,6:3})[state.final]||state.final}`,
     structural:custom?.structural||STRUCTURAL_WALLS,
     masonry:custom?.masonry||MASONRY_WALLS,
     drywall:custom?.drywall||DRYWALL_WALLS,
@@ -393,7 +417,7 @@ function syncMode() {
     info.innerHTML='<h2>Explore a planta</h2><p>Toque em uma parede, piso ou símbolo para ver detalhes e serviços.</p>';
   }
   updateTransform();
-  if (state.mode==="3d" && available) requestAnimationFrame(render3D);
+  requestAnimationFrame(render3D);
 }
 function setMode(mode) {
   if (state.final>=1) {
@@ -422,7 +446,8 @@ const TECH_CHECKS={
   hydraulic:"Confira os pontos no apartamento e preserve as áreas impermeabilizadas.",
   systems:"Preserve ventilação e acesso de manutenção. Confirme a posição real antes de intervir.",
   drains:"Confira o dreno no apartamento. O desenho não mostra todo o trajeto da tubulação.",
-  areas:"Valor aproximado. Meça no apartamento antes de comprar materiais ou planejar móveis."
+  areas:"Valor aproximado. Meça no apartamento antes de comprar materiais ou planejar móveis.",
+  dimensions:"Cota da planta, não medição no imóvel. Confira antes de comprar materiais ou executar a obra."
 };
 const techPopover=$("#tech-popover");
 const servicePopover=$("#service-popover");
@@ -456,6 +481,7 @@ function serviceContextFor(detail){
   return "room_dry";
 }
 function serviceIdsFor(detail){
+  if(detail.layer==="dimensions")return ["vistoria"];
   const context=serviceContextFor(detail);
   return SURFACE_CATALOG[context]?.services||SERVICE_CONTEXTS[context]||["vistoria"];
 }
@@ -510,7 +536,7 @@ function positionPopovers(point){
   techPopover.style.visibility="";servicePopover.style.visibility="";
   if(compact){techPopover.hidden=compactServiceOpen;servicePopover.hidden=!compactServiceOpen;}
 }
-function openTechPopover({title,description,page=1,layer="architecture",surface},point,source=null){
+function openTechPopover({title,description,page=1,layer="architecture",surface,sourceUrl,sourceName,sourceLinkText,secondaryPage},point,source=null){
   window.rivieraAnalytics?.track("detail_opened",{plan_layer:layer,surface_type:surface||"point"});
   globalServiceButtons.forEach(button=>button.setAttribute("aria-expanded","false"));
   const detail={title,description,page,layer,surface};
@@ -522,9 +548,14 @@ function openTechPopover({title,description,page=1,layer="architecture",surface}
   $("#tech-check-label").textContent=structural?"NÃO ALTERAR ESTA PAREDE":"ANTES DE REFORMAR";
   $("#tech-title").textContent=title;
   $("#tech-description").textContent=description;
-  $("#tech-source-name").textContent=`Folha ${page} · ${sheetName}`;
+  $("#tech-evidence-label").textContent=sourceUrl?"PLANTA COTADA":"PLANTA ORIGINAL";
+  $("#tech-source-name").textContent=sourceName||`Folha ${page} · ${sheetName}`;
   $("#tech-check-text").textContent=SURFACE_CATALOG[surface]?.check||TECH_CHECKS[layer]||"Compare a marcação com a folha original e confira as condições reais da unidade antes de intervir.";
-  $("#tech-source-link").href=docUrl(page);
+  $("#tech-source-link").href=sourceUrl||docUrl(page);
+  $("#tech-source-link").textContent=sourceLinkText||"Abrir planta original ↗";
+  const second=$("#tech-secondary-source-link");
+  second.hidden=!secondaryPage;
+  if(secondaryPage){second.href=docUrl(secondaryPage);second.textContent=`Abrir folha ${secondaryPage} ↗`;}
   techSource=source;
   activePoint=point;
   compactServiceOpen=false;
@@ -543,10 +574,11 @@ function detailFor3DDot(dot){
     hydraulic:{title:"Vista hidráulica disponível",description:"O ponto indica um ambiente com vista hidráulica. O volume não representa o trajeto das tubulações.",page:6},
     systems:{title:"Prumada ou instalação indicada",description:"Elemento indicado na folha de ar, gás e prumadas. Confira a legenda e a posição real antes de qualquer intervenção.",page:4},
     drains:{title:"Dreno indicado",description:"Ponto de dreno indicado nas folhas técnicas. A posição no volume é aproximada; confira a vista original.",page:4},
-    areas:{title:"Área aproximada",description:"Estimativa obtida da planta. Meça no apartamento antes de planejar compras ou obra.",page:1}
+    areas:{title:"Área aproximada",description:"Estimativa obtida da planta. Meça no apartamento antes de planejar compras ou obra.",page:1},
+    dimensions:{title:"Medida da planta",description:"Cota da planta; confira a medida no apartamento antes de comprar ou executar.",page:1}
   }[dot.layer];
   if(!defaults)return null;
-  return {layer:dot.layer,title:dot.title||defaults.title,description:dot.description||defaults.description,page:dot.page||defaults.page};
+  return {layer:dot.layer,title:dot.title||defaults.title,description:dot.description||defaults.description,page:dot.page||defaults.page,sourceUrl:dot.sourceUrl,sourceName:dot.sourceName,sourceLinkText:dot.sourceLinkText,secondaryPage:dot.secondaryPage};
 }
 function detailForSurface(surface){
   const item=SURFACE_CATALOG[surface];
@@ -738,6 +770,7 @@ function setFinal(value) {
   }
   const changed=state.final!==n;
   state.final = n;
+  if(changed)state.activeDimension3d=0;
   state.cooling=false;
   syncCooling();
   $("#final-input").value = String(n);
@@ -879,6 +912,8 @@ $("#show-base").addEventListener("click",()=>{ LAYERS.forEach(l=>state.layers[l.
 $("#overlay-opacity").addEventListener("input",e=>{ state.opacity=Number(e.target.value)/100; $("#opacity-value").textContent=`${e.target.value}%`; applyLayers(); });
 $("#view-2d").addEventListener("click",()=>setMode("2d"));
 $("#view-3d").addEventListener("click",()=>setMode("3d"));
+$("#measure-prev").addEventListener("click",()=>{state.activeDimension3d=Math.max(0,state.activeDimension3d-1);render3D();});
+$("#measure-next").addEventListener("click",()=>{state.activeDimension3d=Math.min(dimensionEntries3D().length-1,state.activeDimension3d+1);render3D();});
 function syncCooling(){
   $("#cooling-toggle").setAttribute("aria-pressed",String(state.cooling));
   $("#cooling-toggle").textContent=state.cooling?"❄ Ocultar área do ar":"❄ Área do ar";
@@ -918,7 +953,10 @@ function insidePolygon(x,y,points){
   return inside;
 }
 function pick3D(x,y){
-  const dot=(state.hit3d||[]).filter(item=>Math.hypot(item.x-x,item.y-y)<=item.r).sort((a,b)=>Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
+  const dot=(state.hit3d||[]).filter(item=>item.box
+    ? x>=item.box.x&&x<=item.box.x+item.box.w&&y>=item.box.y&&y<=item.box.y+item.box.h
+    : Math.hypot(item.x-x,item.y-y)<=item.r
+  ).sort((a,b)=>(b.priority||0)-(a.priority||0)||Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
   if(dot)return {dot:dot.dot,x:dot.x,y:dot.y};
   for(let i=(state.surfaceHits3d||[]).length-1;i>=0;i--){
     const item=state.surfaceHits3d[i];

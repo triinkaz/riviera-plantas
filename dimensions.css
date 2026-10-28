@@ -1,4 +1,13 @@
 .dimension-markers{pointer-events:none}
+.measure-nav[hidden]{display:none!important}
+.measure-nav{display:flex;align-items:center;gap:8px;min-height:56px;padding:6px 10px;border-bottom:1px solid var(--line);background:var(--panel)}
+.measure-nav button{flex:none;width:42px;height:42px;border:1px solid var(--line);background:var(--panel-2);color:var(--gold);font:28px Georgia,serif;line-height:1}
+.measure-nav button:disabled{opacity:.35;cursor:default}
+.measure-nav button:not(:disabled):hover,.measure-nav button:not(:disabled):focus-visible{border-color:var(--gold)}
+.measure-nav-copy{display:grid;gap:2px;flex:1;min-width:0;text-align:center}
+.measure-nav-copy small{font:9px Georgia,serif;letter-spacing:.12em;color:var(--gold)}
+.measure-nav-copy strong{font:12px Georgia,serif;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.measure-nav-copy span{font:10px/1.2 Arial,sans-serif;color:var(--muted)}
 .dimension-markers rect{fill:#2b2114ed;stroke:#e7c486;stroke-width:2}
 .dimension-markers text{fill:#f8e8c9;stroke:none;font-family:Arial,sans-serif}
 .dimension-markers .dimension-room{font-size:17px;font-weight:700;letter-spacing:1px}
