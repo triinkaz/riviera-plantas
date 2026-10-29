@@ -29,24 +29,23 @@
     label.className=compact?"collective-mini-count":"collective-count";
     label.textContent="Carregando contagem…";
     label.setAttribute("aria-label",`Contagem de interessados em ${services[id]}: carregando`);
+    let minimumLabel;
     if(compact){
       const link=card.querySelector("a");
       link.insertBefore(label,link.querySelector("span[aria-hidden]"));
     }else{
-      const progress=document.createElement("span");
-      progress.className="collective-progress";
-      progress.setAttribute("aria-hidden","true");
-      progress.append(document.createElement("span"));
+      minimumLabel=document.createElement("span");
+      minimumLabel.className="collective-minimum";
       const block=document.createElement("div");
       block.className="collective-count-block";
-      block.append(label,progress);
+      block.append(label,minimumLabel);
       card.querySelector("a").before(block);
     }
-    counts.set(id,{card,label});
+    counts.set(id,{card,label,minimumLabel});
   });
   function unavailable(){
     countStatus.textContent="Contagem temporariamente indisponível. Você ainda pode registrar seu interesse.";
-    counts.forEach(({label})=>{label.textContent="Contagem indisponível";label.removeAttribute("aria-label")});
+    counts.forEach(({label,minimumLabel})=>{label.textContent="Contagem indisponível";label.removeAttribute("aria-label");if(minimumLabel)minimumLabel.textContent=""});
   }
   let resolved=false;
   window.rivieraColetivaCountsReady=response=>{
@@ -63,19 +62,17 @@
     });
     if(Object.values(services).some(name=>!byName.has(name))){unavailable();resolved=true;return}
     const minimums=new Set([...byName.values()].map(item=>item.minimum));
-    counts.forEach(({card,label},id)=>{
+    counts.forEach(({card,label,minimumLabel},id)=>{
       const {value,minimum}=byName.get(services[id]);
-      label.textContent=`${value} de ${minimum} interessados`;
-      label.setAttribute("aria-label",`${services[id]}: ${value} de ${minimum} interessados`);
-      if(value>=minimum){
-        card.classList.add("collective-minimum-reached");
-        label.textContent+=` · mínimo atingido`;
-      }
-      const fill=card.querySelector(".collective-progress span");
-      if(fill)fill.style.width=`${Math.min(100,value/minimum*100)}%`;
+      const interested=`${value} ${value===1?"interessado":"interessados"}`;
+      const reached=value>=minimum;
+      label.textContent=minimumLabel?interested:`${interested} · mínimo ${minimum}`;
+      label.setAttribute("aria-label",`${services[id]}: ${interested}; mínimo de ${minimum} para buscar propostas${reached?" atingido":""}`);
+      card.classList.toggle("collective-minimum-reached",reached);
+      if(minimumLabel)minimumLabel.textContent=reached?`Mínimo de ${minimum} atingido · inscrições continuam abertas`:`Mínimo para buscar propostas: ${minimum}`;
     });
     const sharedMinimum=minimums.size===1?[...minimums][0]:null;
-    countStatus.textContent=`A contagem considera um contato por serviço escolhido. ${sharedMinimum?`Ao chegar a ${sharedMinimum}`:"Ao atingir o mínimo"}, vamos buscar propostas.`;
+    countStatus.textContent=`Cada serviço tem ${sharedMinimum?`mínimo inicial de ${sharedMinimum} interessados`:"um mínimo inicial de interessados"} para buscarmos propostas. As inscrições continuam abertas depois disso.`;
     resolved=true;
   };
   const countRequest=new URL(countSheet);

@@ -39,11 +39,9 @@ html[data-theme="light"] .collective-service-link:hover{background:#c9e4ca}
 .collective-card h3{margin:17px 0 8px;font:normal 22px Georgia,serif;color:var(--text)}
 .collective-card p{flex:1;margin:0 0 21px;color:var(--muted);font-size:12px;line-height:1.55}
 .collective-count-block{margin:0 0 13px}
-.collective-count{display:block;margin-bottom:7px;color:var(--text);font:12px Georgia,serif}
-.collective-progress{display:block;width:100%;height:5px;overflow:hidden;background:var(--line)}
-.collective-progress span{display:block;width:0;height:100%;background:#5e9a6c;transition:width .45s ease}
+.collective-count{display:block;color:var(--text);font:18px Georgia,serif}
+.collective-minimum{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.4}
 .collective-minimum-reached .collective-count{color:#5ca673}
-.collective-minimum-reached .collective-progress span{background:#4eaa63}
 .collective-card .collective-select{display:block;width:100%;padding:12px;border:1px solid #6d9b76;background:#254c34;color:#f5fff1;text-align:center;font:13px Georgia,serif;cursor:pointer}
 .collective-card .collective-select:hover,.collective-card .collective-select:focus-visible{background:#316444;color:#fff}
 .collective-card.is-picked .collective-select{background:#e0f0de;color:#204e2d;border-color:#70a57b}
