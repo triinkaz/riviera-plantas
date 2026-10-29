@@ -18,6 +18,77 @@
     engenharia:"Engenheiro para reforma",
     art_rrt:"ART ou RRT para reforma"
   };
+  const countSheet="https://docs.google.com/spreadsheets/d/1bMIsKz-q7VSZJSpy8JNlkC8U6UvoQk7zGgz6d2GUgWY/gviz/tq";
+  const countStatus=document.getElementById("collective-count-status");
+  const counts=new Map();
+  document.querySelectorAll("[data-collective-card]").forEach(card=>{
+    const id=card.dataset.collectiveCard;
+    if(!Object.hasOwn(services,id))return;
+    const compact=card.tagName==="LI";
+    const label=document.createElement("span");
+    label.className=compact?"collective-mini-count":"collective-count";
+    label.textContent="Carregando contagem…";
+    label.setAttribute("aria-label",`Contagem de interessados em ${services[id]}: carregando`);
+    if(compact){
+      const link=card.querySelector("a");
+      link.insertBefore(label,link.querySelector("span[aria-hidden]"));
+    }else{
+      const progress=document.createElement("span");
+      progress.className="collective-progress";
+      progress.setAttribute("aria-hidden","true");
+      progress.append(document.createElement("span"));
+      const block=document.createElement("div");
+      block.className="collective-count-block";
+      block.append(label,progress);
+      card.querySelector("a").before(block);
+    }
+    counts.set(id,{card,label});
+  });
+  function unavailable(){
+    countStatus.textContent="Contagem temporariamente indisponível. Você ainda pode registrar seu interesse.";
+    counts.forEach(({label})=>{label.textContent="Contagem indisponível";label.removeAttribute("aria-label")});
+  }
+  let resolved=false;
+  window.rivieraColetivaCountsReady=response=>{
+    if(resolved)return;
+    const rows=response?.table?.rows;
+    if(response?.status!=="ok"||!Array.isArray(rows)){unavailable();resolved=true;return}
+    const byName=new Map();
+    rows.forEach(row=>{
+      const cells=row?.c||[];
+      const name=String(cells[0]?.v||"");
+      const value=Number(cells[1]?.v);
+      const minimum=Number(cells[2]?.v);
+      if(name&&Number.isInteger(value)&&value>=0&&Number.isInteger(minimum)&&minimum>0)byName.set(name,{value,minimum});
+    });
+    if(Object.values(services).some(name=>!byName.has(name))){unavailable();resolved=true;return}
+    const minimums=new Set([...byName.values()].map(item=>item.minimum));
+    counts.forEach(({card,label},id)=>{
+      const {value,minimum}=byName.get(services[id]);
+      label.textContent=`${value} de ${minimum} interessados`;
+      label.setAttribute("aria-label",`${services[id]}: ${value} de ${minimum} interessados`);
+      if(value>=minimum){
+        card.classList.add("collective-minimum-reached");
+        label.textContent+=` · mínimo atingido`;
+      }
+      const fill=card.querySelector(".collective-progress span");
+      if(fill)fill.style.width=`${Math.min(100,value/minimum*100)}%`;
+    });
+    const sharedMinimum=minimums.size===1?[...minimums][0]:null;
+    countStatus.textContent=`A contagem considera um contato por serviço escolhido. ${sharedMinimum?`Ao chegar a ${sharedMinimum}`:"Ao atingir o mínimo"}, vamos buscar propostas.`;
+    resolved=true;
+  };
+  const countRequest=new URL(countSheet);
+  countRequest.searchParams.set("gid","1875703719");
+  countRequest.searchParams.set("range","A5:E21");
+  countRequest.searchParams.set("headers","1");
+  countRequest.searchParams.set("tqx","out:json;responseHandler:rivieraColetivaCountsReady");
+  const countScript=document.createElement("script");
+  countScript.src=countRequest.href;
+  countScript.async=true;
+  countScript.onerror=()=>{if(!resolved){unavailable();resolved=true}};
+  document.head.append(countScript);
+  setTimeout(()=>{if(!resolved){unavailable();resolved=true}},12000);
   const params=new URLSearchParams(location.search);
   const chosenFinal=/^[1-6]$/.test(params.get("final")||"")?params.get("final"):"";
   const chosenService=Object.hasOwn(services,params.get("servico"))?params.get("servico"):"";

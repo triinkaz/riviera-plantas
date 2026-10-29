@@ -10,9 +10,9 @@
   <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
   <link rel="stylesheet" href="styles.css?v=cooktop-brinde-1">
   <link rel="stylesheet" href="analytics.css?v=1">
-  <link rel="stylesheet" href="coletiva.css?v=2">
+  <link rel="stylesheet" href="coletiva.css?v=3">
   <script src="analytics.js?v=1" defer></script>
-  <script src="coletiva.js?v=2" defer></script>
+  <script src="coletiva.js?v=3" defer></script>
 </head>
 <body class="collective-page">
   <a class="skip-link" href="#conteudo">Ir para os serviços</a>
@@ -30,6 +30,7 @@
     </section>
     <section class="collective-content" aria-labelledby="services-title">
       <div class="collective-section-heading"><div><span class="section-kicker">01 / ESCOLHA O SERVIÇO</span><h2 id="services-title">O que você pretende fazer?</h2></div><p>Reunimos os pedidos que apareceram nas conversas dos moradores. Preço e desconto ainda não foram definidos.</p></div>
+      <p id="collective-count-status" class="collective-count-status" role="status">Carregando interessados por serviço…</p>
       <div class="collective-cards">
         <article class="collective-card collective-card--focus" data-collective-card="ar">
           <span class="collective-card-number">AR-CONDICIONADO</span>
@@ -80,8 +81,8 @@
           </ul></section>
         </div>
       </details>
-      <p class="collective-other-note">Precisa de algo diferente ou de mais de um serviço? Você pode descrever os outros pedidos no formulário.</p>
-      <p class="collective-privacy-note">O botão abre um formulário com respostas privadas. Seu contato não aparece no site nem para outros moradores. <a href="privacidade.html#cotacao-coletiva">Como usamos seus dados ↗</a></p>
+      <p class="collective-other-note">Quer entrar na contagem de mais de um serviço? Envie um formulário para cada um. Você também pode descrever outros pedidos no formulário.</p>
+      <p class="collective-privacy-note">Apenas os totais aparecem no site. Seu contato fica privado e não é mostrado a outros moradores. <a href="privacidade.html#cotacao-coletiva">Como usamos seus dados ↗</a></p>
     </section>
     <section class="collective-how" aria-labelledby="how-title"><span class="section-kicker">02 / COMO FUNCIONA</span><h2 id="how-title">Você decide quando houver proposta.</h2><ol><li><strong>Mostre interesse</strong><span>Escolha o serviço e deixe um contato para retorno.</span></li><li><strong>Buscamos condições</strong><span>Reunimos pedidos e conversamos com empresas locais.</span></li><li><strong>Compare e escolha</strong><span>Se houver proposta concreta, enviamos os detalhes. Você decide se quer contratar.</span></li></ol><p>Esta iniciativa é independente do condomínio. A proposta de uma empresa não dispensa conferência de medidas, análise técnica nem as exigências de reforma aplicáveis.</p></section>
   </main>
