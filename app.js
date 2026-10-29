@@ -556,6 +556,9 @@ function openTechPopover({title,description,page=1,layer="architecture",surface,
   const second=$("#tech-secondary-source-link");
   second.hidden=!secondaryPage;
   if(secondaryPage){second.href=docUrl(secondaryPage);second.textContent=`Abrir folha ${secondaryPage} ↗`;}
+  const products=$("#tech-product-recommendations");
+  products.hidden=serviceContextFor(detail)!=="electric_shower";
+  products.open=false;
   techSource=source;
   activePoint=point;
   compactServiceOpen=false;
@@ -754,6 +757,10 @@ function closeTechPopover(restoreFocus=false){
   techSource=null;activePoint=null;compactServiceOpen=false;
 }
 $("#tech-close").addEventListener("click",()=>closeTechPopover(true));
+$("#tech-product-recommendations").addEventListener("click",e=>{
+  const link=e.target.closest("a[data-affiliate-product]");
+  if(link)window.rivieraAnalytics?.track("affiliate_product_clicked",{product_id:link.dataset.affiliateProduct});
+});
 $("#service-close").addEventListener("click",()=>closeTechPopover(true));
 document.addEventListener("pointerdown",e=>{if((!techPopover.hidden||!servicePopover.hidden) && !techPopover.contains(e.target) && !servicePopover.contains(e.target) && !e.target.closest("[data-title],[data-global-service]"))closeTechPopover();});
 document.addEventListener("keydown",e=>{if(e.key==="Escape" && (!techPopover.hidden||!servicePopover.hidden)){e.preventDefault();closeTechPopover(true);}});
