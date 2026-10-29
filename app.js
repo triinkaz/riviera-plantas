@@ -165,7 +165,7 @@ function dimensionMarkers() {
   const small=[1,4].includes(state.final);
   return `<g id="layer-dimensions" class="plan-layer overlay-layer dimension-markers" aria-label="Medidas cotadas de cômodos e trechos">${dimensionData().map(item=>{
     const x=item.x,y=small?item.y:yy(item.y),width=small?205:278,height=small?47:62;
-    return `<g transform="translate(${x} ${y})"><rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="6"/><text y="${small?-5:-7}" text-anchor="middle" class="dimension-room">${item.name.toUpperCase()}</text><text y="${small?16:22}" text-anchor="middle" class="dimension-value">${item.size}</text></g>`;
+    return `<g transform="translate(${x} ${y})" role="button" tabindex="0" aria-label="Medida da ${item.name}: ${item.size}" data-title="${item.name} · ${item.size}" data-description="Cota indicada na planta desta tipologia. Confira a medida no apartamento antes de comprar materiais ou planejar móveis."><rect x="${-width/2}" y="${-height/2}" width="${width}" height="${height}" rx="6"/><text y="${small?-5:-7}" text-anchor="middle" class="dimension-room">${item.name.toUpperCase()}</text><text y="${small?16:22}" text-anchor="middle" class="dimension-value">${item.size}</text></g>`;
   }).join("")}${segmentData().filter(item=>item.line).map(item=>{
     const [x1,rawY1,x2,rawY2]=item.line,[cx,rawCy,width]=item.plate;
     const y1=small?rawY1:yy(rawY1),y2=small?rawY2:yy(rawY2),cy=small?rawCy:yy(rawCy);
@@ -176,7 +176,7 @@ function dimensionMarkers() {
     const leader=horizontal
       ? `M${cx} ${cy+(cy<y1?height/2:-height/2)}V${y1}`
       : `M${cx+(cx<x1?width/2:-width/2)} ${cy}H${x1}`;
-    return `<g class="segment-measure" aria-label="${item.name}: ${item.detail}, ${item.size}"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><path d="${ticks}"/><path class="measure-leader" d="${leader}"/><rect x="${cx-width/2}" y="${cy-height/2}" width="${width}" height="${height}" rx="5"/><text x="${cx}" y="${cy-(small?3:5)}" text-anchor="middle" class="segment-room">${item.label}</text><text x="${cx}" y="${cy+(small?11:16)}" text-anchor="middle" class="segment-value">${item.size}</text></g>`;
+    return `<g class="segment-measure" role="button" tabindex="0" aria-label="${item.name}: ${item.detail}, ${item.size}" data-title="${item.name} · ${item.size}" data-description="Cota do trecho ${item.detail}. Não representa a dimensão total do ambiente; confira no apartamento antes de comprar ou executar."><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><path d="${ticks}"/><path class="measure-leader" d="${leader}"/><rect x="${cx-width/2}" y="${cy-height/2}" width="${width}" height="${height}" rx="5"/><text x="${cx}" y="${cy-(small?3:5)}" text-anchor="middle" class="segment-room">${item.label}</text><text x="${cx}" y="${cy+(small?11:16)}" text-anchor="middle" class="segment-value">${item.size}</text></g>`;
   }).join("")}</g>`;
 }
 const coolingOutline = () => state.final===1
@@ -434,12 +434,13 @@ function setMode(mode) {
 function selectPoint(el) {
   const title = el.dataset.title;
   const description = el.dataset.description;
-  const page = Number(el.dataset.page);
-  $("#selection-info").innerHTML = `<h2>${title}</h2><a href="${docUrl(page)}" target="_blank" rel="noopener">Abrir planta original ↗</a>`;
+  const page = Number(el.dataset.page)||1;
+  const layer=el.closest(".plan-layer")?.id.replace("layer-","")||"architecture";
+  $("#selection-info").innerHTML = `<h2>${title}</h2><a href="${layer==="dimensions"?dimensionDocUrl():docUrl(page)}" target="_blank" rel="noopener">${layer==="dimensions"?"Abrir planta cotada":"Abrir planta original"} ↗</a>`;
   document.querySelectorAll(".selected-point").forEach(node=>node.classList.remove("selected-point"));
   el.classList.add("selected-point");
   const bounds=el.getBoundingClientRect();
-  openTechPopover({title,description,page,surface:el.dataset.surface,layer:el.closest(".plan-layer")?.id.replace("layer-","")||"architecture"},{x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2},el);
+  openTechPopover({title,description,page,surface:el.dataset.surface,layer,sourceUrl:layer==="dimensions"?dimensionDocUrl():undefined,sourceName:layer==="dimensions"?"Planta cotada desta tipologia":undefined,sourceLinkText:layer==="dimensions"?"Abrir planta cotada ↗":undefined},{x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2},el);
 }
 const TECH_CHECKS={
   electric:"Tomadas 220 V e iluminação 127 V nos apartamentos comuns. Confira o circuito e a instalação real antes de ligar equipamentos.",
@@ -451,7 +452,7 @@ const TECH_CHECKS={
 };
 // Critérios documentais dos apartamentos comuns. Não representam medição da unidade entregue.
 const TECHNICAL_SPECS={
-  electric_shower:{items:[["Tensão","220 V"],["Potência","até 5.400 W por chuveiro"],["Resistência","blindada, compatível com o DR"],["Água","vazão recomendada: 6 L/min"]],note:"Confirme aterramento, pressão dinâmica do modelo e circuito no imóvel.",sources:[["Manual · p. 84","manual",84],["Quadro elétrico · folha 3","plan",3]]},
+  electric_shower:{items:[["Tensão","220 V"],["Potência","até 5.400 W por chuveiro"],["Circuito do projeto","disjuntor de 32 A por chuveiro"],["Resistência","blindada, compatível com o DR"],["Água","vazão recomendada: 6 L/min"]],note:"A Lorenzetti Advanced Eletrônica Blindada 220 V/4.500 W pede 32 A e fio de 4 mm² na ficha do fabricante. Confira pressão, vazão, bitola, aterramento e circuito no imóvel antes de comprar.",sources:[["Manual · p. 84","manual",84],["Quadro elétrico · folha 3","plan",3],["Ficha da Lorenzetti","external","https://lorenzetti.com.br/produto/advanced-blindada"]]},
   ac:{items:[["Sistema previsto","split; evaporadora na sala e condensadora na varanda"],["Capacidade prevista","9.000 BTU/h"],["Circuito do projeto","220 V · 20 A · carga indicada de 815 W"]],note:"815 W é a carga indicada no projeto, não o consumo de um modelo. Confira dreno, linha frigorígena e ventilação da condensadora.",sources:[["Manual · p. 106","manual",106],["Quadro elétrico · folha 3","plan",3],["Ar e prumadas · folha 4","plan",4]]},
   electric_light:{items:[["Iluminação","127 V no projeto"],["Circuito 1","16 A · carga indicada de 177 W para o circuito"]],note:"A carga é do circuito compartilhado. Confirme a tensão e o tipo de soquete da luminária antes de comprar.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
   electric_outlet:{items:[["Tensão das tomadas","220 V em todos os apartamentos comuns, confirmado pelo proprietário"],["Quadro elétrico","circuitos de tomadas 2 a 6 em 220 V"],["Potência listada","600 a 1.400 W conforme o circuito; não por tomada"]],note:"O texto geral do manual sobre tomadas 127 V não corresponde a estes apartamentos. Antes de ligar um aparelho, confirme o circuito e a instalação do ponto.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
@@ -472,6 +473,59 @@ const TECHNICAL_SPECS={
   stack:{items:[["Prumadas","água pluvial, ventilação e esgoto na folha 4"],["Furação","áreas cinza das vistas não podem ser furadas"]],note:"Posição real e acesso de manutenção precisam ser conferidos antes de qualquer intervenção.",sources:[["Manual · p. 164","manual",164],["Prumadas · folha 4","plan",4]]},
   electric_exhaust:{items:[["Exaustor","ponto indicado na folha elétrica"],["Vazão e modelo","não especificados nos documentos analisados"]],note:"Confira o equipamento instalado, duto e alimentação antes de comprar outro.",sources:[["Elétrica · folha 2","plan",2]]}
 };
+// Seleção revisada em 29/10/2026. Os links de afiliado abrem a vitrine e destacam o anúncio conferido.
+const PURCHASE_SELECTIONS={
+  measuring:{label:"Ferramentas para conferir medidas",count:"2 opções",note:"As áreas do desenho são estimativas. Meça largura, comprimento, vãos e alturas no imóvel antes de comprar piso, móveis ou box. Para marcenaria, peça conferência profissional.",products:[
+    {id:"vonder-trena-autotrava-5m",name:"Trena Vonder Plus autotrava",spec:"5 m × 19 mm · cód. 38.68.505.505",reputation:"29/10: loja oficial Vonder, +50 mil vendas; item 4,9/5 em 5.227 avaliações e +10 mil vendidos.",url:"https://meli.la/2Kmp4sy",manufacturer:"https://www.vonder.com.br/produto/trena_curta_de_ao_autotrava_5_m_x_19_mm_vonder_plus/3979"},
+    {id:"vonder-medidor-vd40",name:"Medidor a laser Vonder VD 40",spec:"0,05–40 m · precisão nominal ±2 mm · cód. 38.20.040.040",reputation:"29/10: loja oficial Vonder, +250 mil vendas; item 4,8/5 em 594 avaliações e +1.000 vendidos.",url:"https://meli.la/23NZypL",manufacturer:"https://www.vonder.com.br/produto/medidor_de_distncia_a_laser_40_m_vd_40_vonder/13667"}
+  ]}
+};
+const PURCHASE_PENDING={
+  electric_shower:"O projeto pede 220 V, resistência blindada, até 5.400 W e indica disjuntor de 32 A. A Lorenzetti Advanced Eletrônica Blindada de 4.500 W atende a esses dados de catálogo, mas ainda não encontramos anúncio com versão e vendedor confirmados. Confira pressão, vazão, fiação e aterramento no imóvel antes de comprar.",
+  ac:"Ar-condicionado: o projeto prevê 9.000 BTU/h e circuito de 220 V, mas faltam carga térmica, medidas e ventilação da condensadora, linha frigorígena e dreno para escolher um modelo.",
+  electric_outlet:"Aparelhos para tomada: confirme no ponto a corrente nominal da tomada, o circuito, a fiação e a carga já conectada. O disjuntor de 20 A não define a capacidade de cada tomada.",
+  electric_light:"Luminárias e lâmpadas: confira 127 V, soquete, recorte, profundidade e peso permitido no local. A planta não identifica esses encaixes.",
+  electric_panel:"Disjuntores e peças do quadro dependem de projeto e vistoria da instalação. Não escolha outro disjuntor apenas pela potência de um aparelho.",
+  electric_exhaust:"Exaustor: faltam medidas do duto, vazão, conexão e especificação do equipamento entregue.",
+  gas:"Fogão ou cooktop: confirme GLP no ponto real, dimensões do nicho, conexão, pressão e ventilação antes de escolher o modelo.",
+  hydraulic:"Torneiras e metais: faltam rosca, diâmetro, pressão e posição real de cada conexão. Consulte as vistas e confira no apartamento.",
+  drain:"Peças para dreno ou ralo: confirme posição, diâmetro, caimento e acesso de manutenção no imóvel.",
+  masonry:"Tintas, fixadores e acabamentos dependem da composição real da parede. A classificação informada diverge da planta original.",
+  drywall:"Para fixações ou acabamento, confirme no imóvel o trecho de drywall, a estrutura interna e a carga admissível.",
+};
+function purchaseContextFor(detail){
+  if(["dimensions","areas"].includes(detail.layer))return "measuring";
+  const context=serviceContextFor(detail);
+  if(["dry_floor","wet_floor","balcony_floor","room_dry","room_wet","room_mixed"].includes(context))return "measuring";
+  return context;
+}
+function renderPurchases(detail){
+  const context=purchaseContextFor(detail);
+  const selection=PURCHASE_SELECTIONS[context];
+  const section=$("#tech-product-recommendations");
+  if(["structural","shaft","stack"].includes(context)){section.hidden=true;section.open=false;return;}
+  const grid=$("#tech-product-grid");
+  grid.replaceChildren();
+  $("#tech-products-title").textContent=selection?selection.label:"O que falta para indicar produtos";
+  $("#tech-products-count").textContent=selection?selection.count:"Conferir no imóvel";
+  $("#tech-products-note").textContent=selection?.note||PURCHASE_PENDING[context]||"Confira as medidas e a instalação no apartamento antes de comprar materiais ou equipamentos para este ponto.";
+  $("#tech-products-ad-label").hidden=!selection;
+  $("#tech-products-disclosure").hidden=!selection;
+  if(selection){
+    selection.products.forEach(product=>{
+      const card=document.createElement("div");card.className="tech-product";
+      const name=document.createElement("strong");name.textContent=product.name;
+      const spec=document.createElement("span");spec.textContent=product.spec;
+      const reputation=document.createElement("small");reputation.textContent=product.reputation;
+      const actions=document.createElement("div");actions.className="tech-product-actions";
+      const buy=document.createElement("a");buy.href=product.url;buy.target="_blank";buy.rel="sponsored noopener noreferrer";buy.dataset.affiliateProduct=product.id;buy.textContent="Ver produto indicado ↗";
+      const maker=document.createElement("a");maker.href=product.manufacturer;maker.target="_blank";maker.rel="noopener noreferrer";maker.className="tech-product-maker";maker.textContent="Ficha do fabricante ↗";
+      actions.append(buy,maker);card.append(name,spec,reputation,actions);grid.append(card);
+    });
+  }
+  section.hidden=false;
+  section.open=false;
+}
 function renderTechnicalSpecs(detail){
   const card=TECHNICAL_SPECS[serviceContextFor(detail)];
   const section=$("#tech-specs");
@@ -483,7 +537,7 @@ function renderTechnicalSpecs(detail){
   $("#tech-spec-note").textContent=card.note;
   const sources=$("#tech-spec-sources");
   sources.replaceChildren();
-  card.sources.forEach(([label,kind,page])=>{const a=document.createElement("a");a.href=kind==="manual"?`assets/docs/manual-proprietario.pdf#page=${page}`:docUrl(page);a.target="_blank";a.rel="noopener";a.textContent=`${label} ↗`;sources.append(a);});
+  card.sources.forEach(([label,kind,page])=>{const a=document.createElement("a");a.href=kind==="manual"?`assets/docs/manual-proprietario.pdf#page=${page}`:kind==="external"?page:docUrl(page);a.target="_blank";a.rel="noopener noreferrer";a.textContent=`${label} ↗`;sources.append(a);});
 }
 const techPopover=$("#tech-popover");
 const servicePopover=$("#service-popover");
@@ -594,9 +648,7 @@ function openTechPopover({title,description,page=1,layer="architecture",surface,
   const second=$("#tech-secondary-source-link");
   second.hidden=!secondaryPage;
   if(secondaryPage){second.href=docUrl(secondaryPage);second.textContent=`Abrir folha ${secondaryPage} ↗`;}
-  const products=$("#tech-product-recommendations");
-  products.hidden=serviceContextFor(detail)!=="electric_shower";
-  products.open=false;
+  renderPurchases(detail);
   techPopover.classList.remove("has-products-open");
   techSource=source;
   activePoint=point;
@@ -803,9 +855,7 @@ $("#tech-product-recommendations").addEventListener("toggle",e=>{
   requestAnimationFrame(()=>{
     if(!activePoint)return;
     positionPopovers(activePoint);
-    if(products.open && techPopover.scrollHeight>techPopover.clientHeight+2){
-      techPopover.scrollTo({top:Math.max(0,products.offsetTop-20),behavior:"smooth"});
-    }else if(!products.open){techPopover.scrollTop=0;}
+    if(!products.open)techPopover.scrollTop=0;
   });
 });
 $("#tech-product-recommendations").addEventListener("click",e=>{
