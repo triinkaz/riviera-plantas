@@ -996,6 +996,7 @@ function changeZoom(factor) {
 const layout=$(".app-layout");
 const mobileView=window.matchMedia("(max-width:660px), (max-width:900px) and (max-height:500px)");
 const focusToggle=$("#focus-toggle");
+const frameFocusToggle=$("#zoom-fit");
 const focusInertTargets=[".topbar",".bottom-bar",".skip-link"].map(selector=>$(selector));
 let focusActive=false;
 let focusRestore=null;
@@ -1072,6 +1073,10 @@ function updateFocusToggle(){
   focusToggle.title=focusActive?"Sair da tela cheia":"Abrir planta em tela cheia";
   focusToggle.querySelector(".focus-icon").textContent=focusActive?"×":"⛶";
   focusToggle.querySelector(".focus-label").textContent=focusActive?"Sair":"Tela cheia";
+  frameFocusToggle.setAttribute("aria-pressed",String(focusActive));
+  frameFocusToggle.setAttribute("aria-label",focusActive?"Sair da tela cheia":"Abrir planta em tela cheia");
+  frameFocusToggle.title=focusActive?"Sair da tela cheia":"Abrir planta em tela cheia";
+  frameFocusToggle.textContent=focusActive?"×":"⤢";
 }
 function setFocusMode(active,fromFullscreen=false){
   if(active===focusActive)return;
@@ -1103,6 +1108,7 @@ function setFocusMode(active,fromFullscreen=false){
   if(!active&&!fromFullscreen&&document.fullscreenElement===layout)document.exitFullscreen().catch(()=>{});
 }
 focusToggle.addEventListener("click",()=>setFocusMode(!focusActive));
+frameFocusToggle.addEventListener("click",()=>setFocusMode(!focusActive));
 document.addEventListener("fullscreenchange",()=>{
   if(focusActive&&document.fullscreenElement!==layout)setFocusMode(false,true);
 });
@@ -1160,11 +1166,6 @@ function syncCooling(){
 $("#cooling-toggle").addEventListener("click",()=>{state.cooling=!state.cooling;syncCooling();});
 $("#zoom-in").addEventListener("click",()=>changeZoom(1.2));
 $("#zoom-out").addEventListener("click",()=>changeZoom(1/1.2));
-$("#zoom-fit").addEventListener("click",()=>{
-  if(state.mode==="3d") state.view3d={yaw:-.5,tilt:.77,zoom:fitZoom("3d"),panX:0,panY:0};
-  else {state.zoom=fitZoom("2d");state.panX=0;state.panY=0;}
-  updateTransform();
-});
 $("#map-frame").addEventListener("wheel",e=>{
   if(e.target.closest("#tech-popover,#service-popover,.whole-home-actions"))return;
   e.preventDefault();

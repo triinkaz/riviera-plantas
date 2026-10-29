@@ -4,6 +4,8 @@
 .focus-icon{font:16px Arial,sans-serif;line-height:1}
 html[data-theme="light"] .focus-toggle{background:#fffaf0;color:#5a4322}
 html[data-theme="light"] .focus-toggle:hover,html[data-theme="light"] .focus-toggle[aria-pressed="true"]{background:#806334;color:#fff8e8}
+.map-tools #zoom-fit[aria-pressed="true"]{background:#604a28;color:#fff1cc}
+html[data-theme="light"] .map-tools #zoom-fit[aria-pressed="true"]{background:#806334;color:#fff8e8}
 
 body.focus-mode-active{overflow:hidden}
 .app-layout.is-focus-mode{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:260px minmax(0,1fr);width:100%;height:100dvh;min-height:0;overflow:hidden;background:var(--bg)}
