@@ -105,13 +105,25 @@ const SPONSORS = [
   {
     id:"lais",
     name:"Lais",
-    services:["arquitetura","marcenaria","interiores"],
+    services:["arquitetura"],
     whatsapp:"5512988064651",
-    message:"Olá, Lais! Vim pelo site Riviera Plantas. Vi o cooktop de brinde para quem fecha uma cozinha e os 20% de desconto em qualquer projeto. Gostaria de conversar.",
+    message:"Olá, Lais! Vim pelo Riviera Plantas e vi seu anúncio em Arquitetura com 20% de desconto. Gostaria de conversar sobre o projeto do meu apartamento no Riviera Martim de Sá.",
     active:true,
     campaign:{
       premium:true,
       compactServices:["arquitetura"],
+      offer:"20% de desconto no projeto inteiro"
+    }
+  },
+  {
+    id:"fernanda-souza",
+    name:"Fernanda Souza",
+    services:["marcenaria","interiores"],
+    whatsapp:"5512982034901",
+    message:"Olá, Fernanda! Vim pelo Riviera Plantas. Vi os 20% de desconto no projeto inteiro e o cooktop de brinde para quem fechar uma cozinha. Gostaria de conversar sobre o meu apartamento.",
+    active:true,
+    campaign:{
+      premium:true,
       gift:{title:"Cooktop de brinde",condition:"Ao fechar uma cozinha pelo site."},
       offer:"20% de desconto no projeto inteiro",
       description:"O desconto vale para qualquer projeto vindo do site.",
