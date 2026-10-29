@@ -33,7 +33,7 @@ const MANUAL_TIPS = [
   { id:"reforma", title:"Antes de iniciar a obra", text:"Encaminhe o Plano de Reforma e a documentação ao síndico ou responsável pela edificação.", page:23, always:true },
   { id:"estrutura", title:"Alvenaria estrutural", text:"O manual proíbe remover ou modificar paredes estruturais e abrir vãos, nichos ou rasgos.", page:43, layers:["architecture"] },
   { id:"furacao", title:"Furação e áreas ocultas", text:"Consulte as vistas: áreas hachuradas, shafts e sancas não devem ser perfurados. O limite de 2 cm não libera áreas proibidas.", page:164, layers:["architecture","hydraulic","systems","drains"] },
-  { id:"eletrica", title:"Confira a tensão real", text:"O manual descreve iluminação 127 V e traz orientações gerais para tomadas. Compare com as folhas do final e confira cada ponto instalado.", page:98, layers:["electric"] },
+  { id:"eletrica", title:"Tomadas 220 V", text:"Todas as tomadas dos apartamentos comuns são 220 V, conforme confirmação do proprietário e quadro elétrico. A iluminação é 127 V. O texto geral do manual sobre tomadas 127 V diverge.", page:98, layers:["electric"] },
   { id:"impermeabilizacao", title:"Banheiros e cozinha", text:"O manual orienta não quebrar nem perfurar pisos e revestimentos impermeabilizados.", page:58, layers:["hydraulic"] },
   { id:"gas", title:"Gás e ventilação", text:"Instalação e manutenção de equipamentos a gás exigem profissional capacitado e ventilação adequada.", page:92, layers:["systems"] },
   { id:"ar", title:"Condensadora na varanda", text:"A condensadora precisa trocar ar com o exterior; preserve ventilação e acesso para manutenção.", page:106, layers:["systems"] },
@@ -264,7 +264,7 @@ function areaMarkers() {
 }
 const electricPoints = () => {
   let s = LIGHTS.map(([x,y]) => point(x,y,"✦","light","Iluminação de teto","Ponto indicado na folha elétrica. Confirme a tensão e o circuito na unidade.",2)).join('');
-  s += OUTLETS.map(([x,y]) => point(x,y,"T","outlet","Tomada indicada","Tomada representada na folha elétrica. Posição gráfica aproximada; confira altura e tensão no ponto real.",2)).join('');
+  s += OUTLETS.map(([x,y]) => point(x,y,"T","outlet","Tomada 220 V","Tomada 220 V conforme confirmação do proprietário e quadro elétrico. Posição gráfica aproximada; confira o circuito no imóvel.",2)).join('');
   s += SWITCHES.map(([x,y]) => point(x,y,"I","switch","Interruptor indicado","Interruptor representado na folha elétrica. Observe a faixa de segurança de 20 cm descrita na folha.",2)).join('');
   s += point(754,415,"!","shower","Chuveiro elétrico","Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito.",2);
   s += point(221,767,"!","shower","Chuveiro elétrico","Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito.",2);
@@ -442,7 +442,7 @@ function selectPoint(el) {
   openTechPopover({title,description,page,surface:el.dataset.surface,layer:el.closest(".plan-layer")?.id.replace("layer-","")||"architecture"},{x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2},el);
 }
 const TECH_CHECKS={
-  electric:"Confira a tensão e o circuito no apartamento antes de instalar equipamentos. Há divergência entre os documentos.",
+  electric:"Tomadas 220 V e iluminação 127 V nos apartamentos comuns. Confira o circuito e a instalação real antes de ligar equipamentos.",
   hydraulic:"Confira os pontos no apartamento e preserve as áreas impermeabilizadas.",
   systems:"Preserve ventilação e acesso de manutenção. Confirme a posição real antes de intervir.",
   drains:"Confira o dreno no apartamento. O desenho não mostra todo o trajeto da tubulação.",
@@ -454,8 +454,8 @@ const TECHNICAL_SPECS={
   electric_shower:{items:[["Tensão","220 V"],["Potência","até 5.400 W por chuveiro"],["Resistência","blindada, compatível com o DR"],["Água","vazão recomendada: 6 L/min"]],note:"Confirme aterramento, pressão dinâmica do modelo e circuito no imóvel.",sources:[["Manual · p. 84","manual",84],["Quadro elétrico · folha 3","plan",3]]},
   ac:{items:[["Sistema previsto","split; evaporadora na sala e condensadora na varanda"],["Capacidade prevista","9.000 BTU/h"],["Circuito do projeto","220 V · 20 A · carga indicada de 815 W"]],note:"815 W é a carga indicada no projeto, não o consumo de um modelo. Confira dreno, linha frigorígena e ventilação da condensadora.",sources:[["Manual · p. 106","manual",106],["Quadro elétrico · folha 3","plan",3],["Ar e prumadas · folha 4","plan",4]]},
   electric_light:{items:[["Iluminação","127 V no projeto"],["Circuito 1","16 A · carga indicada de 177 W para o circuito"]],note:"A carga é do circuito compartilhado. Confirme a tensão e o tipo de soquete da luminária antes de comprar.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
-  electric_outlet:{items:[["Tomadas no quadro específico","circuitos 2 a 6 indicados em 220 V"],["Carga indicada","600 a 1.400 W conforme o circuito; não por tomada"]],note:"Há divergência: o texto geral do manual diz 127 V, salvo pontos 220 V. Meça a tensão de cada tomada e identifique o circuito antes da compra.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
-  electric_panel:{items:[["Iluminação","circuito 1 · 127 V · 16 A · 177 W"],["Tomadas","circuitos 2 a 6 · 220 V no quadro"],["Chuveiros","circuitos 7 e 8 · 220 V · 32 A · 5.400 W"],["Ar-condicionado","circuito 9 · 220 V · 20 A · 815 W"]],note:"Valores por circuito, não autorização para somar aparelhos ou trocar disjuntores. Há conflito sobre a tensão das tomadas; confira a unidade.",sources:[["Quadro elétrico · folha 3","plan",3],["Manual · p. 98","manual",98]]},
+  electric_outlet:{items:[["Tensão das tomadas","220 V em todos os apartamentos comuns, confirmado pelo proprietário"],["Quadro elétrico","circuitos de tomadas 2 a 6 em 220 V"],["Potência listada","600 a 1.400 W conforme o circuito; não por tomada"]],note:"O texto geral do manual sobre tomadas 127 V não corresponde a estes apartamentos. Antes de ligar um aparelho, confirme o circuito e a instalação do ponto.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
+  electric_panel:{items:[["Iluminação","circuito 1 · 127 V · 16 A · 177 W"],["Tomadas","todas 220 V; circuitos 2 a 6 no quadro"],["Chuveiros","circuitos 7 e 8 · 220 V · 32 A · 5.400 W"],["Ar-condicionado","circuito 9 · 220 V · 20 A · 815 W"]],note:"Tomadas 220 V confirmadas pelo proprietário. O manual contém texto geral divergente. Valores por circuito não autorizam somar aparelhos ou trocar disjuntores.",sources:[["Quadro elétrico · folha 3","plan",3],["Manual · p. 98","manual",98]]},
   gas:{items:[["Combustível","GLP central"],["Ponto previsto","fogão na cozinha"],["Ventilação","abertura permanente da área de serviço"]],note:"O manual menciona gás natural em um trecho genérico da p. 94, mas identifica o condomínio como GLP nas pp. 13 e 93. Confirme adaptação do aparelho; não bloqueie a ventilação.",sources:[["Manual · p. 13","manual",13],["Manual · pp. 92–94","manual",92],["Gás e prumadas · folha 4","plan",4]]},
   hydraulic:{items:[["Distribuição de água","PEX nos shafts e ramais"],["Trajeto","embutido em laje/teto; consultar vistas específicas"]],note:"Diâmetros, roscas, pressão no ponto e posição exata não estão confirmados para escolha de peças. Confira no imóvel.",sources:[["Manual · p. 84","manual",84],["Vistas hidráulicas · folhas 6–9","plan",6]]},
   drain:{items:[["Drenos","pontos indicados nas folhas técnicas"],["Trajeto oculto","não representado integralmente na planta interativa"]],note:"Confirme posição, diâmetro, caimento e acesso no imóvel antes de comprar equipamento ou alterar acabamento.",sources:[["Ar e prumadas · folha 4","plan",4],["Vista de dreno · folha 5","plan",5]]},
@@ -612,7 +612,7 @@ function openTechPopover({title,description,page=1,layer="architecture",surface,
 }
 function detailFor3DDot(dot){
   const defaults={
-    electric:{title:dot.label==="T"?"Tomada indicada":dot.label==="I"?"Interruptor indicado":"Iluminação de teto",description:"Ponto representado na folha elétrica. A posição no volume é aproximada; confira altura, tensão e circuito na instalação real.",page:2},
+    electric:{title:dot.label==="T"?"Tomada 220 V":dot.label==="I"?"Interruptor indicado":"Iluminação de teto",description:dot.label==="T"?"Tomada 220 V conforme confirmação do proprietário e quadro elétrico. A posição no volume é aproximada; confira o circuito no imóvel.":"Ponto representado na folha elétrica. A posição no volume é aproximada; confira altura, tensão e circuito na instalação real.",page:2},
     hydraulic:{title:"Vista hidráulica disponível",description:"O ponto indica um ambiente com vista hidráulica. O volume não representa o trajeto das tubulações.",page:6},
     systems:{title:"Prumada ou instalação indicada",description:"Elemento indicado na folha de ar, gás e prumadas. Confira a legenda e a posição real antes de qualquer intervenção.",page:4},
     drains:{title:"Dreno indicado",description:"Ponto de dreno indicado nas folhas técnicas. A posição no volume é aproximada; confira a vista original.",page:4},

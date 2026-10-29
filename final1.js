@@ -74,7 +74,7 @@ function final1Svg() {
   </g>`;
   const labels=`<g id="room-labels">${FINAL1.labels.map(([x,y,rows])=>rows.map((label,i)=>`<text x="${x}" y="${y+(i-(rows.length-1)/2)*19}" class="room-label" text-anchor="middle">${label}</text>`).join("")).join("")}</g>`;
   let electric=FINAL1.lights.map(([x,y])=>point(x,y,"✦","light","Iluminação de teto","Ponto indicado na folha elétrica. Confirme tensão e circuito no imóvel.",2)).join("");
-  electric+=FINAL1.outlets.map(([x,y])=>point(x,y,"T","outlet","Tomada indicada","Posição gráfica aproximada. Confira altura, tensão e circuito no ponto real.",2)).join("");
+  electric+=FINAL1.outlets.map(([x,y])=>point(x,y,"T","outlet","Tomada 220 V","Tomada 220 V conforme confirmação do proprietário e quadro elétrico. Posição gráfica aproximada; confira o circuito no imóvel.",2)).join("");
   electric+=FINAL1.switches.map(([x,y])=>point(x,y,"I","switch","Interruptor indicado","Observe a faixa de segurança de 20 cm indicada na folha elétrica.",2)).join("");
   electric+=point(710,847,"EX","systems","Exaustor de teto","Confira a posição na planta elétrica e no apartamento.",2);
   electric+=point(350,948,"Q","switch","Quadro de luz e força","Não execute furos na região do quadro. Consulte a folha 3.",3);
