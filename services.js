@@ -5,6 +5,7 @@ const SERVICE_CATALOG = {
   drywall: {name:"Montagem e reparo de drywall", detail:"Reparo, acabamento e instalação de divisórias após conferência do projeto."},
   alterar_drywall: {name:"Avaliar remoção ou mudança do drywall", detail:"Estudo de eventual remoção ou mudança de divisória; depende de análise e procedimento de reforma.", conditional:true},
   piso: {name:"Pisos e revestimentos", detail:"Escolha e instalação de acabamento após medir e verificar a base."},
+  box: {name:"Box de banheiro", detail:"Medição e instalação após conferir paredes, fixações e impermeabilização no imóvel."},
   rodape: {name:"Rodapés", detail:"Instalação e acabamento de rodapés conforme o piso e as paredes."},
   rejunte: {name:"Rejunte e vedação", detail:"Manutenção de juntas e vedações aparentes, sem presumir intervenção na impermeabilização."},
   impermeabilizacao: {name:"Avaliar impermeabilização", detail:"Diagnóstico e projeto de reparo; intervenções em áreas impermeabilizadas exigem análise.", conditional:true},
@@ -67,7 +68,7 @@ const SURFACE_CATALOG = {
 
 const SERVICE_CONTEXTS = {
   room_dry:["pintura","piso","marcenaria","iluminacao"],
-  room_wet:["hidraulica","loucas","rejunte","impermeabilizacao"],
+  room_wet:["hidraulica","loucas","box","rejunte","impermeabilizacao"],
   room_mixed:["pintura","piso","marcenaria","eletrica","hidraulica"],
   electric_light:["iluminacao","eletrica"],
   electric_outlet:["eletrica","vistoria"],

@@ -636,6 +636,12 @@ function createProviderCard(provider,service,independent,serviceId){
   }
   return card;
 }
+function collectiveUrl(serviceId=""){
+  const params=new URLSearchParams({final:String(state.final)});
+  if(state.mode==="3d")params.set("view","3d");
+  if(serviceId)params.set("servico",serviceId);
+  return `cotacao-coletiva.html?${params}`;
+}
 function showService(serviceId){
   const service=SERVICE_CATALOG[serviceId];
   if(!service)return;
@@ -649,6 +655,14 @@ function showService(serviceId){
     const condition=document.createElement("p");condition.className="service-condition";
     condition.textContent="Este escopo depende de avaliação técnica e das autorizações aplicáveis. O anúncio não libera a obra.";
     results.append(condition);
+  }
+  if(["box","piso","ar"].includes(serviceId)){
+    const collective=document.createElement("a");
+    collective.className="collective-service-link";
+    collective.href=collectiveUrl(serviceId);
+    collective.textContent="Cotar com outros moradores ↗";
+    collective.addEventListener("click",()=>window.rivieraAnalytics?.track("collective_open",{service_id:serviceId}));
+    results.append(collective);
   }
   const sponsors=SPONSORS.filter(item=>item.active && item.services?.includes(serviceId)).slice(0,MAX_SPONSORS_PER_SERVICE);
   const independents=INDEPENDENT_PROVIDERS.filter(item=>item.active && item.services?.includes(serviceId));
@@ -705,6 +719,10 @@ function openGlobalService(button){
   $("#service-close").focus();
 }
 globalServiceButtons.forEach(button=>button.addEventListener("click",()=>openGlobalService(button)));
+$("#collective-entry").addEventListener("click",event=>{
+  event.currentTarget.href=collectiveUrl();
+  window.rivieraAnalytics?.track("collective_open",{source:"plan"});
+});
 $("#independent-toggle").addEventListener("click",()=>{
   const toggle=$("#independent-toggle");
   const expanded=toggle.getAttribute("aria-expanded")!=="true";
@@ -806,6 +824,7 @@ function setFinal(value) {
   }
   const changed=state.final!==n;
   state.final = n;
+  $("#collective-entry").href=collectiveUrl();
   if(changed)state.activeDimension3d=0;
   state.cooling=false;
   syncCooling();
