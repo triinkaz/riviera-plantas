@@ -34,6 +34,13 @@ const FINAL1 = {
     [1021,834],[786,815],[688,803],[655,956],[726,956],[380,956]],
   switches: [[378,639],[498,640],[680,703],[767,703],[802,707],[765,780],
     [709,792],[381,930],[451,930],[653,800]],
+  // Símbolos da folha elétrica; posições gráficas estimadas, sem alturas de instalação.
+  electricExtras: [
+    [742,504,"tv","TV","Ponto de TV"],[794,865,"tv","TV","Ponto de TV"],[583,949,"tv","TV","Ponto de TV"],
+    [558,949,"phone","TEL","Ponto de telefone"],[360,736,"intercom","IF","Interfone"],
+    [477,949,"bell","CB","Campainha"],[462,979,"bell_button","BT","Botão da campainha"],
+    [300,545,"sconce","AR","Arandela"]
+  ],
   hydraulic: [[852,582,6,"Banho da suíte"],[704,862,7,"Banho social"],
     [302,800,8,"Cozinha e serviço"],[382,578,9,"Varanda"]],
   stacks: [[900,508,"AP","Água pluvial"],[900,534,"V","Ventilação"],
@@ -47,6 +54,8 @@ FINAL1.dots = [
   ...FINAL1.lights.map(([x,y])=>({x,y,layer:"electric",label:""})),
   ...FINAL1.outlets.map(([x,y])=>({x,y,layer:"electric",label:"T"})),
   ...FINAL1.switches.map(([x,y])=>({x,y,layer:"electric",label:"I"})),
+  ...FINAL1.electricExtras.map(([x,y,kind,label,title])=>({x,y,kind,layer:"electric",label,title,
+    description:title==="Arandela"?"Iluminação de parede indicada na folha elétrica. Posição estimada; confirme a instalação, a tensão e o circuito no imóvel.":`${title} indicado na folha elétrica. Posição estimada; confira o símbolo na folha original e a localização no imóvel.`,page:2})),
   ...FINAL1.hydraulic.map(([x,y,page,room])=>({x,y,layer:"hydraulic",label:"H",title:`Vista hidráulica: ${room}`,page})),
   ...FINAL1.stacks.map(([x,y,,title])=>({x,y,layer:"systems",label:"",title,page:4})),
   ...FINAL1.drains.map(([x,y,,title,page])=>({x,y,layer:"drains",label:"D",title,page})),
@@ -76,14 +85,15 @@ function final1Svg() {
   let electric=FINAL1.lights.map(([x,y])=>point(x,y,"✦","light","Iluminação de teto","Ponto indicado na folha elétrica. Confirme tensão e circuito no imóvel.",2)).join("");
   electric+=FINAL1.outlets.map(([x,y])=>point(x,y,"T","outlet","Tomada 220 V","Tomada 220 V conforme confirmação do proprietário e quadro elétrico. Posição gráfica aproximada; confira o circuito no imóvel.",2)).join("");
   electric+=FINAL1.switches.map(([x,y])=>point(x,y,"I","switch","Interruptor indicado","Observe a faixa de segurança de 20 cm indicada na folha elétrica.",2)).join("");
+  electric+=FINAL1.electricExtras.map(([x,y,kind,label,title])=>point(x,y,label,kind,title,electricExtraDescription(title),2)).join("");
   electric+=point(710,847,"EX","systems","Exaustor de teto","Confira a posição na planta elétrica e no apartamento.",2);
   electric+=point(350,948,"Q","switch","Quadro de luz e força","Não execute furos na região do quadro. Consulte a folha 3.",3);
   electric+=point(900,502,"!","shower","Chuveiro elétrico","Ponto 220 V indicado na folha elétrica; confira a instalação real.",2);
   electric+=point(652,901,"!","shower","Chuveiro elétrico","Ponto 220 V indicado na folha elétrica; confira a instalação real.",2);
-  const hydro=FINAL1.hydraulic.map(([x,y,p,title])=>`<g class="hydro-zone" role="button" tabindex="0" aria-label="Abrir vista hidráulica: ${title}" data-title="Vista hidráulica: ${title}" data-description="Veja a planta original para localizar os pontos. O trajeto das tubulações não aparece aqui." data-page="${p}" transform="translate(${x} ${y})"><circle r="33" class="zone-ring"/><circle r="17" class="zone-disc"/><text y="5" text-anchor="middle">H</text></g>`).join("");
+  const hydro=FINAL1.hydraulic.map(([x,y,p,title])=>`<g class="hydro-zone" role="button" tabindex="0" aria-label="Abrir vista hidráulica: ${title}" data-title="Vista hidráulica: ${title}" data-description="Veja a planta original para localizar os pontos. O trajeto das tubulações não aparece aqui." data-page="${p}" transform="translate(${x} ${y})"><circle r="33" class="zone-ring"/><circle r="17" class="zone-disc"/>${hydraulicViewGlyph()}</g>`).join("");
   let systems=FINAL1.stacks.map(([x,y,code,title])=>point(x,y,code,"stack",title,"Prumada indicada na folha 4. Não execute furos na região; consulte as vistas.",4)).join("");
-  systems+=`<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para condensadora" data-title="Condensadora de ar condicionado" data-description="Local previsto na varanda pela folha 4. Preserve ventilação e acesso de manutenção." data-page="4">${rect(460,523,34,60,"condenser-area")}</g>`;
-  systems+=`<g class="system-area" role="button" tabindex="0" aria-label="Local previsto para evaporadora" data-title="Evaporadora de ar condicionado" data-description="Local previsto na sala; confirme instalação, dreno e medidas no imóvel." data-page="4">${rect(628,782,14,47,"evaporator-area")}</g>`;
+  systems+=`<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para condensadora" data-title="Condensadora de ar condicionado" data-description="Local previsto na varanda pela folha 4. Preserve ventilação e acesso de manutenção." data-page="4">${rect(460,523,34,60,"condenser-area")}${systemAreaGlyph("condenser",460,523,34,60)}</g>`;
+  systems+=`<g class="system-area" role="button" tabindex="0" aria-label="Local previsto para evaporadora" data-title="Evaporadora de ar condicionado" data-description="Local previsto na sala; confirme instalação, dreno e medidas no imóvel." data-page="4">${rect(628,782,14,47,"evaporator-area")}${systemAreaGlyph("evaporator",628,782,14,47)}</g>`;
   systems+=line(257,674,257,712,"gas-line")+point(257,682,"G","gas","Tubulação de gás","A folha 4 alerta para tubulação de gás nesta parede. Não fure; confira o traçado real.",4);
   const drains=FINAL1.drains.map(([x,y,code,title,p])=>point(x,y,code,"drain",title,"Ponto indicado na folha técnica. Consulte o detalhe original; o trajeto não está desenhado aqui.",p)).join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" class="final4-plan" viewBox="180 390 930 640" role="group" aria-label="Planta vetorial do final 1 comum com camadas selecionáveis">

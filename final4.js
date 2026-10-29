@@ -27,6 +27,13 @@ const FINAL4 = {
   lights: [[318,592],[511,563],[438,718],[705,688],[710,562],[900,601],[850,868],[646,868],[411,872],[316,744]],
   outlets: [[266,526],[266,586],[289,526],[289,586],[266,620],[289,620],[266,693],[289,693],[463,490],[603,490],[793,542],[788,586],[1017,545],[1017,648],[514,747],[514,843],[681,732],[498,872],[278,817],[865,747]],
   switches: [[363,509],[463,507],[363,523],[405,686],[514,699],[673,769],[867,771],[789,649],[807,652],[996,646],[313,867]],
+  // Símbolos da folha elétrica; posições gráficas estimadas, sem alturas de instalação.
+  electricExtras: [
+    [585,491,"tv","TV","Ponto de TV"],[793,573,"tv","TV","Ponto de TV"],[741,927,"tv","TV","Ponto de TV"],
+    [557,491,"phone","TEL","Ponto de telefone"],[360,704,"intercom","IF","Interfone"],
+    [463,491,"bell","CB","Campainha"],[463,456,"bell_button","BT","Botão da campainha"],
+    [300,888,"sconce","AR","Arandela"]
+  ],
   hydraulic: [[708,570,7,"Banho social"],[853,847,6,"Banho da suíte"],[326,703,8,"Cozinha e serviço"],[404,875,9,"Varanda"]],
   stacks: [[657,499,"AP","Água pluvial"],[657,521,"V","Ventilação"],[657,544,"E","Esgoto"],[255,772,"E","Esgoto"],[906,882,"E","Esgoto"],[906,918,"V","Ventilação"],[906,946,"AP","Água pluvial"]],
   drains: [[600,535,"PD","Dreno da sala",5],[711,535,"D","Dreno próximo ao banho social",4]],
@@ -36,6 +43,8 @@ FINAL4.dots = [
   ...FINAL4.lights.map(([x,y])=>({x,y,layer:"electric",label:""})),
   ...FINAL4.outlets.map(([x,y])=>({x,y,layer:"electric",label:"T"})),
   ...FINAL4.switches.map(([x,y])=>({x,y,layer:"electric",label:"I"})),
+  ...FINAL4.electricExtras.map(([x,y,kind,label,title])=>({x,y,kind,layer:"electric",label,title,
+    description:title==="Arandela"?"Iluminação de parede indicada na folha elétrica. Posição estimada; confirme a instalação, a tensão e o circuito no imóvel.":`${title} indicado na folha elétrica. Posição estimada; confira o símbolo na folha original e a localização no imóvel.`,page:2})),
   ...FINAL4.hydraulic.map(([x,y,page,room])=>({x,y,layer:"hydraulic",label:"H",title:`Vista hidráulica: ${room}`,page})),
   ...FINAL4.stacks.map(([x,y,,title])=>({x,y,layer:"systems",label:"",title,page:4})),
   ...FINAL4.drains.map(([x,y,,title,page])=>({x,y,layer:"drains",label:"D",title,page})),
@@ -66,14 +75,15 @@ function final4Svg() {
   let electric = FINAL4.lights.map(([x,y])=>point(x,y,"✦","light","Iluminação de teto","Ponto indicado na folha elétrica. Confirme tensão e circuito no imóvel.",2)).join("");
   electric += FINAL4.outlets.map(([x,y])=>point(x,y,"T","outlet","Tomada 220 V","Tomada 220 V conforme confirmação do proprietário e quadro elétrico. Posição gráfica aproximada; confira o circuito no imóvel.",2)).join("");
   electric += FINAL4.switches.map(([x,y])=>point(x,y,"I","switch","Interruptor indicado","Observe a faixa de segurança de 20 cm indicada na folha elétrica.",2)).join("");
+  electric += FINAL4.electricExtras.map(([x,y,kind,label,title])=>point(x,y,label,kind,title,electricExtraDescription(title),2)).join("");
   electric += point(720,520,"EX","systems","Exaustor de teto","Confira a posição exata na planta original e no apartamento.",2);
   electric += point(252,864,"Q","switch","Quadro de luz e força","Não execute furos na região do quadro. Consulte a folha 3.",3);
   electric += point(681,544,"!","shower","Chuveiro elétrico","Ponto 220 V indicado na folha elétrica; confira a instalação real.",2);
   electric += point(893,904,"!","shower","Chuveiro elétrico","Ponto 220 V indicado na folha elétrica; confira a instalação real.",2);
-  const hydro = FINAL4.hydraulic.map(([x,y,p,title])=>`<g class="hydro-zone" role="button" tabindex="0" aria-label="Abrir vista hidráulica: ${title}" data-title="Vista hidráulica: ${title}" data-description="Veja a planta original para localizar os pontos. O trajeto das tubulações não aparece aqui." data-page="${p}" transform="translate(${x} ${y})"><circle r="33" class="zone-ring"/><circle r="17" class="zone-disc"/><text y="5" text-anchor="middle">H</text></g>`).join("");
+  const hydro = FINAL4.hydraulic.map(([x,y,p,title])=>`<g class="hydro-zone" role="button" tabindex="0" aria-label="Abrir vista hidráulica: ${title}" data-title="Vista hidráulica: ${title}" data-description="Veja a planta original para localizar os pontos. O trajeto das tubulações não aparece aqui." data-page="${p}" transform="translate(${x} ${y})"><circle r="33" class="zone-ring"/><circle r="17" class="zone-disc"/>${hydraulicViewGlyph()}</g>`).join("");
   let systems = FINAL4.stacks.map(([x,y,code,title])=>point(x,y,code,"stack",title,"Prumada indicada na folha 4. Não execute furos na região; consulte as vistas.",4)).join("");
-  systems += `<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para condensadora" data-title="Condensadora de ar condicionado" data-description="Local previsto na varanda pela folha 4. Preserve ventilação e acesso de manutenção." data-page="4">${rect(464,854,48,57,"condenser-area")}</g>`;
-  systems += `<g class="system-area" role="button" tabindex="0" aria-label="Local previsto para evaporadora" data-title="Evaporadora de ar condicionado" data-description="Local previsto na folha 4; confirme instalação, dreno e medidas no imóvel." data-page="4">${rect(628,540,14,55,"evaporator-area")}</g>`;
+  systems += `<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para condensadora" data-title="Condensadora de ar condicionado" data-description="Local previsto na varanda pela folha 4. Preserve ventilação e acesso de manutenção." data-page="4">${rect(464,854,48,57,"condenser-area")}${systemAreaGlyph("condenser",464,854,48,57)}</g>`;
+  systems += `<g class="system-area" role="button" tabindex="0" aria-label="Local previsto para evaporadora" data-title="Evaporadora de ar condicionado" data-description="Local previsto na folha 4; confirme instalação, dreno e medidas no imóvel." data-page="4">${rect(628,540,14,55,"evaporator-area")}${systemAreaGlyph("evaporator",628,540,14,55)}</g>`;
   systems += line(257,687,257,742,"gas-line")+point(252,715,"G","gas","Tubulação de gás","A folha 4 alerta para tubulação de gás nesta parede. Não fure; confira o traçado real.",4);
   const drains = FINAL4.drains.map(([x,y,code,title,p])=>point(x,y,code,"drain",title,"Ponto indicado na folha técnica. Consulte o detalhe original; o trajeto não está desenhado aqui.",p)).join("");
   return `<svg xmlns="http://www.w3.org/2000/svg" class="final4-plan" viewBox="180 390 930 640" role="group" aria-label="Planta vetorial do final 4 comum com camadas selecionáveis">

@@ -12,8 +12,8 @@ const LEGENDA = [
   ["swatch masonry", "Alvenaria (não estrutural)"],
   ["swatch drywall", "Drywall"],
   ["swatch shaft", "Shaft / vazio hidráulico"],
-  ["swatch electric", "Ponto elétrico"],
-  ["swatch hydraulic", "Hidráulica"],
+  ["swatch electric", "Elétrica: veja os ícones"],
+  ["swatch hydraulic", "Vista hidráulica por ambiente"],
   ["swatch systems", "Ar, gás ou prumada"],
   ["swatch drains", "Dreno"],
   ["swatch areas", "Área aproximada"]
@@ -137,6 +137,16 @@ const SHAFTS = [[161,714,121,40],[772,352,39,125],[1201,351,30,119],[1212,600,32
 const LIGHTS = [[400,515],[734,515],[998,462],[1126,675],[857,795],[1126,936],[857,1070],[400,1070],[590,780],[334,780]];
 const OUTLETS = [[248,370],[499,370],[338,679],[514,679],[770,678],[1191,558],[1170,745],[1212,745],[1170,874],[1212,874],[1170,967],[1212,967],[1212,1028],[176,1056],[500,1229],[848,1229],[899,1229],[675,878],[514,898],[488,752]];
 const SWITCHES = [[248,402],[514,644],[667,581],[1026,567],[1132,478],[514,936],[708,875],[727,875],[898,1195],[1115,1068],[1115,1084],[453,751],[534,752]];
+// Símbolos adicionais da folha elétrica; coordenadas gráficas estimadas, sem alturas de instalação.
+const ELECTRIC_EXTRAS = [
+  [306,682,"tv","TV","Ponto de TV"],[538,1229,"tv","TV","Ponto de TV"],[812,1229,"tv","TV","Ponto de TV"],
+  [770,1229,"phone","TEL","Ponto de telefone"],[1052,752,"intercom","IF","Interfone"],
+  [1139,1079,"bell","CB","Campainha"],[1113,1130,"bell_button","BT","Botão da campainha"],
+  [1152,411,"sconce","AR","Arandela"]
+];
+const electricExtraDescription=(title)=>title==="Arandela"
+  ? "Iluminação de parede indicada na folha elétrica. Posição estimada; confirme a instalação, a tensão e o circuito no imóvel."
+  : `${title} indicado na folha elétrica. Posição estimada; confira o símbolo na folha original e a localização no imóvel.`;
 const $ = (selector) => document.querySelector(selector);
 const themeToggle = $("#theme-toggle");
 function applyTheme(theme,save=false){
@@ -251,8 +261,39 @@ const roomLabels = () => {
   ];
   return `<g id="room-labels">${rows.map(([x,y,lines])=>lines.map((t,i)=>`<text x="${x}" y="${yy(y)+(i-(lines.length-1)/2)*31}" class="room-label" text-anchor="middle">${t}</text>`).join("")).join('')}</g>`;
 };
+function pointGlyph(type,label) {
+  let shape;
+  if(type==="light")shape='<circle cy="-1" r="3"/><path d="M-3 2.5v2h6v-2M-2 6h4M0-8v2M-8-1h2M6-1h2M-6-6l1.5 1.5M6-6L4.5-4.5"/>';
+  else if(type==="outlet")shape='<rect x="-7" y="-7" width="14" height="14" rx="2"/><path d="M-3-3v4M3-3v4M-1 4h2"/>';
+  else if(type==="switch"&&label==="Q")shape='<rect x="-7" y="-7" width="14" height="14" rx="1"/><path d="M-4-3h8M-4 0h8M-4 3h8M-2-4v2M0-1v2M2 2v2"/>';
+  else if(type==="switch")shape='<rect x="-7" y="-7" width="14" height="14" rx="2"/><path d="M-3 3L3-3M-4 5h8"/>';
+  else if(type==="shower")shape='<path d="M-7-6h5v4h4M2-2c3 0 5 2 5 5H-3c0-3 2-5 5-5ZM-3 5v2M1 5v2M5 5v2"/>';
+  else if(type==="systems"&&label==="EX")shape='<circle r="7"/><circle r="1.5"/><path d="M1-1c3-5 6-3 4 0M1 1c5 3 3 6 0 4M-1 1c-3 5-6 3-4 0M-1-1c-5-3-3-6 0-4"/>';
+  else if(type==="systems"&&label==="C")shape='<rect x="-8" y="-6" width="16" height="12" rx="1"/><circle r="4"/><circle r="1"/><path d="M0-4v3M4 0H1M0 4V1M-4 0h3"/>';
+  else if(type==="tv")shape='<rect x="-7" y="-6" width="14" height="10" rx="1"/><path d="M0 4v3M-4 7h8M3-3h2"/>';
+  else if(type==="phone")shape='<path d="M-6-7c-1 6 5 13 11 14l2-3-4-3-2 2c-2-1-4-3-5-5l2-2-3-4Z"/>';
+  else if(type==="intercom")shape='<rect x="-6" y="-8" width="12" height="16" rx="2"/><path d="M-3-4h6M-3-1h6M-3 2h3"/><circle cx="3" cy="4" r="1"/>';
+  else if(type==="bell")shape='<path d="M-6 4h12c-2-2-2-4-2-6a4 4 0 0 0-8 0c0 2 0 4-2 6ZM-2 6a2 2 0 0 0 4 0M0-8v2"/>';
+  else if(type==="bell_button")shape='<circle r="7"/><circle r="3"/><path d="M0-3v6"/>';
+  else if(type==="sconce")shape='<path d="M-7-7V7M-7 0h6M-1 0l-3-4h8L1 0M0 2v4M-2 7h4"/>';
+  else if(type==="gas")shape='<path d="M0-8c2 4-1 5 2 8 1-2 2-2 2-4 4 5 3 11-4 12-6-1-8-7-4-11 0 3 1 4 2 4 2-2-1-5 2-9Z"/>';
+  else if(type==="drain")shape='<rect x="-7" y="-7" width="14" height="14" rx="1"/><path d="M-2-6V6M2-6V6M-6-2H6M-6 2H6"/>';
+  else if(type==="stack")shape=`<path d="M-6-7V7M6-7V7M-6-5H6M-6 5H6"/><text x="0" y="2.5" text-anchor="middle" stroke="none" style="font:700 6px Arial,sans-serif;fill:#fff6de">${label}</text>`;
+  else shape=`<text x="0" y="3" text-anchor="middle" stroke="none" style="font:700 7px Arial,sans-serif;fill:#fff6de">${label}</text>`;
+  const color=["outlet","switch","tv","phone","intercom","bell","bell_button","sconce"].includes(type)?"#bcf2ff":type==="drain"?"#ead1ff":type==="shower"||type==="gas"?"#ffe1d5":"#fff6de";
+  return `<g class="poi-glyph" aria-hidden="true" pointer-events="none" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${shape}</g>`;
+}
+function hydraulicViewGlyph() {
+  return '<g class="hydro-glyph" aria-hidden="true" pointer-events="none" fill="none" stroke="#e0f5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M-7-9h9l5 5v13H-7Z M2-9v5h5"/><path d="M0-3c-2 3-4 5-4 7a4 4 0 0 0 8 0c0-2-2-4-4-7Z"/></g>';
+}
+function systemAreaGlyph(kind,x,y,w,h) {
+  const shape=kind==="condenser"
+    ? '<rect x="-8" y="-7" width="16" height="14" rx="1"/><circle r="4"/><circle r="1"/><path d="M0-4v3M4 0H1M0 4V1M-4 0h3"/>'
+    : '<rect x="-9" y="-5" width="18" height="10" rx="2"/><path d="M-6 1h12M-5 4l-1 2M0 4v2M5 4l1 2"/>';
+  return `<g class="system-area-glyph" aria-hidden="true" pointer-events="none" transform="translate(${x+w/2} ${y+h/2})" fill="none" stroke="#fff9e8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${shape}</g>`;
+}
 function point(x,y,label,type,title,description,page) {
-  return `<g class="poi poi-${type}" role="button" tabindex="0" aria-label="${title}" data-title="${title}" data-description="${description}" data-page="${page}" transform="translate(${x} ${yy(y)})"><circle r="15" class="poi-hit"/><circle r="10" class="poi-disc"/><text text-anchor="middle" y="4.5">${label}</text></g>`;
+  return `<g class="poi poi-${type}" role="button" tabindex="0" aria-label="${title}" data-title="${title}" data-description="${description}" data-page="${page}" transform="translate(${x} ${yy(y)})"><circle r="16" class="poi-hit"/><circle r="12" class="poi-disc"/>${pointGlyph(type,label)}</g>`;
 }
 function areaMarkers() {
   return `<g id="layer-areas" class="plan-layer overlay-layer">${areaData().map(item=>{
@@ -266,6 +307,7 @@ const electricPoints = () => {
   let s = LIGHTS.map(([x,y]) => point(x,y,"✦","light","Iluminação de teto","Ponto indicado na folha elétrica. Confirme a tensão e o circuito na unidade.",2)).join('');
   s += OUTLETS.map(([x,y]) => point(x,y,"T","outlet","Tomada 220 V","Tomada 220 V conforme confirmação do proprietário e quadro elétrico. Posição gráfica aproximada; confira o circuito no imóvel.",2)).join('');
   s += SWITCHES.map(([x,y]) => point(x,y,"I","switch","Interruptor indicado","Interruptor representado na folha elétrica. Observe a faixa de segurança de 20 cm descrita na folha.",2)).join('');
+  s += ELECTRIC_EXTRAS.map(([x,y,kind,label,title])=>point(x,y,label,kind,title,electricExtraDescription(title),2)).join('');
   s += point(754,415,"!","shower","Chuveiro elétrico","Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito.",2);
   s += point(221,767,"!","shower","Chuveiro elétrico","Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito.",2);
   s += point(989,1244,"Q","switch","Quadro de luz e força","Não execute furos na região do quadro. Consulte também a folha 3.",3);
@@ -280,7 +322,7 @@ const hydraulicPoints = () => {
     [991,493,9,"Varanda"]
   ];
   return `<g id="layer-hydraulic" class="plan-layer overlay-layer">${zones.map(([x,y,p,title]) =>
-    `<g class="hydro-zone" role="button" tabindex="0" aria-label="Abrir vista hidráulica: ${title}" data-title="Vista hidráulica: ${title}" data-description="Veja a planta original para localizar os pontos. O trajeto das tubulações não aparece aqui." data-page="${p}" transform="translate(${x} ${yy(y)})"><circle r="48" class="zone-ring"/><circle r="21" class="zone-disc"/><text y="6" text-anchor="middle">H</text></g>`).join('')}</g>`;
+    `<g class="hydro-zone" role="button" tabindex="0" aria-label="Abrir vista hidráulica: ${title}" data-title="Vista hidráulica: ${title}" data-description="Veja a planta original para localizar os pontos. O trajeto das tubulações não aparece aqui." data-page="${p}" transform="translate(${x} ${yy(y)})"><circle r="48" class="zone-ring"/><circle r="21" class="zone-disc"/>${hydraulicViewGlyph()}</g>`).join('')}</g>`;
 };
 const systemsPoints = () => {
   let s = '';
@@ -290,8 +332,8 @@ const systemsPoints = () => {
     [1235,626,"E","Esgoto"],[1237,677,"G","Gás"]
   ];
   s += stacks.map(([x,y,code,title])=>point(x,y,code,"stack",title,"Prumada ou instalação indicada na folha 4. Não execute furos na região; consulte as vistas técnicas.",4)).join('');
-  s += `<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para condensadora" data-title="Condensadora de ar condicionado" data-description="Local previsto na folha 4. Preserve ventilação e acesso para manutenção." data-page="4">${rect(845,mirrored()?1068:403,38,99,"condenser-area")}</g>`;
-  s += `<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para evaporadora" data-title="Evaporadora de ar condicionado" data-description="Local previsto na folha 4; confirme instalação, dreno e medidas no imóvel." data-page="4">${rect(692,mirrored()?829:715,99,26,"evaporator-area")}</g>`;
+  s += `<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para condensadora" data-title="Condensadora de ar condicionado" data-description="Local previsto na folha 4. Preserve ventilação e acesso para manutenção." data-page="4">${rect(845,mirrored()?1068:403,38,99,"condenser-area")}${systemAreaGlyph("condenser",845,mirrored()?1068:403,38,99)}</g>`;
+  s += `<g class="system-area" role="button" tabindex="0" aria-label="Área prevista para evaporadora" data-title="Evaporadora de ar condicionado" data-description="Local previsto na folha 4; confirme instalação, dreno e medidas no imóvel." data-page="4">${rect(692,mirrored()?829:715,99,26,"evaporator-area")}${systemAreaGlyph("evaporator",692,mirrored()?829:715,99,26)}</g>`;
   s += line(1225,yy(692),1225,yy(765),"gas-line");
   s += point(1204,727,"!","gas","Tubulação de gás","A folha 4 alerta sobre tubulação de gás na parede. Não fure; confirme a localização real e consulte as vistas.",4);
   return `<g id="layer-systems" class="plan-layer overlay-layer">${s}</g>`;
@@ -337,6 +379,7 @@ function get3DDots() {
     ...make(LIGHTS,"electric",""),
     ...make(OUTLETS,"electric","T"),
     ...make(SWITCHES,"electric","I"),
+    ...ELECTRIC_EXTRAS.map(([x,y,kind,label,title])=>({x,y,kind,layer:"electric",label,title,description:electricExtraDescription(title),page:2})),
     {x:754,y:415,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito no imóvel.",page:2},
     {x:221,y:767,layer:"electric",label:"!",title:"Chuveiro elétrico",description:"Ponto de chuveiro indicado como 220 V na folha elétrica. Confirme instalação e circuito no imóvel.",page:2},
     {x:989,y:1244,layer:"electric",label:"Q",title:"Quadro de luz e força",description:"Não execute furos na região do quadro. Consulte também a folha 3 e confira a posição real.",page:3},
@@ -391,6 +434,9 @@ function render3D() {
   state.hit3d=result?.hits||[];
   state.surfaceHits3d=result?.surfaces||[];
 }
+function syncPositionNote(){
+  $("#position-note").hidden=state.mode!=="3d"||!["electric","hydraulic","systems","drains"].some(layer=>state.layers[layer]);
+}
 function syncMode() {
   const available = true;
   $("#cooling-toggle").disabled = !available;
@@ -401,6 +447,7 @@ function syncMode() {
   $("#plan-stage").hidden = !available || state.mode!=="2d";
   $("#plan-3d").hidden = !available || state.mode!=="3d";
   $("#gesture-hint").hidden = !available || state.mode!=="3d";
+  syncPositionNote();
   $("#map-status").textContent = !available ? "CONSULTA PARCIAL" : state.mode==="3d" ? "VISTA 3D" : "PLANTA 2D";
   $("#map-disclaimer").textContent = !available
     ? "Cotas de arquitetura disponíveis. Demais camadas técnicas pendentes; confira medidas no imóvel."
@@ -903,12 +950,27 @@ function applyLayers() {
   renderDimensions();
   renderAreas();
   renderManualTips();
+  syncPositionNote();
   render3D();
 }
 function renderLayerControls() {
   $("#layer-list").innerHTML = LAYERS.map(layer => `<label class="layer-row"><span class="layer-color" style="--layer-color:${layer.color}"></span><span class="layer-copy"><strong>${layer.name}</strong><small>${layer.detail}</small></span><input type="checkbox" data-layer="${layer.id}" ${state.layers[layer.id] ? "checked" : ""}><span class="switch" aria-hidden="true"></span></label>`).join("");
   $("#layer-list").addEventListener("change", e => { if (e.target.matches("input[data-layer]")) { state.layers[e.target.dataset.layer] = e.target.checked; applyLayers(); window.rivieraAnalytics?.track("layer_toggled",{plan_layer:e.target.dataset.layer,enabled:e.target.checked?"yes":"no"}); } });
-  $("#legend").innerHTML = LEGENDA.map(([cls,name])=>`<div><i class="${cls}"></i><span>${name}</span></div>`).join("");
+  const iconExamples=[
+    ["light","✦","Luz de teto"],["outlet","T","Tomada"],["switch","I","Interruptor"],
+    ["shower","!","Chuveiro"],["switch","Q","Quadro elétrico"],["systems","C","Ar-condicionado"],
+    ["systems","EX","Exaustor"],["tv","TV","TV"],["phone","TEL","Telefone"],
+    ["intercom","IF","Interfone"],["bell","CB","Campainha"],["bell_button","BT","Botão da campainha"],
+    ["sconce","AR","Arandela"],["gas","G","Gás"],["stack","AP","Prumada"],["drain","D","Dreno"]
+  ];
+  const iconKey=iconExamples.map(([type,label,name])=>{
+    const electric=["outlet","switch","tv","phone","intercom","bell","bell_button","sconce"].includes(type);
+    const fill=electric?"#133542":type==="drain"?"#4d2857":type==="shower"||type==="gas"?"#5c251f":type==="light"?"#674d24":"#543421";
+    const stroke=electric?"#61c9ec":type==="drain"?"#ca82e7":type==="shower"||type==="gas"?"#ff8469":type==="light"?"#ffdd83":"#e99559";
+    return `<span class="icon-key-item"><svg viewBox="-13 -13 26 26" aria-hidden="true"><circle r="12" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>${pointGlyph(type,label)}</svg><span>${name}</span></span>`;
+  }).join("");
+  $("#legend").innerHTML = LEGENDA.map(([cls,name])=>`<div><i class="${cls}"></i><span>${name}</span></div>`).join("")+
+    `<details class="icon-key"><summary>O que significam os ícones</summary><div class="icon-key-grid">${iconKey}<span class="icon-key-item"><svg viewBox="-13 -13 26 26" aria-hidden="true"><circle r="12" fill="#1a3e69" stroke="#88c2ff" stroke-width="1.5"/><g transform="scale(.75)">${hydraulicViewGlyph()}</g></svg><span>Vista hidráulica</span></span></div><p>Os símbolos mostram locais aproximados. Abra o detalhe e confira a planta original.</p></details>`;
 }
 function renderSources() {
   $("#source-list").innerHTML = SHEETS.map(([page,title,detail])=>`<a href="${docUrl(page)}" target="_blank" rel="noopener"><b>${String(page).padStart(2,"0")}</b><span><strong>${title}</strong><small>${detail}</small></span><i aria-hidden="true">↗</i></a>`).join("");
@@ -1194,7 +1256,7 @@ function pick3D(x,y){
     ? x>=item.box.x&&x<=item.box.x+item.box.w&&y>=item.box.y&&y<=item.box.y+item.box.h
     : Math.hypot(item.x-x,item.y-y)<=item.r
   ).sort((a,b)=>(b.priority||0)-(a.priority||0)||Math.hypot(a.x-x,a.y-y)-Math.hypot(b.x-x,b.y-y))[0];
-  if(dot)return {dot:dot.dot,x:dot.x,y:dot.y};
+  if(dot)return {dot:dot.dot,cluster:dot.cluster,x:dot.x,y:dot.y};
   for(let i=(state.surfaceHits3d||[]).length-1;i>=0;i--){
     const item=state.surfaceHits3d[i];
     if(insidePolygon(x,y,item.points))return {surface:item.surface,x,y};
@@ -1205,6 +1267,17 @@ function open3DAt(clientX,clientY){
   const bounds=$("#plan-3d").getBoundingClientRect();
   const hit=pick3D(clientX-bounds.left,clientY-bounds.top);
   if(!hit)return false;
+  if(hit.cluster){
+    const previousZoom=state.view3d.zoom;
+    const nextZoom=Math.max(1.9,previousZoom);
+    const ratio=nextZoom/previousZoom;
+    state.view3d.panX=ratio*(state.view3d.panX+bounds.width/2-hit.x);
+    state.view3d.panY=ratio*(state.view3d.panY+bounds.height/2-hit.y);
+    state.view3d.zoom=nextZoom;
+    updateTransform();
+    last3DOpen={time:performance.now(),x:clientX,y:clientY};
+    return true;
+  }
   const detail=hit.dot?detailFor3DDot(hit.dot):detailForSurface(hit.surface);
   if(!detail)return false;
   openTechPopover(detail,{x:bounds.left+hit.x,y:bounds.top+hit.y});

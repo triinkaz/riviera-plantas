@@ -160,6 +160,128 @@ function drawApartment3D(canvas, options) {
   const hits = [];
   const compact=width<=660;
   const occupiedBadges=[];
+  const kindForDot=(dot)=>{
+    const title=(dot.title||"").toLowerCase();
+    const declared=String(dot.kind||"").toLowerCase().replaceAll("-","_");
+    if(["tv","phone","intercom","bell","bell_button","sconce"].includes(declared))return declared;
+    if(dot.layer==="hydraulic")return "water";
+    if(dot.layer==="drains")return "drain";
+    if(title.includes("arandela"))return "sconce";
+    if(title.includes("interfone"))return "intercom";
+    if(title.includes("botão")&&title.includes("campainha"))return "bell_button";
+    if(title.includes("campainha"))return "bell";
+    if(title.includes("telefone"))return "phone";
+    if(title.includes("tv")||title.includes("televisão"))return "tv";
+    if(title.includes("chuveiro"))return "shower";
+    if(title.includes("quadro"))return "panel";
+    if(title.includes("exaustor"))return "exhaust";
+    if(title.includes("condensadora")||dot.label==="C")return "condenser";
+    if(title.includes("evaporadora")||dot.label==="EV")return "ac";
+    if(title.includes("gás")||dot.label==="G")return "gas";
+    if(dot.layer==="systems")return "stack";
+    if(dot.label==="T")return "outlet";
+    if(dot.label==="I")return "switch";
+    return "light";
+  };
+  const wallRects=[...options.structural,...(options.masonry||[]),...options.drywall].map(mirrorRect);
+  const shaftRects=options.shafts.map(mirrorRect);
+  const nearestEdge=(x,y,rectangles)=>{
+    let best=null;
+    rectangles.forEach(([rx,ry,rw,rh])=>{
+      const edges=[
+        [rx,Math.max(ry,Math.min(ry+rh,y))],
+        [rx+rw,Math.max(ry,Math.min(ry+rh,y))],
+        [Math.max(rx,Math.min(rx+rw,x)),ry],
+        [Math.max(rx,Math.min(rx+rw,x)),ry+rh]
+      ];
+      edges.forEach(([px,py])=>{
+        const distance=Math.hypot(px-x,py-y);
+        if(!best||distance<best.distance)best={x:px,y:py,distance};
+      });
+    });
+    return best;
+  };
+  // As alturas abaixo são unidades do desenho, não cotas de instalação.
+  const heightForKind={outlet:42,switch:88,shower:112,panel:91,ac:118,gas:76,stack:78,condenser:18,drain:4,water:8,light:164,exhaust:164,
+    tv:58,phone:55,intercom:98,bell:118,bell_button:88,sconce:126};
+  const wallKinds=new Set(["outlet","switch","shower","panel","ac","gas","tv","phone","intercom","bell","bell_button","sconce"]);
+  const priorityForKind={shower:4,ac:4,condenser:4,panel:4,gas:3,switch:3,outlet:3,tv:3,phone:3,intercom:3,bell:3,bell_button:3,sconce:3,
+    water:2,drain:2,stack:2,light:1,exhaust:1};
+  const drawIcon=(kind,x,y,r,color)=>{
+    context.save();
+    context.translate(x,y);
+    context.globalAlpha=Math.max(.7,options.opacity);
+    context.fillStyle=light?"#fffdf8f2":"#15130ff2";
+    context.strokeStyle=color;
+    context.lineWidth=1.8;
+    context.beginPath();
+    if(typeof context.roundRect==="function")context.roundRect(-r,-r,r*2,r*2,4);
+    else context.rect(-r,-r,r*2,r*2);
+    context.fill();context.stroke();
+    context.strokeStyle=light?"#20343b":"#f6edda";
+    context.fillStyle=light?"#20343b":"#f6edda";
+    context.lineWidth=1.5;
+    context.lineCap="round";
+    context.lineJoin="round";
+    if(kind==="outlet"){
+      context.strokeRect(-6,-6,12,12);
+      context.beginPath();context.moveTo(-2,-2);context.lineTo(-2,1);context.moveTo(2,-2);context.lineTo(2,1);context.stroke();
+      context.beginPath();context.arc(0,4,1,0,Math.PI*2);context.fill();
+    }else if(kind==="switch"){
+      context.strokeRect(-6,-6,12,12);
+      context.beginPath();context.moveTo(-3,3);context.lineTo(3,-3);context.stroke();
+      context.beginPath();context.arc(-3,3,1.3,0,Math.PI*2);context.arc(3,-3,1.3,0,Math.PI*2);context.fill();
+    }else if(kind==="tv"){
+      context.strokeRect(-7,-5,14,9);
+      context.beginPath();context.moveTo(0,4);context.lineTo(0,6);context.moveTo(-3,6);context.lineTo(3,6);context.stroke();
+    }else if(kind==="phone"){
+      context.beginPath();context.moveTo(-6,-4);context.lineTo(-3,-6);context.lineTo(-1,-3);
+      context.bezierCurveTo(-1,0,1,2,3,2);context.lineTo(5,0);context.lineTo(7,3);context.lineTo(4,6);
+      context.bezierCurveTo(-1,6,-6,1,-6,-4);context.stroke();
+    }else if(kind==="intercom"){
+      context.strokeRect(-5,-7,10,14);
+      context.beginPath();context.moveTo(-2,-4);context.lineTo(2,-4);context.moveTo(-2,-1);context.lineTo(2,-1);context.stroke();
+      context.beginPath();context.arc(0,4,1.3,0,Math.PI*2);context.fill();
+    }else if(kind==="bell"){
+      context.beginPath();context.moveTo(-5,3);context.lineTo(-3,1);context.lineTo(-3,-2);context.arc(0,-2,3,Math.PI,Math.PI*2);context.lineTo(3,1);context.lineTo(5,3);context.closePath();context.stroke();
+      context.beginPath();context.arc(0,5,1,0,Math.PI*2);context.fill();
+    }else if(kind==="bell_button"){
+      context.strokeRect(-6,-6,12,12);
+      context.beginPath();context.arc(0,0,3,0,Math.PI*2);context.stroke();
+    }else if(kind==="sconce"){
+      context.beginPath();context.moveTo(-6,-6);context.lineTo(-6,6);context.moveTo(-6,0);context.lineTo(-2,0);context.moveTo(-2,-4);context.lineTo(5,-1);context.lineTo(-2,2);context.closePath();context.stroke();
+      context.beginPath();context.moveTo(5,-5);context.lineTo(7,-6);context.moveTo(5,3);context.lineTo(7,5);context.stroke();
+    }else if(kind==="shower"){
+      context.beginPath();context.arc(0,-2,5,Math.PI,Math.PI*2);context.moveTo(-5,-2);context.lineTo(5,-2);
+      [-4,0,4].forEach(dx=>{context.moveTo(dx,1);context.lineTo(dx-1,5);});context.stroke();
+    }else if(kind==="light"){
+      context.beginPath();context.arc(0,0,3,0,Math.PI*2);context.stroke();
+      for(let i=0;i<8;i++){const angle=i*Math.PI/4;context.beginPath();context.moveTo(Math.cos(angle)*5,Math.sin(angle)*5);context.lineTo(Math.cos(angle)*7,Math.sin(angle)*7);context.stroke();}
+    }else if(kind==="panel"){
+      context.strokeRect(-6,-7,12,14);
+      [-3,1,5].forEach(dy=>{context.beginPath();context.moveTo(-3,dy);context.lineTo(3,dy);context.stroke();});
+    }else if(kind==="ac"){
+      context.strokeRect(-8,-5,16,10);
+      [-2,1,4].forEach(dy=>{context.beginPath();context.moveTo(-5,dy);context.lineTo(5,dy);context.stroke();});
+    }else if(kind==="condenser"||kind==="exhaust"){
+      context.strokeRect(-7,-7,14,14);
+      context.beginPath();context.arc(0,0,5,0,Math.PI*2);context.stroke();
+      for(let i=0;i<4;i++){const angle=i*Math.PI/2;context.beginPath();context.moveTo(0,0);context.lineTo(Math.cos(angle)*4,Math.sin(angle)*4);context.stroke();}
+      context.beginPath();context.arc(0,0,1,0,Math.PI*2);context.fill();
+    }else if(kind==="water"){
+      context.strokeRect(-6,-7,12,14);
+      context.beginPath();context.moveTo(0,-4);context.bezierCurveTo(4,0,4,3,0,4);context.bezierCurveTo(-4,3,-4,0,0,-4);context.stroke();
+    }else if(kind==="drain"){
+      context.strokeRect(-6,-6,12,12);
+      [-2,2].forEach(dx=>{context.beginPath();context.moveTo(dx,-5);context.lineTo(dx,5);context.stroke();});
+    }else if(kind==="gas"){
+      context.beginPath();context.moveTo(0,-7);context.bezierCurveTo(5,-3,3,0,5,2);context.bezierCurveTo(6,6,2,7,0,7);context.bezierCurveTo(-5,7,-7,3,-4,-1);context.bezierCurveTo(-2,1,-1,0,0,-7);context.stroke();
+    }else{
+      context.strokeRect(-4,-7,8,14);
+      context.beginPath();context.moveTo(0,-5);context.lineTo(0,4);context.moveTo(-3,2);context.lineTo(0,5);context.lineTo(3,2);context.stroke();
+    }
+    context.restore();
+  };
   const overlaps=(a,b,pad=5)=>a.x<b.x+b.w+pad&&a.x+a.w+pad>b.x&&a.y<b.y+b.h+pad&&a.y+a.h+pad>b.y;
   const placeMeasure=(cx,cy,w,h,occupied,minY=8,bottom=8)=>{
     const offsets=[[0,0],[0,-52],[0,52],[-115,0],[115,0],[-115,-52],[115,-52],[-115,52],[115,52],[0,-104],[0,104]];
@@ -174,34 +296,108 @@ function drawApartment3D(canvas, options) {
     });
     return chosen;
   };
-  const visibleDots=options.dots.filter(dot=>options.layers[dot.layer]).map(dot=>{
-    const [sx,sy] = project([dot.x,mirrorY(dot.y),18]);
-    const radius = dot.layer === "hydraulic" ? 10 : 6;
-    hits.push({x:sx,y:sy,r:Math.max(radius+7,14),priority:3,dot});
-    occupiedBadges.push({x:sx-radius-4,y:sy-radius-4,w:(radius+4)*2,h:(radius+4)*2});
-    return {dot,sx,sy,radius};
-  });
-  const drawVisibleDots=()=>visibleDots.forEach(({dot,sx,sy,radius})=>{
-    context.globalAlpha = options.opacity;
-    context.beginPath();
-    context.arc(sx,sy,radius+4,0,Math.PI*2);
-    context.fillStyle = "#0e0d0bd9";
-    context.fill();
-    context.beginPath();
-    context.arc(sx,sy,radius,0,Math.PI*2);
-    context.fillStyle = colors[dot.layer];
-    context.fill();
-    context.strokeStyle = "#fff3d7";
-    context.lineWidth = 1.2;
-    context.stroke();
-    if (dot.label) {
-      context.fillStyle = "#0c0b09";
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.font = "bold 7px Arial";
-      context.fillText(dot.label,sx,sy+.5);
+  const preparedDots=options.dots.filter(dot=>options.layers[dot.layer]).map(dot=>{
+    const kind=kindForDot(dot);
+    const originalX=dot.x,originalY=mirrorY(dot.y);
+    let anchorX=originalX,anchorY=originalY;
+    const nearby=nearestEdge(originalX,originalY,kind==="stack"?shaftRects:wallRects);
+    const mounted=!!nearby&&nearby.distance<=(kind==="stack"?95:115)&&(kind==="stack"||wallKinds.has(kind));
+    if(mounted){
+      anchorX=nearby.x;anchorY=nearby.y;
+      if(nearby.distance>2){anchorX+=(originalX-nearby.x)/nearby.distance*5;anchorY+=(originalY-nearby.y)/nearby.distance*5;}
     }
-    context.globalAlpha = 1;
+    // Sem uma face próxima, o ponto permanece uma referência no piso, sem sugerir posição de instalação.
+    const referenceHeight=!mounted&&(wallKinds.has(kind)||kind==="stack")?18:(heightForKind[kind]||18);
+    const [anchorScreenX,anchorScreenY]=project([anchorX,anchorY,referenceHeight]);
+    return {dot,kind,originalX,originalY,anchorScreenX,anchorScreenY};
+  }).sort((a,b)=>(priorityForKind[b.kind]||1)-(priorityForKind[a.kind]||1));
+  const groupOverview=compact&&zoom<1.7&&preparedDots.length>24;
+  const soloKinds=new Set(["shower","ac","condenser","panel","gas"]);
+  const groups=[];
+  preparedDots.forEach(item=>{
+    const canJoin=groupOverview&&!soloKinds.has(item.kind);
+    const group=canJoin?groups.find(candidate=>candidate.canJoin&&candidate.members.length<10&&
+      Math.hypot(candidate.anchorScreenX-item.anchorScreenX,candidate.anchorScreenY-item.anchorScreenY)<38&&
+      Math.hypot(candidate.originalX-item.originalX,candidate.originalY-item.originalY)<125):null;
+    if(group){
+      const n=group.members.length;
+      if(group.layer!==item.dot.layer)group.layer="mixed";
+      group.anchorScreenX=(group.anchorScreenX*n+item.anchorScreenX)/(n+1);
+      group.anchorScreenY=(group.anchorScreenY*n+item.anchorScreenY)/(n+1);
+      group.originalX=(group.originalX*n+item.originalX)/(n+1);
+      group.originalY=(group.originalY*n+item.originalY)/(n+1);
+      group.members.push(item);
+    }else groups.push({layer:item.dot.layer,canJoin,members:[item],originalX:item.originalX,originalY:item.originalY,
+      anchorScreenX:item.anchorScreenX,anchorScreenY:item.anchorScreenY});
+  });
+  const visualItems=groups.map(group=>{
+    if(group.members.length>1)return {cluster:{layer:group.layer,count:group.members.length,dots:group.members.map(item=>item.dot)},
+      radius:14,anchorScreenX:group.anchorScreenX,anchorScreenY:group.anchorScreenY};
+    const item=group.members[0];
+    const radius=compact?(item.kind==="outlet"||item.kind==="switch"||item.kind==="tv"||item.kind==="phone"?9:
+      ["light","stack","water","drain","exhaust","bell","bell_button","sconce","intercom"].includes(item.kind)?8:10):preparedDots.length>45?10:11;
+    return {...item,radius};
+  });
+  const dotPositions=[];
+  const offsets=[[0,0],[0,-20],[20,0],[-20,0],[0,20],[20,-20],[-20,-20],[20,20],[-20,20],
+    [0,-40],[40,0],[-40,0],[0,40],[40,-20],[-40,-20],[40,20],[-40,20],
+    [20,-40],[-20,-40],[20,40],[-20,40],[40,-40],[-40,-40],[40,40],[-40,40],
+    [0,-60],[60,0],[-60,0],[0,60]];
+  const visibleDots=visualItems.map(item=>{
+    const {radius,anchorScreenX,anchorScreenY}=item;
+    let best=null,bestScore=Infinity;
+    offsets.forEach(([dx,dy])=>{
+      const x=anchorScreenX+dx,y=anchorScreenY+dy;
+      const outside=x<radius+2||x>width-radius-2||y<radius+2||y>height-radius-2;
+      const clashes=dotPositions.reduce((count,used)=>count+(Math.hypot(x-used.x,y-used.y)<radius+used.radius+3?1:0),0);
+      const score=(outside?10000:0)+clashes*1000+Math.hypot(dx,dy);
+      if(score<bestScore){bestScore=score;best={x,y};}
+    });
+    const sx=best.x,sy=best.y;
+    dotPositions.push({x:sx,y:sy,radius});
+    hits.push(item.cluster?{x:sx,y:sy,r:20,priority:4,cluster:item.cluster}:
+      {x:sx,y:sy,r:Math.max(radius+5,16),priority:3,dot:item.dot});
+    occupiedBadges.push({x:sx-radius-2,y:sy-radius-2,w:(radius+2)*2,h:(radius+2)*2});
+    return {...item,sx,sy};
+  });
+  const drawCluster=(cluster,x,y)=>{
+    context.save();context.translate(x,y);context.globalAlpha=Math.max(.8,options.opacity);
+    context.fillStyle=light?"#fffdf8f2":"#15130ff2";
+    context.strokeStyle=colors[cluster.layer]||"#b18a4d";context.lineWidth=2;
+    context.beginPath();
+    if(typeof context.roundRect==="function")context.roundRect(-17,-12,34,24,6);
+    else context.rect(-17,-12,34,24);
+    context.fill();context.stroke();
+    context.strokeStyle=light?"#20343b":"#f6edda";context.fillStyle=light?"#20343b":"#f6edda";
+    context.lineWidth=1.5;context.lineCap="round";context.lineJoin="round";
+    if(cluster.layer==="electric"){
+      context.beginPath();context.moveTo(-9,-8);context.lineTo(-13,0);context.lineTo(-8,0);context.lineTo(-11,8);context.lineTo(-4,-2);context.lineTo(-9,-2);context.closePath();context.fill();
+    }else if(cluster.layer==="hydraulic"){
+      context.strokeRect(-14,-8,12,16);
+      context.beginPath();context.moveTo(-8,-5);context.bezierCurveTo(-3,1,-4,5,-8,5);context.bezierCurveTo(-12,5,-13,1,-8,-5);context.stroke();
+    }else if(cluster.layer==="drains"){
+      context.strokeRect(-14,-7,12,14);
+      context.beginPath();context.moveTo(-10,-6);context.lineTo(-10,6);context.moveTo(-6,-6);context.lineTo(-6,6);context.stroke();
+    }else if(cluster.layer==="mixed"){
+      const stripes=["electric","hydraulic","drains","systems"];
+      stripes.forEach((layer,index)=>{context.fillStyle=colors[layer]||"#b18a4d";context.fillRect(-13+index*3,-7,2,14);});
+      context.fillStyle=light?"#20343b":"#f6edda";
+    }else{
+      context.strokeRect(-12,-8,8,16);
+      context.beginPath();context.moveTo(-8,-6);context.lineTo(-8,6);context.stroke();
+    }
+    context.font="bold 11px Arial";context.textAlign="center";context.textBaseline="middle";
+    context.fillText(String(cluster.count),8,0);
+    context.restore();
+  };
+  const drawVisibleDots=()=>visibleDots.forEach(item=>{
+    const {sx,sy,anchorScreenX,anchorScreenY}=item;
+    if(Math.hypot(sx-anchorScreenX,sy-anchorScreenY)>3){
+      context.save();context.globalAlpha=.65;context.strokeStyle=colors[item.cluster?.layer||item.dot.layer]||"#b18a4d";context.lineWidth=1;
+      context.beginPath();context.moveTo(anchorScreenX,anchorScreenY);context.lineTo(sx,sy);context.stroke();context.restore();
+    }
+    if(item.cluster)drawCluster(item.cluster,sx,sy);
+    else drawIcon(item.kind,sx,sy,item.radius,colors[item.dot.layer]);
   });
   if (options.cooling && options.coolingOutline) {
     const zone=options.coolingOutline.map(([x,y])=>[x,mirrorY(y),4]);
