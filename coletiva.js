@@ -98,28 +98,69 @@
   if(params.get("view")==="3d")back.searchParams.set("view","3d");
   document.querySelectorAll("#return-top,#return-bottom").forEach(link=>link.href=back.href);
   if(chosenFinal)document.getElementById("collective-final").textContent=`Final ${chosenFinal} selecionado`;
-  document.querySelectorAll("[data-collective-link]").forEach(link=>{
-    const id=link.dataset.collectiveLink;
+  const selectedServices=new Set();
+  const selectButtons=new Map();
+  const selectionBar=document.getElementById("collective-selection-bar");
+  const selectionTotal=document.getElementById("collective-selection-total");
+  const selectionNames=document.getElementById("collective-selection-names");
+  const selectionContinue=document.getElementById("collective-selection-continue");
+  function formLinkFor(ids){
     const url=new URL(formUrl);
     url.searchParams.set("usp","pp_url");
-    url.searchParams.set("entry.1183952461",services[id]);
+    ids.forEach(id=>url.searchParams.append("entry.1183952461",services[id]));
     if(chosenFinal)url.searchParams.set("entry.1242273522",chosenFinal);
-    link.href=url.href;
-    link.target="_blank";
-    link.rel="noopener";
-    if(!link.hasAttribute("aria-label"))link.setAttribute("aria-label",`${services[id]}; abre o Google Formulários em nova aba`);
-    link.addEventListener("click",()=>window.rivieraAnalytics?.track("collective_form_open",{service_id:id}));
+    return url.href;
+  }
+  function updateSelection(){
+    selectButtons.forEach((button,id)=>{
+      const selected=selectedServices.has(id);
+      const card=button.closest("[data-collective-card]");
+      card.classList.toggle("is-picked",selected);
+      button.setAttribute("aria-pressed",String(selected));
+      if(card.tagName==="ARTICLE"){
+        button.textContent=selected?"✓ Selecionado · remover":"+ Adicionar à cotação";
+        button.setAttribute("aria-label",`${selected?"Remover":"Adicionar"} ${services[id]} ${selected?"da":"à"} cotação`);
+      }else{
+        button.querySelector("span[aria-hidden]").textContent=selected?"✓":"+";
+      }
+    });
+    const count=selectedServices.size;
+    selectionBar.hidden=count===0;
+    document.body.classList.toggle("has-collective-selection",count>0);
+    selectionTotal.textContent=`${count} ${count===1?"serviço selecionado":"serviços selecionados"}`;
+    const names=[...selectedServices].map(id=>services[id]);
+    selectionNames.textContent=names.length>2?`${names.slice(0,2).join(" · ")} · +${names.length-2}`:names.join(" · ");
+    selectionContinue.textContent=`Continuar com ${count} ${count===1?"serviço":"serviços"} ↗`;
+    selectionContinue.href=formLinkFor([...selectedServices]);
+  }
+  document.querySelectorAll("[data-collective-link]").forEach(link=>{
+    const id=link.dataset.collectiveLink;
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="collective-select";
+    button.dataset.collectiveSelect=id;
+    while(link.firstChild)button.append(link.firstChild);
+    link.replaceWith(button);
+    selectButtons.set(id,button);
+    button.addEventListener("click",()=>{
+      if(selectedServices.has(id))selectedServices.delete(id);
+      else selectedServices.add(id);
+      updateSelection();
+    });
   });
   if(chosenService){
     const card=document.querySelector(`[data-collective-card="${chosenService}"]`);
+    selectedServices.add(chosenService);
     card.classList.add("is-selected");
     const more=card.closest("details");
     if(more)more.open=true;
     const selected=document.createElement("span");
     selected.className=more?"collective-mini-selected":"collective-selected";
-    selected.textContent=more?"Selecionado na planta":"Você estava vendo este serviço na planta";
+    selected.textContent=more?"Visto na planta":"Você estava vendo este serviço na planta";
     card.prepend(selected);
   }
+  updateSelection();
+  selectionContinue.addEventListener("click",()=>window.rivieraAnalytics?.track("collective_form_open",{service_count:selectedServices.size}));
   const themeButton=document.getElementById("theme-toggle");
   function syncTheme(){
     const dark=document.documentElement.dataset.theme==="dark";

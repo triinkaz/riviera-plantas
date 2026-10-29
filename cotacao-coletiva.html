@@ -10,9 +10,9 @@
   <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
   <link rel="stylesheet" href="styles.css?v=cooktop-brinde-1">
   <link rel="stylesheet" href="analytics.css?v=1">
-  <link rel="stylesheet" href="coletiva.css?v=3">
+  <link rel="stylesheet" href="coletiva.css?v=4">
   <script src="analytics.js?v=1" defer></script>
-  <script src="coletiva.js?v=3" defer></script>
+  <script src="coletiva.js?v=4" defer></script>
 </head>
 <body class="collective-page">
   <a class="skip-link" href="#conteudo">Ir para os serviços</a>
@@ -25,11 +25,11 @@
     <section class="collective-hero" aria-labelledby="collective-title">
       <span class="section-kicker">COTAÇÃO COLETIVA · RIVIERA</span>
       <h1 id="collective-title">Vai reformar? Vamos cotar juntos.</h1>
-      <p>Escolha o serviço que você precisa. Vamos reunir moradores interessados e buscar propostas de empresas de Caraguatatuba.</p>
+      <p>Marque todos os serviços que você precisa. Depois, informe seu contato uma vez só. Vamos reunir moradores e buscar propostas em Caraguatatuba.</p>
       <div class="collective-hero-meta"><span id="collective-final">Seu final será informado no formulário.</span><span>Sem compromisso de contratar</span></div>
     </section>
     <section class="collective-content" aria-labelledby="services-title">
-      <div class="collective-section-heading"><div><span class="section-kicker">01 / ESCOLHA O SERVIÇO</span><h2 id="services-title">O que você pretende fazer?</h2></div><p>Reunimos os pedidos que apareceram nas conversas dos moradores. Preço e desconto ainda não foram definidos.</p></div>
+      <div class="collective-section-heading"><div><span class="section-kicker">01 / ESCOLHA OS SERVIÇOS</span><h2 id="services-title">O que você pretende fazer?</h2></div><p>Escolha quantos serviços quiser. Preço e desconto ainda não foram definidos.</p></div>
       <p id="collective-count-status" class="collective-count-status" role="status">Carregando interessados por serviço…</p>
       <div class="collective-cards">
         <article class="collective-card collective-card--focus" data-collective-card="ar">
@@ -81,11 +81,12 @@
           </ul></section>
         </div>
       </details>
-      <p class="collective-other-note">Quer entrar na contagem de mais de um serviço? Envie um formulário para cada um. Você também pode descrever outros pedidos no formulário.</p>
+      <p class="collective-other-note">Não achou o serviço que precisa? Você pode descrevê-lo no formulário.</p>
       <p class="collective-privacy-note">Apenas os totais aparecem no site. Seu contato fica privado e não é mostrado a outros moradores. <a href="privacidade.html#cotacao-coletiva">Como usamos seus dados ↗</a></p>
     </section>
-    <section class="collective-how" aria-labelledby="how-title"><span class="section-kicker">02 / COMO FUNCIONA</span><h2 id="how-title">Você decide quando houver proposta.</h2><ol><li><strong>Mostre interesse</strong><span>Escolha o serviço e deixe um contato para retorno.</span></li><li><strong>Buscamos condições</strong><span>Reunimos pedidos e conversamos com empresas locais.</span></li><li><strong>Compare e escolha</strong><span>Se houver proposta concreta, enviamos os detalhes. Você decide se quer contratar.</span></li></ol><p>Esta iniciativa é independente do condomínio. A proposta de uma empresa não dispensa conferência de medidas, análise técnica nem as exigências de reforma aplicáveis.</p></section>
+    <section class="collective-how" aria-labelledby="how-title"><span class="section-kicker">02 / COMO FUNCIONA</span><h2 id="how-title">Você decide quando houver proposta.</h2><ol><li><strong>Mostre interesse</strong><span>Marque os serviços e informe seu contato uma vez.</span></li><li><strong>Buscamos condições</strong><span>Reunimos pedidos e conversamos com empresas locais.</span></li><li><strong>Compare e escolha</strong><span>Se houver proposta concreta, enviamos os detalhes. Você decide se quer contratar.</span></li></ol><p>Esta iniciativa é independente do condomínio. A proposta de uma empresa não dispensa conferência de medidas, análise técnica nem as exigências de reforma aplicáveis.</p></section>
   </main>
+  <aside id="collective-selection-bar" class="collective-selection-bar" aria-label="Serviços escolhidos" hidden><div class="collective-selection-copy"><strong id="collective-selection-total"></strong><small id="collective-selection-names"></small></div><a id="collective-selection-continue" href="https://docs.google.com/forms/d/e/1FAIpQLSdf92pmIKpQGUMzGYDpxC2nkZ5G6W54YkaZIYAsy1__SufEPA/viewform" target="_blank" rel="noopener">Continuar ↗</a></aside>
   <footer class="collective-footer"><a id="return-bottom" href="./">← Voltar à planta</a><a href="privacidade.html#cotacao-coletiva">Dados e privacidade</a><button id="analytics-preferences" class="analytics-preferences" type="button" hidden>Preferências</button></footer>
   <section id="analytics-consent" class="analytics-consent" aria-label="Privacidade das visitas" hidden><p><strong>Podemos medir o uso do site?</strong> Isso nos ajuda a entender quais páginas e serviços recebem cliques. Não enviamos seu contato para essa medição. <a href="privacidade.html">Saiba mais</a>.</p><div><button id="analytics-reject" type="button">Agora não</button><button id="analytics-accept" type="button">Permitir</button></div></section>
 </body>
