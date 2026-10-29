@@ -23,7 +23,7 @@ const SERVICE_CATALOG = {
   gas: {name:"Instalação de gás", detail:"Inspeção e manutenção por profissional qualificado, preservando ventilação e segurança."},
   drenos: {name:"Drenos", detail:"Inspeção e manutenção do ponto existente após consulta às vistas originais."},
   vistoria: {name:"Vistoria técnica", detail:"Levantamento no local e orientação por profissional habilitado para o escopo."},
-  envidracamento: {name:"Avaliar envidraçamento", detail:"Somente após conferir padrão, regras e autorizações aplicáveis ao condomínio.", conditional:true},
+  envidracamento: {name:"Avaliar envidraçamento", detail:"Estudo do fechamento da varanda e da ventilação da condensadora, conforme padrão e autorizações do condomínio.", conditional:true},
   limpeza: {name:"Limpeza pós-obra", detail:"Limpeza especializada após serviços e acabamentos concluídos."}
 };
 

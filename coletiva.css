@@ -29,8 +29,9 @@ html[data-theme="light"] .collective-service-link:hover{background:#c9e4ca}
 .collective-section-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:19px}
 .collective-section-heading h2,.collective-how h2{margin:6px 0 0;font:normal 27px Georgia,serif;color:var(--text)}
 .collective-section-heading p{max-width:300px;margin:0;color:var(--muted);font-size:11px;line-height:1.5}
-.collective-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.collective-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .collective-card{position:relative;display:flex;flex-direction:column;min-height:244px;padding:22px;border:1px solid var(--line);background:var(--panel)}
+.collective-card--focus{border-color:#799e82}
 .collective-card.is-selected{border-color:#75ad82;box-shadow:0 0 0 2px #75ad8244}
 .collective-card-number{color:var(--gold-dim);font:11px Georgia,serif;letter-spacing:.14em}
 .collective-card h3{margin:17px 0 8px;font:normal 22px Georgia,serif;color:var(--text)}
@@ -38,6 +39,23 @@ html[data-theme="light"] .collective-service-link:hover{background:#c9e4ca}
 .collective-card a{display:block;padding:12px;border:1px solid #6d9b76;background:#254c34;color:#f5fff1;text-align:center;font:13px Georgia,serif}
 .collective-card a:hover,.collective-card a:focus-visible{background:#316444;color:#fff}
 .collective-selected{position:absolute;top:-12px;right:12px;padding:5px 8px;background:#285e3d;color:#fff;font:10px Georgia,serif}
+.collective-caution{margin-top:14px;padding:14px 17px;border-left:3px solid #608a70;background:var(--panel);color:var(--text);font-size:12px;line-height:1.55}
+.collective-caution a{color:var(--text);text-decoration:underline;text-underline-offset:2px}
+.collective-more{margin-top:16px;border:1px solid var(--line);background:var(--panel)}
+.collective-more summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 21px;cursor:pointer;color:var(--text);font:17px Georgia,serif;list-style:none}
+.collective-more summary::-webkit-details-marker{display:none}
+.collective-more summary:focus-visible{outline:2px solid #659a70;outline-offset:-4px}
+.collective-more summary span{font-size:23px;line-height:1;transition:transform .2s}
+.collective-more[open] summary span{transform:rotate(180deg)}
+.collective-more-content{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;padding:7px 21px 22px;border-top:1px solid var(--line)}
+.collective-more-content h3{margin:15px 0 12px;color:var(--gold);font:15px Georgia,serif}
+.collective-more-content ul{margin:0;padding:0;list-style:none}
+.collective-more-content li{margin-top:7px;border:1px solid var(--line);background:var(--panel-2)}
+.collective-more-content li.is-selected{border-color:#75ad82;box-shadow:0 0 0 2px #75ad8244}
+.collective-mini-selected{display:block;padding:8px 12px 0;color:var(--gold);font-size:10px}
+.collective-more-content li a{display:flex;justify-content:space-between;gap:10px;padding:11px 12px;color:var(--text);font-size:12px;line-height:1.35}
+.collective-more-content li a:hover,.collective-more-content li a:focus-visible{background:#70a47c33}
+.collective-other-note{margin:13px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
 .collective-privacy-note{margin:14px 0 0;color:var(--muted);font-size:11px;line-height:1.55}
 .collective-how{margin-top:46px;padding:27px 30px;border:1px solid var(--line);background:var(--panel)}
 .collective-how ol{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:22px 0 20px;padding:0;list-style:none;counter-reset:step}
@@ -51,4 +69,4 @@ html[data-theme="light"] .collective-service-link:hover{background:#c9e4ca}
 html[data-theme="light"] .collective-hero{background:radial-gradient(circle at 86% 0,#d9ead2,transparent 50%),#fffdf8}
 html[data-theme="light"] .collective-card a{background:#376a46;border-color:#376a46}
 html[data-theme="light"] .collective-card a:hover{background:#285a37}
-@media(max-width:700px){.collective-page .topbar{gap:10px;padding:9px 13px;min-height:56px}.collective-page .identity strong{font-size:13px}.collective-page .identity small{font-size:8px}.collective-page .toplink{font-size:10px;white-space:normal;text-align:right}.collective-main{padding:14px 12px 36px}.collective-hero{padding:24px 19px}.collective-hero h1{font-size:31px}.collective-hero p{font-size:13px}.collective-hero-meta{margin-top:18px}.collective-content{padding-top:28px}.collective-section-heading{display:block}.collective-section-heading h2,.collective-how h2{font-size:23px}.collective-section-heading p{margin-top:8px}.collective-cards{grid-template-columns:1fr}.collective-card{min-height:0;padding:17px}.collective-card h3{margin:10px 0 6px;font-size:20px}.collective-card p{margin-bottom:15px}.collective-how{margin-top:32px;padding:20px}.collective-how ol{grid-template-columns:1fr;gap:8px}.collective-footer{flex-wrap:wrap;padding:17px 12px;font-size:11px}}
+@media(max-width:700px){.collective-page .topbar{gap:10px;padding:9px 13px;min-height:56px}.collective-page .identity strong{font-size:13px}.collective-page .identity small{font-size:8px}.collective-page .toplink{font-size:10px;white-space:normal;text-align:right}.collective-main{padding:14px 12px 36px}.collective-hero{padding:24px 19px}.collective-hero h1{font-size:31px}.collective-hero p{font-size:13px}.collective-hero-meta{margin-top:18px}.collective-content{padding-top:28px}.collective-section-heading{display:block}.collective-section-heading h2,.collective-how h2{font-size:23px}.collective-section-heading p{margin-top:8px}.collective-cards{grid-template-columns:1fr}.collective-card{min-height:0;padding:17px}.collective-card h3{margin:10px 0 6px;font-size:20px}.collective-card p{margin-bottom:15px}.collective-more summary{padding:15px;font-size:15px}.collective-more-content{grid-template-columns:1fr;gap:7px;padding:3px 14px 16px}.collective-more-content h3{margin:14px 0 8px}.collective-more-content li a{padding:12px}.collective-how{margin-top:32px;padding:20px}.collective-how ol{grid-template-columns:1fr;gap:8px}.collective-footer{flex-wrap:wrap;padding:17px 12px;font-size:11px}}

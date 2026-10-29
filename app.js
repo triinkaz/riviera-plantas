@@ -656,12 +656,13 @@ function showService(serviceId){
     condition.textContent="Este escopo depende de avaliação técnica e das autorizações aplicáveis. O anúncio não libera a obra.";
     results.append(condition);
   }
-  if(["box","piso","ar"].includes(serviceId)){
+  const collectiveServiceId={box:"box",piso:"piso",ar:"ar",envidracamento:"vidro_ar",pintura:"pintura",eletrica:"eletrica",iluminacao:"eletrica"}[serviceId];
+  if(collectiveServiceId){
     const collective=document.createElement("a");
     collective.className="collective-service-link";
-    collective.href=collectiveUrl(serviceId);
+    collective.href=collectiveUrl(collectiveServiceId);
     collective.textContent="Cotar com outros moradores ↗";
-    collective.addEventListener("click",()=>window.rivieraAnalytics?.track("collective_open",{service_id:serviceId}));
+    collective.addEventListener("click",()=>window.rivieraAnalytics?.track("collective_open",{service_id:collectiveServiceId}));
     results.append(collective);
   }
   const sponsors=SPONSORS.filter(item=>item.active && item.services?.includes(serviceId)).slice(0,MAX_SPONSORS_PER_SERVICE);
