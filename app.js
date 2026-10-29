@@ -473,8 +473,15 @@ const TECHNICAL_SPECS={
   stack:{items:[["Prumadas","água pluvial, ventilação e esgoto na folha 4"],["Furação","áreas cinza das vistas não podem ser furadas"]],note:"Posição real e acesso de manutenção precisam ser conferidos antes de qualquer intervenção.",sources:[["Manual · p. 164","manual",164],["Prumadas · folha 4","plan",4]]},
   electric_exhaust:{items:[["Exaustor","ponto indicado na folha elétrica"],["Vazão e modelo","não especificados nos documentos analisados"]],note:"Confira o equipamento instalado, duto e alimentação antes de comprar outro.",sources:[["Elétrica · folha 2","plan",2]]}
 };
-// Seleção revisada em 29/10/2026. Os links de afiliado abrem a vitrine e destacam o anúncio conferido.
+// Seleção revisada em 29/10/2026. Materiais novos usam o anúncio do vendedor conferido;
+// as ferramentas de medição preservam seus links de afiliado já testados.
+const CONSTRUCTION_PRODUCTS={
+  tape:{id:"3m-fita-crepe-101la-kit2",name:"Fita crepe 3M 101LA · kit com 2",spec:"Dois rolos de 48 mm × 50 m · para proteção temporária na pintura",reputation:"29/10: R$ 37,95 na loja oficial 3M (+500 mil vendas). Produto 4,8/5, mais de 6 mil avaliações e +50 mil vendidos.",use:"Teste em uma área discreta e siga a embalagem para aplicação e retirada.",url:"https://www.mercadolivre.com.br/kit-2-fita-crepe-3m-larga-uso-geral-e-pintura-48mm-x-50m-cor-branco/p/MLB32626456?pdp_filters=item_id%3AMLB3829222634",manufacturer:"https://www.3m.com.br/3M/pt_BR/p/dc/v101746106/",affiliate:false},
+  paint:{id:"tigre-kit-pintura-1540",name:"Kit de pintura Tigre 1540 · 5 peças",spec:"Rolos, pincel, suporte e bandeja · acessórios para pintura",reputation:"29/10: R$ 34,40 na loja oficial Mabelvas Wood (+10 mil vendas). Produto 4,8/5, mais de 11 mil avaliações e +50 mil vendidos.",use:"Escolha o rolo conforme a tinta e a superfície; confira as instruções da tinta.",url:"https://www.mercadolivre.com.br/kit-de-pintura-tigre-multiuso-5-pecas-com-rolo-pincel-e-bandeja-1540/p/MLB26681364?pdp_filters=item_id%3AMLB7359142514",manufacturer:"https://www.tigre.com.br/produto/kit-1540-re-tintas",affiliate:false},
+  wrap:{id:"acesso-filme-stretch",name:"Filme stretch Acesso · rolo transparente",spec:"Para envolver móveis e caixas durante a reforma",reputation:"29/10: R$ 48 na loja oficial Acesso (+100 mil vendas). Produto 4,8/5, mais de 1.600 avaliações e +10 mil vendidos.",use:"É filme de embalagem; não serve como proteção de piso. Não cubra ralos, ventilação ou acessos técnicos.",url:"https://www.mercadolivre.com.br/plastico-filme-stretch-50x220m-25kg-transparente-acesso-embalagem-25-micras-bobina-film-strech-pallet/p/MLB62062120?pdp_filters=item_id%3AMLB4357144201",affiliate:false}
+};
 const PURCHASE_SELECTIONS={
+  construction_dry:{label:"Materiais para preparar este cômodo",count:"3 opções",note:"Fita e acessórios para pintura; filme apenas para envolver móveis e caixas, não para o piso. Mantenha ralos, ventilação e acessos livres.",products:[CONSTRUCTION_PRODUCTS.tape,CONSTRUCTION_PRODUCTS.paint,CONSTRUCTION_PRODUCTS.wrap]},
   measuring:{label:"Ferramentas para conferir medidas",count:"2 opções",note:"As áreas do desenho são estimativas. Meça largura, comprimento, vãos e alturas no imóvel antes de comprar piso, móveis ou box. Para marcenaria, peça conferência profissional.",products:[
     {id:"vonder-trena-autotrava-5m",name:"Trena Vonder Plus autotrava",spec:"5 m × 19 mm · cód. 38.68.505.505",reputation:"29/10: loja oficial Vonder, +50 mil vendas; item 4,9/5 em 5.227 avaliações e +10 mil vendidos.",url:"https://meli.la/2Kmp4sy",manufacturer:"https://www.vonder.com.br/produto/trena_curta_de_ao_autotrava_5_m_x_19_mm_vonder_plus/3979"},
     {id:"vonder-medidor-vd40",name:"Medidor a laser Vonder VD 40",spec:"0,05–40 m · precisão nominal ±2 mm · cód. 38.20.040.040",reputation:"29/10: loja oficial Vonder, +250 mil vendas; item 4,8/5 em 594 avaliações e +1.000 vendidos.",url:"https://meli.la/23NZypL",manufacturer:"https://www.vonder.com.br/produto/medidor_de_distncia_a_laser_40_m_vd_40_vonder/13667"}
@@ -496,7 +503,8 @@ const PURCHASE_PENDING={
 function purchaseContextFor(detail){
   if(["dimensions","areas"].includes(detail.layer))return "measuring";
   const context=serviceContextFor(detail);
-  if(["dry_floor","wet_floor","balcony_floor","room_dry","room_wet","room_mixed"].includes(context))return "measuring";
+  if(["dry_floor","room_dry"].includes(context))return state.layers.architecture?"construction_dry":"measuring";
+  if(["wet_floor","balcony_floor","room_wet","room_mixed"].includes(context))return "measuring";
   return context;
 }
 function renderPurchases(detail){
@@ -509,18 +517,21 @@ function renderPurchases(detail){
   $("#tech-products-title").textContent=selection?selection.label:"O que falta para indicar produtos";
   $("#tech-products-count").textContent=selection?selection.count:"Conferir no imóvel";
   $("#tech-products-note").textContent=selection?.note||PURCHASE_PENDING[context]||"Confira as medidas e a instalação no apartamento antes de comprar materiais ou equipamentos para este ponto.";
-  $("#tech-products-ad-label").hidden=!selection;
-  $("#tech-products-disclosure").hidden=!selection;
+  const hasAffiliate=Boolean(selection?.products.some(product=>product.affiliate!==false));
+  $("#tech-products-ad-label").hidden=!hasAffiliate;
+  $("#tech-products-disclosure").hidden=!hasAffiliate;
   if(selection){
     selection.products.forEach(product=>{
       const card=document.createElement("div");card.className="tech-product";
       const name=document.createElement("strong");name.textContent=product.name;
       const spec=document.createElement("span");spec.textContent=product.spec;
       const reputation=document.createElement("small");reputation.textContent=product.reputation;
+      const use=document.createElement("small");use.className="tech-product-use";use.textContent=product.use||"";
       const actions=document.createElement("div");actions.className="tech-product-actions";
-      const buy=document.createElement("a");buy.href=product.url;buy.target="_blank";buy.rel="sponsored noopener noreferrer";buy.dataset.affiliateProduct=product.id;buy.textContent="Ver produto indicado ↗";
-      const maker=document.createElement("a");maker.href=product.manufacturer;maker.target="_blank";maker.rel="noopener noreferrer";maker.className="tech-product-maker";maker.textContent="Ficha do fabricante ↗";
-      actions.append(buy,maker);card.append(name,spec,reputation,actions);grid.append(card);
+      const buy=document.createElement("a");buy.href=product.url;buy.target="_blank";buy.rel=product.affiliate===false?"noopener noreferrer":"sponsored noopener noreferrer";buy.dataset.productId=product.id;if(product.affiliate!==false)buy.dataset.affiliateProduct=product.id;buy.textContent="Ver anúncio conferido ↗";
+      actions.append(buy);
+      if(product.manufacturer){const maker=document.createElement("a");maker.href=product.manufacturer;maker.target="_blank";maker.rel="noopener noreferrer";maker.className="tech-product-maker";maker.textContent="Ficha do fabricante ↗";actions.append(maker);}
+      card.append(name,spec,reputation);if(product.use)card.append(use);card.append(actions);grid.append(card);
     });
   }
   section.hidden=false;
@@ -859,8 +870,10 @@ $("#tech-product-recommendations").addEventListener("toggle",e=>{
   });
 });
 $("#tech-product-recommendations").addEventListener("click",e=>{
-  const link=e.target.closest("a[data-affiliate-product]");
-  if(link)window.rivieraAnalytics?.track("affiliate_product_clicked",{product_id:link.dataset.affiliateProduct});
+  const link=e.target.closest("a[data-product-id]");
+  if(!link)return;
+  window.rivieraAnalytics?.track("product_clicked",{product_id:link.dataset.productId});
+  if(link.dataset.affiliateProduct)window.rivieraAnalytics?.track("affiliate_product_clicked",{product_id:link.dataset.affiliateProduct});
 });
 $("#service-close").addEventListener("click",()=>closeTechPopover(true));
 document.addEventListener("pointerdown",e=>{if((!techPopover.hidden||!servicePopover.hidden) && !techPopover.contains(e.target) && !servicePopover.contains(e.target) && !e.target.closest("[data-title],[data-global-service]"))closeTechPopover();});
