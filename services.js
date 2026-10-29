@@ -104,13 +104,14 @@ const SPONSORS = [
   },
   {
     id:"lais",
-    name:"Lais",
+    name:"Arq. Lais Santos",
     services:["arquitetura"],
     whatsapp:"5512988064651",
-    message:"Oi, Lais! Vi seu contato no Riviera Plantas. Quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá. Pode me passar um orçamento?",
+    message:"Oi, Lais! Vi seu contato no Riviera Plantas e os 10% de desconto. Quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá. Pode me passar um orçamento?",
     active:true,
     campaign:{
       premium:true,
+      offer:"10% de desconto",
       compactServices:["arquitetura"]
     }
   },

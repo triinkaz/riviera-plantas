@@ -449,6 +449,42 @@ const TECH_CHECKS={
   areas:"Valor aproximado. Meça no apartamento antes de comprar materiais ou planejar móveis.",
   dimensions:"Cota da planta, não medição no imóvel. Confira antes de comprar materiais ou executar a obra."
 };
+// Critérios documentais dos apartamentos comuns. Não representam medição da unidade entregue.
+const TECHNICAL_SPECS={
+  electric_shower:{items:[["Tensão","220 V"],["Potência","até 5.400 W por chuveiro"],["Resistência","blindada, compatível com o DR"],["Água","vazão recomendada: 6 L/min"]],note:"Confirme aterramento, pressão dinâmica do modelo e circuito no imóvel.",sources:[["Manual · p. 84","manual",84],["Quadro elétrico · folha 3","plan",3]]},
+  ac:{items:[["Sistema previsto","split; evaporadora na sala e condensadora na varanda"],["Capacidade prevista","9.000 BTU/h"],["Circuito do projeto","220 V · 20 A · carga indicada de 815 W"]],note:"815 W é a carga indicada no projeto, não o consumo de um modelo. Confira dreno, linha frigorígena e ventilação da condensadora.",sources:[["Manual · p. 106","manual",106],["Quadro elétrico · folha 3","plan",3],["Ar e prumadas · folha 4","plan",4]]},
+  electric_light:{items:[["Iluminação","127 V no projeto"],["Circuito 1","16 A · carga indicada de 177 W para o circuito"]],note:"A carga é do circuito compartilhado. Confirme a tensão e o tipo de soquete da luminária antes de comprar.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
+  electric_outlet:{items:[["Tomadas no quadro específico","circuitos 2 a 6 indicados em 220 V"],["Carga indicada","600 a 1.400 W conforme o circuito; não por tomada"]],note:"Há divergência: o texto geral do manual diz 127 V, salvo pontos 220 V. Meça a tensão de cada tomada e identifique o circuito antes da compra.",sources:[["Manual · p. 98","manual",98],["Quadro elétrico · folha 3","plan",3]]},
+  electric_panel:{items:[["Iluminação","circuito 1 · 127 V · 16 A · 177 W"],["Tomadas","circuitos 2 a 6 · 220 V no quadro"],["Chuveiros","circuitos 7 e 8 · 220 V · 32 A · 5.400 W"],["Ar-condicionado","circuito 9 · 220 V · 20 A · 815 W"]],note:"Valores por circuito, não autorização para somar aparelhos ou trocar disjuntores. Há conflito sobre a tensão das tomadas; confira a unidade.",sources:[["Quadro elétrico · folha 3","plan",3],["Manual · p. 98","manual",98]]},
+  gas:{items:[["Combustível","GLP central"],["Ponto previsto","fogão na cozinha"],["Ventilação","abertura permanente da área de serviço"]],note:"O manual menciona gás natural em um trecho genérico da p. 94, mas identifica o condomínio como GLP nas pp. 13 e 93. Confirme adaptação do aparelho; não bloqueie a ventilação.",sources:[["Manual · p. 13","manual",13],["Manual · pp. 92–94","manual",92],["Gás e prumadas · folha 4","plan",4]]},
+  hydraulic:{items:[["Distribuição de água","PEX nos shafts e ramais"],["Trajeto","embutido em laje/teto; consultar vistas específicas"]],note:"Diâmetros, roscas, pressão no ponto e posição exata não estão confirmados para escolha de peças. Confira no imóvel.",sources:[["Manual · p. 84","manual",84],["Vistas hidráulicas · folhas 6–9","plan",6]]},
+  drain:{items:[["Drenos","pontos indicados nas folhas técnicas"],["Trajeto oculto","não representado integralmente na planta interativa"]],note:"Confirme posição, diâmetro, caimento e acesso no imóvel antes de comprar equipamento ou alterar acabamento.",sources:[["Ar e prumadas · folha 4","plan",4],["Vista de dreno · folha 5","plan",5]]},
+  structural:{items:[["Material","alvenaria estrutural na planta original"],["Intervenções","sem remoção, novos vãos, nichos ou rasgos"]],note:"A representação no site é aproximada. Confira a parede no desenho original e no imóvel.",sources:[["Manual · p. 43","manual",43],["Arquitetura · folha 1","plan",1]]},
+  masonry:{items:[["Material informado","alvenaria não estrutural, segundo o proprietário"],["Divergência","a planta original marca esse trecho como drywall"]],note:"Não há planta revisada ou confirmação técnica independente. Esta classificação não autoriza intervenção.",sources:[["Arquitetura · folha 1","plan",1]]},
+  drywall:{items:[["Material informado","drywall nos trechos encostados às paredes"],["Localização","junto à churrasqueira e à área de serviço"]],note:"Informação do proprietário para os finais comuns; confirme a composição e a fixação no imóvel.",sources:[["Arquitetura · folha 1","plan",1]]},
+  wet_floor:{items:[["Banheiros e cozinha","impermeabilização polimérica descrita no manual"],["Box","fixação nas paredes; não furar piso ou rodapé"]],note:"A especificação de impermeabilização da área de serviço não foi identificada nessa tabela. Confira o local antes de qualquer intervenção.",sources:[["Manual · p. 58","manual",58]]},
+  dry_floor:{items:[["Ambientes secos","piso entregue como laje zero no memorial"],["Novo revestimento","medir a área e verificar a base no imóvel"]],note:"O memorial não substitui a vistoria do contrapiso e das alturas disponíveis antes de comprar materiais.",sources:[["Manual · p. 121","manual",121]]},
+  balcony_floor:{items:[["Piso entregue no memorial","cerâmica 448 × 448 mm no terraço"],["Drenagem","ralo de águas pluviais; manter livre"]],note:"Confirme o acabamento no apartamento. Envidraçamento depende do padrão do condomínio e análise técnica.",sources:[["Manual · p. 122","manual",122],["Manual · p. 86","manual",86],["Manual · p. 25","manual",25]]},
+  shaft:{items:[["Área técnica","instalações e prumadas"],["Furação","áreas cinza das vistas não podem ser furadas"]],note:"Preserve acesso para inspeção e manutenção.",sources:[["Manual · p. 164","manual",164],["Ar e prumadas · folha 4","plan",4]]},
+  room_dry:{items:[["Acabamento entregue no memorial","piso em laje zero; paredes com pintura látex PVA sobre gesso liso"]],note:"Confira acabamento e dimensões no apartamento antes de escolher piso, tinta ou marcenaria.",sources:[["Manual · p. 121","manual",121]]},
+  room_wet:{items:[["Banheiros e cozinha","impermeabilização polimérica descrita no manual"],["Pontos hidráulicos","consultar a vista do ambiente nas folhas 6–9"]],note:"Compatibilidade de metais, box e louças depende de medidas e conexões reais.",sources:[["Manual · p. 58","manual",58],["Vistas hidráulicas · folhas 6–9","plan",6]]},
+  room_mixed:{items:[["Cozinha","piso cerâmico no memorial; ponto de gás GLP"],["Água","ramais PEX descritos no manual"]],note:"Meça bancadas e pontos reais antes de escolher eletros ou planejados.",sources:[["Manual · pp. 121–122","manual",121],["Manual · p. 84","manual",84],["Manual · p. 92","manual",92]]},
+  stack:{items:[["Prumadas","água pluvial, ventilação e esgoto na folha 4"],["Furação","áreas cinza das vistas não podem ser furadas"]],note:"Posição real e acesso de manutenção precisam ser conferidos antes de qualquer intervenção.",sources:[["Manual · p. 164","manual",164],["Prumadas · folha 4","plan",4]]},
+  electric_exhaust:{items:[["Exaustor","ponto indicado na folha elétrica"],["Vazão e modelo","não especificados nos documentos analisados"]],note:"Confira o equipamento instalado, duto e alimentação antes de comprar outro.",sources:[["Elétrica · folha 2","plan",2]]}
+};
+function renderTechnicalSpecs(detail){
+  const card=TECHNICAL_SPECS[serviceContextFor(detail)];
+  const section=$("#tech-specs");
+  section.hidden=!card;
+  if(!card)return;
+  const list=$("#tech-spec-list");
+  list.replaceChildren();
+  card.items.forEach(([label,value])=>{const row=document.createElement("div");const dt=document.createElement("dt");const dd=document.createElement("dd");dt.textContent=label;dd.textContent=value;row.append(dt,dd);list.append(row);});
+  $("#tech-spec-note").textContent=card.note;
+  const sources=$("#tech-spec-sources");
+  sources.replaceChildren();
+  card.sources.forEach(([label,kind,page])=>{const a=document.createElement("a");a.href=kind==="manual"?`assets/docs/manual-proprietario.pdf#page=${page}`:docUrl(page);a.target="_blank";a.rel="noopener";a.textContent=`${label} ↗`;sources.append(a);});
+}
 const techPopover=$("#tech-popover");
 const servicePopover=$("#service-popover");
 let techSource=null;
@@ -469,6 +505,7 @@ function serviceContextFor(detail){
     if(title.includes("exaustor"))return "electric_exhaust";
     if(title.includes("condensadora"))return "ac";
     if(title.includes("iluminação"))return "electric_light";
+    if(title.includes("interruptor"))return "electric_light";
     return "electric_outlet";
   }
   if(detail.layer==="hydraulic")return "hydraulic";
@@ -548,6 +585,7 @@ function openTechPopover({title,description,page=1,layer="architecture",surface,
   $("#tech-check-label").textContent=structural?"NÃO ALTERAR ESTA PAREDE":"ANTES DE REFORMAR";
   $("#tech-title").textContent=title;
   $("#tech-description").textContent=description;
+  renderTechnicalSpecs(detail);
   $("#tech-evidence-label").textContent=sourceUrl?"PLANTA COTADA":"PLANTA ORIGINAL";
   $("#tech-source-name").textContent=sourceName||`Folha ${page} · ${sheetName}`;
   $("#tech-check-text").textContent=SURFACE_CATALOG[surface]?.check||TECH_CHECKS[layer]||"Compare a marcação com a folha original e confira as condições reais da unidade antes de intervir.";
