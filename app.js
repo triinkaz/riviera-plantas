@@ -995,6 +995,11 @@ function changeZoom(factor) {
 }
 const layout=$(".app-layout");
 const mobileView=window.matchMedia("(max-width:660px), (max-width:900px) and (max-height:500px)");
+const focusToggle=$("#focus-toggle");
+const focusInertTargets=[".topbar",".bottom-bar",".skip-link"].map(selector=>$(selector));
+let focusActive=false;
+let focusRestore=null;
+let focusInertRestore=null;
 function fitZoom(mode){
   if(!mobileView.matches || ![1,4].includes(state.final))return 1;
   return mode==="3d"?1.14:1.1;
@@ -1057,9 +1062,56 @@ function syncMobileView(){
   layout.classList.toggle("mobile-mode",mobileView.matches);
   layout.classList.remove("hide-left","hide-right");
   if(mobileView.matches)layout.classList.add("hide-left","hide-right");
+  else if(focusActive)layout.classList.add("hide-right");
   updatePanelButtons();
   requestAnimationFrame(render3D);
 }
+function updateFocusToggle(){
+  focusToggle.setAttribute("aria-pressed",String(focusActive));
+  focusToggle.setAttribute("aria-label",focusActive?"Sair da tela cheia":"Abrir planta em tela cheia");
+  focusToggle.title=focusActive?"Sair da tela cheia":"Abrir planta em tela cheia";
+  focusToggle.querySelector(".focus-icon").textContent=focusActive?"×":"⛶";
+  focusToggle.querySelector(".focus-label").textContent=focusActive?"Sair":"Tela cheia";
+}
+function setFocusMode(active,fromFullscreen=false){
+  if(active===focusActive)return;
+  if(active){
+    focusRestore={mobile:mobileView.matches,left:layout.classList.contains("hide-left"),right:layout.classList.contains("hide-right")};
+    focusInertRestore=focusInertTargets.map(element=>element.inert);
+    focusInertTargets.forEach(element=>element.inert=true);
+    closeTechPopover();
+    closeMobilePanels();
+    if(mobileView.matches)layout.classList.add("hide-left","hide-right");
+    else{layout.classList.remove("hide-left");layout.classList.add("hide-right");}
+  }else{
+    focusInertTargets.forEach((element,index)=>element.inert=focusInertRestore?.[index]??false);
+    focusInertRestore=null;
+    if(mobileView.matches)layout.classList.add("hide-left","hide-right");
+    else if(focusRestore&&!focusRestore.mobile){
+      layout.classList.toggle("hide-left",focusRestore.left);
+      layout.classList.toggle("hide-right",focusRestore.right);
+    }else layout.classList.remove("hide-left","hide-right");
+  }
+  focusActive=active;
+  layout.classList.toggle("is-focus-mode",active);
+  document.body.classList.toggle("focus-mode-active",active);
+  updatePanelButtons();
+  updateFocusToggle();
+  requestAnimationFrame(render3D);
+  window.rivieraAnalytics?.track("focus_mode_toggled",{enabled:active,view:state.mode});
+  if(active&&!mobileView.matches&&$("#analytics-consent").hidden&&layout.requestFullscreen)layout.requestFullscreen().catch(()=>{});
+  if(!active&&!fromFullscreen&&document.fullscreenElement===layout)document.exitFullscreen().catch(()=>{});
+}
+focusToggle.addEventListener("click",()=>setFocusMode(!focusActive));
+document.addEventListener("fullscreenchange",()=>{
+  if(focusActive&&document.fullscreenElement!==layout)setFocusMode(false,true);
+});
+document.addEventListener("keydown",e=>{
+  if(e.key!=="Escape"||!focusActive)return;
+  if(!techPopover.hidden||!servicePopover.hidden||!drawerBackdrop.hidden)return;
+  e.preventDefault();
+  setFocusMode(false);
+},true);
 function togglePanel(side){
   if(mobileView.matches){
     const hidden=layout.classList.contains(side==="left"?"hide-left":"hide-right");

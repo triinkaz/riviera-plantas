@@ -1,0 +1,46 @@
+/* Modo de foco: a planta e as camadas ocupam a janela sem perder os controles. */
+.focus-toggle{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:29px;padding:5px 9px;border:1px solid var(--gold-dim);background:var(--panel-2);color:var(--gold);font:11px Georgia,serif;white-space:nowrap}
+.focus-toggle:hover,.focus-toggle[aria-pressed="true"]{border-color:var(--gold);background:#604a28;color:#fff1cc}
+.focus-icon{font:16px Arial,sans-serif;line-height:1}
+html[data-theme="light"] .focus-toggle{background:#fffaf0;color:#5a4322}
+html[data-theme="light"] .focus-toggle:hover,html[data-theme="light"] .focus-toggle[aria-pressed="true"]{background:#806334;color:#fff8e8}
+
+body.focus-mode-active{overflow:hidden}
+.app-layout.is-focus-mode{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:260px minmax(0,1fr);width:100%;height:100dvh;min-height:0;overflow:hidden;background:var(--bg)}
+.app-layout.is-focus-mode.hide-left{grid-template-columns:0 minmax(0,1fr)}
+.app-layout.is-focus-mode>.control-panel{grid-column:1;height:100%;max-height:100%;overflow-y:auto;overscroll-behavior:contain}
+.app-layout.is-focus-mode>.info-panel{display:none!important}
+.app-layout.is-focus-mode>.map-section{grid-column:2;align-self:stretch;height:100%;min-height:0;overflow:hidden}
+.app-layout.is-focus-mode>.map-section .map-frame{height:auto;min-height:0;max-height:none;flex:1}
+.app-layout.is-focus-mode .map-heading{min-height:0;align-items:center;padding:9px 14px}
+.app-layout.is-focus-mode .map-heading h1{font-size:20px}
+.app-layout.is-focus-mode .map-heading .section-kicker,
+.app-layout.is-focus-mode .map-heading p,
+.app-layout.is-focus-mode .map-status,
+.app-layout.is-focus-mode .collective-entry,
+.app-layout.is-focus-mode .map-footer,
+.app-layout.is-focus-mode .whole-home-actions,
+.app-layout.is-focus-mode .map-watermark,
+.app-layout.is-focus-mode .dimension-status,
+.app-layout.is-focus-mode .area-status,
+.app-layout.is-focus-mode #toggle-details{display:none!important}
+.app-layout.is-focus-mode .plan-stage,
+.app-layout.is-focus-mode #plan-3d{top:48px}
+.app-layout.is-focus-mode #plan-3d{height:calc(100% - 48px)}
+.app-layout.is-focus-mode .plan-stage svg{min-height:0;max-height:none}
+body:has(#analytics-consent:not([hidden])) .app-layout.is-focus-mode .map-tools{top:52px;right:8px;bottom:auto;left:auto;transform:none}
+
+@media(max-width:660px), (max-width:900px) and (max-height:500px){
+  .focus-toggle{min-height:38px;padding:5px 7px;font-size:10px}
+  .app-layout.is-focus-mode{display:flex;flex-direction:column}
+  .app-layout.is-focus-mode>.map-section{grid-column:auto;order:0;align-self:stretch;width:100%;height:100%;min-height:0}
+  .app-layout.is-focus-mode>.map-section .map-frame{height:auto;min-height:0;max-height:none;flex:1}
+  .app-layout.is-focus-mode .map-heading{gap:6px;padding:7px 10px}
+  .app-layout.is-focus-mode .map-heading h1{font-size:18px}
+  .app-layout.is-focus-mode .mode-controls{gap:5px}
+  .app-layout.is-focus-mode .mode-switch button{min-width:44px}
+  .app-layout.is-focus-mode .map-frame:after{height:54px}
+  .app-layout.is-focus-mode .plan-stage{top:48px;bottom:54px}
+  .app-layout.is-focus-mode #plan-3d{top:48px;bottom:54px;height:calc(100% - 102px)}
+  .app-layout.is-focus-mode .map-tools{bottom:5px}
+}
