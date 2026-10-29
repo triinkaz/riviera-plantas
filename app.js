@@ -559,6 +559,7 @@ function openTechPopover({title,description,page=1,layer="architecture",surface,
   const products=$("#tech-product-recommendations");
   products.hidden=serviceContextFor(detail)!=="electric_shower";
   products.open=false;
+  techPopover.classList.remove("has-products-open");
   techSource=source;
   activePoint=point;
   compactServiceOpen=false;
@@ -757,6 +758,18 @@ function closeTechPopover(restoreFocus=false){
   techSource=null;activePoint=null;compactServiceOpen=false;
 }
 $("#tech-close").addEventListener("click",()=>closeTechPopover(true));
+$("#tech-product-recommendations").addEventListener("toggle",e=>{
+  if(!activePoint)return;
+  const products=e.currentTarget;
+  techPopover.classList.toggle("has-products-open",products.open);
+  requestAnimationFrame(()=>{
+    if(!activePoint)return;
+    positionPopovers(activePoint);
+    if(products.open && techPopover.scrollHeight>techPopover.clientHeight+2){
+      techPopover.scrollTo({top:Math.max(0,products.offsetTop-20),behavior:"smooth"});
+    }else if(!products.open){techPopover.scrollTop=0;}
+  });
+});
 $("#tech-product-recommendations").addEventListener("click",e=>{
   const link=e.target.closest("a[data-affiliate-product]");
   if(link)window.rivieraAnalytics?.track("affiliate_product_clicked",{product_id:link.dataset.affiliateProduct});

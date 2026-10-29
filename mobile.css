@@ -53,6 +53,7 @@
   .source-list{max-height:none}
   .tech-popover,.service-popover{position:fixed;left:auto!important;right:0!important;top:8px!important;bottom:auto!important;z-index:40;width:min(350px,calc(100vw - 36px));max-height:calc(100dvh - 16px);overflow-y:auto;overscroll-behavior:contain}
   .tech-popover-body,.service-popover-body{padding:16px}
+  .tech-popover-heading{margin:-16px -16px 10px;padding:16px 16px 1px}
   .tech-popover h2,.service-popover h2{font-size:18px}
   .tech-description,.service-intro{font-size:12px}
   .map-frame:after{height:112px}
