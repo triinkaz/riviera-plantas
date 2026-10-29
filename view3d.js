@@ -15,6 +15,7 @@ function drawApartment3D(canvas, options) {
   }
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
   context.clearRect(0, 0, width, height);
+  if(options.decorated){context.fillStyle="#f3f0e8";context.fillRect(0,0,width,height);}
   const light = options.theme !== "dark";
 
   const { yaw, tilt, zoom, panX, panY } = options.view;
@@ -106,6 +107,56 @@ function drawApartment3D(canvas, options) {
       polygon([corners[0],corners[2]], null, light?"#836d89":"#b59cb8", 1);
       polygon([corners[1],corners[3]], null, light?"#836d89":"#b59cb8", 1);
     });
+    if(options.decorated && custom && options.final===4){
+      // Estudo visual do final 4 comum: apenas volumes de mobiliário solto.
+      // Paredes, shafts, aberturas e área técnica da condensadora não são alterados.
+      const box=(x,y,w,h,zTop,top,front,side,zBase=4)=>{
+        const low=rectangle([x,y,w,h],zBase),high=rectangle([x,y,w,h],zTop);
+        const sides=[
+          {vertices:[low[0],low[1],high[1],high[0]],fill:front},
+          {vertices:[low[1],low[2],high[2],high[1]],fill:side},
+          {vertices:[low[2],low[3],high[3],high[2]],fill:front},
+          {vertices:[low[3],low[0],high[0],high[3]],fill:side}
+        ].sort((a,b)=>a.vertices.reduce((sum,p)=>sum+depth(p),0)-b.vertices.reduce((sum,p)=>sum+depth(p),0));
+        sides.forEach(face=>polygon(face.vertices,face.fill,"#4a3b2a",.75));
+        polygon(high,top,"#4a3b2a",.8);
+      };
+      const rug=(x,y,w,h,color)=>polygon(rectangle([x,y,w,h],4),color,"#796f5d",1.2);
+      const bed=(x,y,w,h,accent)=>{
+        box(x,y,w,h,20,"#92714e","#6f5339","#5e452f");
+        box(x+5,y+5,w-10,h-10,37,"#f2eadb","#d5c9b6","#c4b8a4",20);
+        box(x+9,y+55,w-18,h-63,39,accent,accent,"#8d968a",37);
+        box(x+11,y+11,(w-28)/2,28,44,"#fffaf0","#e4d8c8","#e4d8c8",37);
+        box(x+17+(w-28)/2,y+11,(w-28)/2,28,44,"#fffaf0","#e4d8c8","#e4d8c8",37);
+      };
+      // Sala e cozinha abertas: assentos, tapete e mesa sem mudanças em instalações.
+      rug(523,542,109,145,"#b4c0ad");
+      box(568,603,58,85,33,"#e8d7bb","#cbb99e","#bca88d");
+      box(610,600,17,91,64,"#efe1cb","#d4c2a8","#c4b195");
+      box(566,598,58,16,54,"#efe1cb","#d4c2a8","#c4b195");
+      box(543,552,54,33,29,"#aa835c","#83613f","#735335");
+      box(553,498,68,23,38,"#a77c54","#835c3e","#725135");
+      box(398,564,79,48,52,"#b18a61","#856441","#735435");
+      [[385,570],[481,570],[408,617],[452,617]].forEach(([x,y])=>box(x,y,24,22,27,"#d4c4a9","#aa987c","#99886f"));
+      box(275,530,28,122,61,"#efe9dd","#d1c5b3","#bdad99");
+      polygon(rectangle([278,570,22,37],62),"#e8ece7","#687e80",1.2);
+      polygon(rectangle([282,575,14,27],63),"#91b8c0","#5d8089",1.1);
+      box(282,657,44,42,78,"#d9d9d2","#b7b9b2","#a7aaa3");
+      // Serviço: lavadora acessível, sem fechar shafts ou prumadas.
+      box(285,744,53,50,63,"#f0f0e9","#cbd1cf","#b6bebb");
+      // Dormitório e suíte: camas e apoios soltos, sem pressupor fixações.
+      rug(553,787,173,145,"#d4cbbb");
+      bed(581,783,118,137,"#a9b8ad");
+      box(517,759,47,28,65,"#9c7856","#755638","#63482f");
+      box(709,807,28,33,38,"#a77c54","#825d3b","#715034");
+      rug(838,505,164,190,"#d7d0c2");
+      bed(858,520,126,151,"#d5b9a5");
+      box(808,555,35,105,73,"#a38260","#795a3d","#684c33");
+      // Varanda aberta: dois assentos; reserva técnica da condensadora livre.
+      box(293,837,48,44,32,"#ddd0b7","#bbaa8e","#a79479");
+      box(296,895,48,40,32,"#ddd0b7","#bbaa8e","#a79479");
+      polygon(rectangle([464,854,48,57],5),"#66bfd638","#167d97",1.4);
+    }
     const faces = [];
     const addBox = (values, material, wallHeight) => {
       const palette = material === "structural"

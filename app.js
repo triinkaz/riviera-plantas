@@ -1009,6 +1009,8 @@ function setFinal(value) {
   const changed=state.final!==n;
   state.final = n;
   $("#collective-entry").href=collectiveUrl();
+  $("#decorado-entry").hidden=n!==4;
+  $(".map-promos").classList.toggle("has-decorado",n===4);
   if(changed)state.activeDimension3d=0;
   state.cooling=false;
   syncCooling();

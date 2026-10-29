@@ -15,12 +15,14 @@
   <link rel="stylesheet" href="analytics.css?v=1">
   <link rel="stylesheet" href="focus.css?v=focus-2">
   <link rel="stylesheet" href="icons.css?v=icons-1">
+  <link rel="stylesheet" href="decorado.css?v=decorado-1">
   <script src="services.js?v=lais-santos-10-1" defer></script>
-  <script src="view3d.js?v=icons-1" defer></script>
+  <script src="view3d.js?v=decorado-1" defer></script>
   <script src="final4.js?v=icons-1" defer></script>
   <script src="final1.js?v=icons-1" defer></script>
   <script src="analytics.js?v=1" defer></script>
-  <script src="app.js?v=icons-1" defer></script>
+  <script src="app.js?v=decorado-1" defer></script>
+  <script src="decorado.js?v=decorado-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#painel">Ir para a planta</a>
@@ -57,7 +59,7 @@
       </aside>
       <section class="map-section" aria-labelledby="map-title">
         <div class="map-heading"><div><div class="section-kicker">SEU APARTAMENTO</div><h1 id="map-title">Planta do final 2</h1><p id="map-description">Plantas dos finais 2 e 5</p></div><div class="mode-controls"><button id="cooling-toggle" class="cooling-toggle" type="button" aria-pressed="false" aria-controls="cooling-panel">❄ Área do ar</button><div class="mode-switch" aria-label="Modo de visualização"><button id="view-2d" type="button" aria-pressed="true">2D</button><button id="view-3d" type="button" aria-pressed="false">3D</button></div><button id="focus-toggle" class="focus-toggle" type="button" aria-pressed="false" aria-label="Abrir planta em tela cheia" title="Abrir planta em tela cheia"><span class="focus-icon" aria-hidden="true">⛶</span><span class="focus-label">Tela cheia</span></button><span id="map-status" class="map-status">PLANTA 2D</span></div></div>
-        <a id="collective-entry" class="collective-entry" href="cotacao-coletiva.html?final=2"><span class="collective-new">NOVO</span><span class="collective-entry-copy"><strong>Cote junto com seus vizinhos</strong><small>Serviços para sua reforma · sem compromisso</small></span><span class="collective-arrow" aria-hidden="true">↗</span></a>
+        <div class="map-promos"><a id="collective-entry" class="collective-entry" href="cotacao-coletiva.html?final=2"><span class="collective-new">NOVO</span><span class="collective-entry-copy"><strong>Cote junto com seus vizinhos</strong><small>Serviços para sua reforma · sem compromisso</small></span><span class="collective-arrow" aria-hidden="true">↗</span></a><button id="decorado-entry" class="decorado-entry" type="button" aria-haspopup="dialog" aria-controls="decorado-dialog" hidden><span class="decorado-play" aria-hidden="true">▶</span><span class="decorado-entry-copy"><strong>Visite o decorado</strong><small>Maquete do final 4</small></span><span class="decorado-arrow" aria-hidden="true">↗</span></button></div>
         <div id="measure-nav" class="measure-nav" aria-label="Medidas na vista 3D" hidden><button id="measure-prev" type="button" aria-label="Medida anterior">‹</button><div class="measure-nav-copy" aria-live="polite"><small id="measure-count">MEDIDAS</small><strong id="measure-name"></strong><span id="measure-detail"></span></div><button id="measure-next" type="button" aria-label="Próxima medida">›</button></div>
         <div id="map-frame" class="map-frame">
           <div id="plan-stage" class="plan-stage"></div>
@@ -78,6 +80,7 @@
     </main>
     <footer id="documentos" class="bottom-bar"><div><strong>Plantas e documentos</strong><span>Apartamentos comuns</span></div><nav aria-label="Documentos originais"><a href="assets/docs/final-1-comum.pdf" target="_blank" rel="noopener">Planta 1 ↗</a><a href="assets/docs/finais-2-5.pdf" target="_blank" rel="noopener">Plantas 2/5 ↗</a><a href="assets/docs/finais-3-6.pdf" target="_blank" rel="noopener">Plantas 3/6 ↗</a><a href="assets/docs/final-4-comum.pdf" target="_blank" rel="noopener">Planta 4 ↗</a><a href="assets/docs/manual-proprietario.pdf" target="_blank" rel="noopener">Manual ↗</a><a href="especificacoes.html">Especificações técnicas</a><a href="especificacoes.html#compras">Materiais para a obra</a><a href="assets/docs/guia-reformas.pdf" target="_blank" rel="noopener">Guia de reformas ↗</a><a href="privacidade.html">Dados e privacidade</a><button id="analytics-preferences" class="analytics-preferences" type="button" hidden>Preferências</button></nav></footer>
   </div>
+  <dialog id="decorado-dialog" class="decorado-dialog" aria-labelledby="decorado-title" aria-describedby="decorado-description"><div class="decorado-modal"><div class="decorado-modal-heading"><div><span class="section-kicker">FINAL 4 · APARTAMENTO COMUM</span><h2 id="decorado-title">Visite o decorado</h2></div><button id="decorado-close" class="decorado-close" type="button" aria-label="Fechar vídeo">×</button></div><video id="decorado-video" controls playsinline preload="none" poster="assets/video/final-4-decorado-poster.png" aria-label="Vídeo ilustrativo do apartamento final 4 decorado"><source id="decorado-source" data-src="assets/video/final-4-decorado.mp4" type="video/mp4"></video><p id="decorado-error" class="decorado-error" hidden>Não foi possível carregar o vídeo. Tente novamente em instantes.</p><p id="decorado-description">Estudo visual de decoração do final 4 comum. Mobiliário e acabamentos são ilustrativos; confira medidas, instalações e regras antes de reformar.</p></div></dialog>
   <section id="analytics-consent" class="analytics-consent" aria-label="Privacidade das visitas" hidden><p><strong>Podemos medir o uso do site?</strong> Isso nos ajuda a ver quantas pessoas consultam as plantas e quais serviços recebem cliques. Não enviamos seu nome, telefone ou número do apartamento para essa medição. <a href="privacidade.html">Saiba mais</a>.</p><div><button id="analytics-reject" type="button">Agora não</button><button id="analytics-accept" type="button">Permitir</button></div></section>
   <noscript>Ative o JavaScript para consultar as camadas. Os PDFs originais estão nos links do rodapé.</noscript>
 </body>
