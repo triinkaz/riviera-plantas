@@ -743,7 +743,7 @@ function createProviderCard(provider,service,independent,serviceId){
   const compactPremium=campaign?.premium && campaign.compactServices?.includes(serviceId);
   if(campaign?.premium && !compactPremium)card.classList.add("sponsor-card--premium");
   const badge=document.createElement("small");
-  badge.textContent=independent?"PUBLICIDADE · PROFISSIONAL INDEPENDENTE":campaign?.premium&&!compactPremium?"PUBLICIDADE · PARCERIA ESPECIAL":"PUBLICIDADE";
+  badge.textContent=independent?"Publicidade · profissional independente":"Publicidade";
   const name=document.createElement("strong");name.textContent=provider.name;
   if(campaign?.premium && !compactPremium)name.className="premium-name";
   card.append(badge,name);
