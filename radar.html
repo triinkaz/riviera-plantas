@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="radar.css?v=2">
   <script src="radar-config.js?v=20261102" defer></script>
   <script src="analytics.js?v=1" defer></script>
-  <script src="radar.js?v=2" defer></script>
+  <script src="radar.js?v=3" defer></script>
 </head>
 <body class="radar-page">
   <a class="skip-link" href="#conteudo">Ir para o Radar</a>
@@ -27,10 +27,10 @@
     <section class="radar-hero" aria-labelledby="radar-title">
       <span class="section-kicker">RELATOS DOS MORADORES · INICIATIVA INDEPENDENTE</span>
       <h1 id="radar-title">Radar Riviera</h1>
-      <p>Encontrou um problema no apartamento ou no prédio? Escolha como quer participar. Veja no mapa e no painel o que outros moradores já relataram.</p>
+      <p>Encontrou um problema no apartamento ou no prédio? Escolha como quer participar. Os relatos aprovados aparecem no mapa e no painel.</p>
       <div class="radar-hero-actions"><a class="radar-button radar-button--primary" href="registrar-problema.html">REGISTRAR PROBLEMA <span aria-hidden="true">→</span></a><a class="radar-button radar-button--media" href="enviar-midia.html">ENVIAR FOTOS/VÍDEOS <span aria-hidden="true">→</span></a></div>
       <p id="radar-availability" class="radar-status" role="status" hidden></p>
-      <p class="radar-disclaimer">Relatos enviados por moradores, sem verificação técnica. Este site não substitui chamados, administração, assembleia ou atendimento de emergência.</p>
+      <p class="radar-disclaimer">Relatos enviados por usuários, com unidade informada por eles e sem verificação técnica. Este site não substitui chamados, administração, assembleia ou atendimento de emergência.</p>
     </section>
 
     <section id="mapa" class="radar-section radar-map-section" aria-labelledby="mapa-title">
@@ -49,7 +49,7 @@
       </div>
       <div class="radar-filters"><label for="summary-filter">Mostrar</label><select id="summary-filter"><option value="all">Todos os problemas</option></select><label for="summary-order">Ordenar</label><select id="summary-order"><option value="priority">Mais urgentes</option><option value="count">Mais relatados</option></select></div>
       <div id="radar-issue-list" class="radar-issue-list" aria-live="polite"><p class="radar-empty">Aguardando os primeiros relatos.</p></div>
-      <p class="radar-footnote">Os números só entram no painel após revisão. A prioridade considera risco, dano em andamento, uso impedido e recorrência. Uma contagem alta não significa, sozinha, maior urgência.</p>
+      <p class="radar-footnote">Os números só entram no painel após revisão. A unidade é declarada por quem envia, sem comprovação de moradia. A prioridade considera risco, dano em andamento, uso impedido e recorrência. Uma contagem alta não significa, sozinha, maior urgência.</p>
       <div class="radar-updated" id="radar-updated"></div>
     </section>
 

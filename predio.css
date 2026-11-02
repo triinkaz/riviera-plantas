@@ -52,3 +52,9 @@ main{width:min(1160px,100%);margin:auto;padding:28px clamp(12px,2.5vw,28px) 55px
   .is-embedded .embed-note{padding:8px 12px}
   .is-embedded .selected-panel{padding:10px 12px}
 }
+
+/* Áreas de toque confortáveis para os controles do mapa em telas pequenas. */
+.is-embedded .embed-open{min-height:44px}
+@media(max-width:760px){
+  .tower-jump button{width:44px;min-height:44px}
+}

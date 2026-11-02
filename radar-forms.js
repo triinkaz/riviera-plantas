@@ -214,8 +214,24 @@
       const small = document.createElement("small"); small.textContent = [categoryLabel(issue.category), topicLabel(issue.category, issue.topic), issue.room].filter(Boolean).join(" · ");
       copy.append(title, small);
       if (entry.files.length) { const media = document.createElement("small"); media.className = "radar-attachment-list"; media.textContent = entry.files.length + (entry.files.length === 1 ? " arquivo: " : " arquivos: ") + entry.files.map(file => file.name).join(", "); copy.append(media); }
+      const actions = document.createElement("div"); actions.className = "radar-selected-actions";
+      const attach = document.createElement("button"); attach.type = "button"; attach.textContent = "Anexar foto/vídeo"; attach.setAttribute("aria-label", "Anexar foto ou vídeo a " + title.textContent);
+      const picker = document.createElement("input"); picker.type = "file"; picker.accept = "image/jpeg,image/png,image/webp,video/mp4,video/webm"; picker.multiple = true; picker.hidden = true;
+      attach.addEventListener("click", () => picker.click());
+      picker.addEventListener("change", () => {
+        const files = Array.from(picker.files || []);
+        if (!files.length) return;
+        if (files.some(file => !validFile(file))) { status($("add-issue-feedback"), fileError(), "error"); return; }
+        const allFiles = selectedFiles().concat(files);
+        if (allFiles.length > 4) { status($("add-issue-feedback"), "O limite é de 4 arquivos no mesmo envio.", "error"); return; }
+        if (allFiles.reduce((sum, file) => sum + file.size, 0) > 26_000_000) { status($("add-issue-feedback"), "Os arquivos somados devem ter até 26 MB. Envie os demais separadamente.", "error"); return; }
+        entry.files.push(...files);
+        renderSelected();
+        status($("add-issue-feedback"), "Arquivo anexado ao problema. Marque a autorização para publicar as mídias antes de enviar.", "success");
+      });
       const remove = document.createElement("button"); remove.type = "button"; remove.textContent = "Remover"; remove.setAttribute("aria-label", "Remover " + title.textContent); remove.addEventListener("click", () => { selectedIssues.splice(index, 1); renderSelected(); });
-      row.append(copy, remove); list.append(row);
+      actions.append(attach, remove, picker);
+      row.append(copy, actions); list.append(row);
     });
     reflectMediaConsent();
   }
@@ -251,7 +267,14 @@
       event.preventDefault();
       if (!canSend || submitting) return;
       // Inclui automaticamente o problema em edição, evitando que o morador o esqueça.
-      if ($( "report-category" ).value || !selectedIssues.length) {
+      const draftFiles = $("report-files").files?.length || 0;
+      const draftHasInput = draftFiles || ["report-topic", "report-detail", "report-room", "report-description", "report-protocol"].some(id => $(id).value.trim()) || ["report-active", "report-risk", "report-blocks"].some(id => $(id).checked);
+      if (selectedIssues.length && !$("report-category").value && draftHasInput) {
+        status($("report-feedback"), draftFiles ? "Esses arquivos ainda não estão ligados a um problema. Escolha a área e adicione o problema, ou use ‘Anexar foto/vídeo’ na lista abaixo." : "Há um problema incompleto em edição. Escolha a área e adicione-o, ou limpe os campos antes de enviar.", "error");
+        $(draftFiles ? "report-files" : "report-category").focus();
+        return;
+      }
+      if ($("report-category").value || !selectedIssues.length) {
         if (!addIssue()) { $("report-category").focus(); return; }
       }
       const unitId = normalizeUnit($("report-unit").value);

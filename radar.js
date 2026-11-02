@@ -482,8 +482,10 @@
       try {
         const same = activeInteraction.type === "same";
         const path = "/api/radar/media/" + encodeURIComponent(activeInteraction.mediaId) + (same ? "/same" : "/comments");
-        await request(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, unitId, ...(same ? {} : { text }), turnstileToken: token, website: $("interaction-website").value }) });
-        status($("interaction-feedback"), same ? "Recebido. Sua confirmação será contabilizada após a revisão." : "Comentário recebido para revisão.", "success");
+        const result = await request(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name, unitId, ...(same ? {} : { text }), turnstileToken: token, website: $("interaction-website").value }) });
+        status($("interaction-feedback"), same
+          ? result?.alreadyRegistered ? "Esta unidade já confirmou este problema. Nenhuma nova confirmação foi registrada." : "Recebido. Sua confirmação será contabilizada após a revisão."
+          : "Comentário recebido para revisão.", result?.alreadyRegistered ? "" : "success");
       } catch (error) { status($("interaction-feedback"), submissionError(error, "Não foi possível enviar. Confira os dados e tente novamente."), "error"); }
       finally { resetToken("interaction-turnstile"); button.disabled = false; }
     });

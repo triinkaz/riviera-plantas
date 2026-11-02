@@ -4,6 +4,8 @@
   const NS = "http://www.w3.org/2000/svg";
   const TOWERS = ["A", "B", "C", "D"];
   const BANDS = { 1: "3–4", 2: "5–9", 3: "10 ou mais" };
+  // Visual spacing only: the schematic does not assert the building's floor count.
+  const MIN_SCHEMATIC_SLOTS = 10;
   const embedded = document.documentElement.classList.contains("is-embedded");
   const filter = document.getElementById("problem-filter");
   const grid = document.getElementById("tower-grid");
@@ -17,6 +19,7 @@
   let selected = null;
   let lastUpdated = null;
   let requestSequence = 0;
+  let visualFloorSlots = MIN_SCHEMATIC_SLOTS;
 
   function svgElement(tag, attributes, parent) {
     const element = document.createElementNS(NS, tag);
@@ -84,7 +87,8 @@
     card.id = `bloco-${tower.toLowerCase()}`;
     const heading = document.createElement("header");
     textElement(heading, "strong", `Bloco ${tower}`);
-    const visible = cells.filter(cell => cell.tower === tower && bandFor(cell) !== null).length;
+    const towerCells = cells.filter(cell => cell.tower === tower && bandFor(cell) !== null).sort((a, b) => a.floor - b.floor);
+    const visible = towerCells.length;
     textElement(heading, "small", visible ? `${visible} ${visible === 1 ? "pavimento com relatos" : "pavimentos com relatos"}` : "Aguardando dados publicáveis");
     card.append(heading);
 
@@ -101,9 +105,9 @@
     const letter = svgElement("text", { class: "roof-letter", x: 106, y: 52 }, scene);
     letter.textContent = tower;
 
-    if (maxFloor > 0) {
+    if (visible > 0) {
       const slot = 289 / maxFloor;
-      cells.filter(cell => cell.tower === tower && bandFor(cell) !== null).sort((a, b) => a.floor - b.floor).forEach(cell => {
+      towerCells.forEach(cell => {
         const bandLabel = bandFor(cell);
         const top = 369 - cell.floor * slot;
         const bottom = top + slot;
@@ -160,8 +164,7 @@
   function render() {
     grid.setAttribute("aria-busy", "true");
     const filtered = cells.filter(cell => bandFor(cell) !== null);
-    const maxFloor = cells.reduce((max, cell) => Math.max(max, cell.floor), 0);
-    grid.replaceChildren(...TOWERS.map(tower => renderTower(tower, maxFloor)));
+    grid.replaceChildren(...TOWERS.map(tower => renderTower(tower, visualFloorSlots)));
     grid.removeAttribute("aria-busy");
     renderRanking();
     renderSelected();
@@ -193,6 +196,9 @@
       if (TOWERS.includes(tower) && Number.isInteger(floor) && floor >= 1 && floor <= 40 && [1, 2, 3].includes(level)) keyed.set(`${tower}:${floor}`, { tower, floor, level });
     });
     cells = [...keyed.values()];
+    // Keep the same vertical scale while changing filters; never stretch one
+    // visible pavimento to the full height of the schematic building.
+    visualFloorSlots = Math.max(visualFloorSlots, ...cells.map(cell => cell.floor));
     lastUpdated = raw.updated_at || null;
     render();
   }
