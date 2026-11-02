@@ -22,6 +22,14 @@ A camada **Medidas** exibe as cotas de suíte e dormitório nas vistas 2D e 3D. 
 
 No celular, a planta abre primeiro. **Camadas** e **Detalhes** ficam em gavetas acionadas pelas setas laterais; os acessos a profissionais e ART e os botões de zoom ocupam faixas reservadas abaixo do desenho. A vista 2D também aceita gesto de pinça para aproximar e afastar. O botão **Tela cheia** e a seta diagonal da barra de zoom abrem o mesmo modo de foco, mantendo final, camadas e 2D/3D acessíveis. No computador ele usa a tela cheia do navegador quando disponível; no celular ocupa a janela e libera o espaço dos acessos a profissionais. **Sair**, a seta diagonal ou Escape restaura a interface anterior, sem perder o zoom e a posição da planta.
 
+## Radar Riviera
+
+O acesso **Radar Riviera** no topo abre `radar.html`, onde moradores podem registrar vários problemas em um envio, consultar um painel agrupado e compartilhar fotos ou vídeos. A lista começa pelos problemas recorrentes nas conversas fornecidas, mas não importa mensagens, contatos nem contagens do WhatsApp. As categorias incluem unidade, áreas comuns, vistoria e atendimento, temas para assembleia e **Outros**; em cada tema há assuntos e problemas específicos.
+
+O painel mostra somente envios aprovados após revisão. Ele organiza recorrência e urgência declarada pelos participantes, sem transformar o relato em laudo, chamado oficial ou voto de assembleia. `predio.html` representa as torres A–D com blocos 3D **esquemáticos**: formato, implantação e número de apartamentos não foram reproduzidos por falta de documentação. O mapa colore faixas de pavimento apenas quando há relatos de pelo menos três unidades distintas; as cores representam faixas de quantidade (3–4, 5–9, 10+), e o usuário pode filtrar por tipo de problema.
+
+Mídias e comentários aguardam revisão. O ID completo da unidade e o contato ficam privados; comentários públicos mostram só o primeiro nome e uma versão parcial do ID. O mural exibe uma cópia tratada da mídia aprovada, quando houver. `privacidade.html` explica o tratamento e a página Radar inclui um pedido privado de correção ou remoção. A API com banco e arquivos é mantida fora deste repositório público; `radar-config.js` contém apenas a URL pública do serviço. Não publicar credenciais de administração ou originais de mídia no GitHub Pages.
+
 ## Cotação coletiva
 
 O acesso **Cote junto com seus vizinhos** aparece fora do desenho para preservar a consulta da planta. A página reúne 16 opções agrupadas de serviços pedidos nas conversas fornecidas, sem inferir quantos moradores distintos querem contratar. Ar-condicionado e a avaliação de envidraçamento da varanda aparecem em destaque; box e pisos continuam visíveis, e os demais serviços ficam em uma lista recolhível. Alguns serviços também têm acesso contextual ao tocar na planta; box aparece nos serviços dos banheiros da vista 3D.

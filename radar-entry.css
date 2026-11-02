@@ -1,0 +1,7 @@
+.radar-toplink{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:34px;padding:6px 11px;border:1px solid #a76b51;background:#40271d;color:#fff0dc;font:12px Georgia,serif;white-space:nowrap}
+.radar-toplink:hover,.radar-toplink:focus-visible{border-color:#d69c72;background:#583225;color:#fff}
+.radar-toplink-dot{width:7px;height:7px;flex:none;border-radius:50%;background:#f39a62;box-shadow:0 0 0 3px #f39a6233}
+html[data-theme="light"] .radar-toplink{border-color:#bb7f61;background:#f7e5d7;color:#6f3522}
+html[data-theme="light"] .radar-toplink:hover,html[data-theme="light"] .radar-toplink:focus-visible{background:#efd3bf;color:#512816}
+@media(max-width:660px){.radar-toplink{margin-left:auto;min-height:32px;padding:5px 8px;font-size:11px}.topbar .toplink{margin-left:0}}
+@media(max-width:380px){.topbar{gap:6px}.topbar .identity{gap:6px}.topbar .identity strong{font-size:11px}.topbar .identity small{font-size:7px}.radar-toplink{padding:5px 6px;font-size:10px}.radar-toplink-dot{width:5px;height:5px}}

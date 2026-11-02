@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f2e9" id="browser-theme-color">
+  <meta name="description" content="Veja onde os relatos dos moradores do Riviera Martim de Sá se concentram, por bloco, pavimento e tipo de problema.">
+  <title>Mapa do prédio · Radar Riviera</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
+  <link rel="stylesheet" href="predio.css?v=1">
+  <link rel="stylesheet" href="analytics.css?v=1">
+  <script src="radar-config.js?v=20261102" defer></script>
+  <script src="analytics.js?v=1" defer></script>
+  <script src="predio.js?v=2" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Ir para o mapa</a>
+  <header class="topbar">
+    <a class="identity" href="./" aria-label="Riviera Plantas, página inicial"><span class="identity-mark" aria-hidden="true">R</span><span><strong>Riviera Martim de Sá</strong><small>RADAR DOS MORADORES</small></span></a>
+    <div class="header-actions">
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Tema escuro</span></button>
+      <a class="back-link" href="radar.html">← Voltar ao Radar</a>
+    </div>
+  </header>
+  <main id="conteudo">
+    <section class="intro" aria-labelledby="map-title">
+      <div>
+        <span class="eyebrow">RADAR RIVIERA / VISÃO DO PRÉDIO</span>
+        <h1 id="map-title">Onde os problemas se concentram?</h1>
+        <p>Veja os relatos dos moradores por bloco e pavimento. Escolha um tipo de problema para comparar as áreas.</p>
+      </div>
+      <a class="report-link" href="radar.html#registrar">Registrar um problema <span aria-hidden="true">↗</span></a>
+    </section>
+
+    <section class="map-shell" aria-labelledby="heatmap-heading">
+      <div class="section-top">
+        <div>
+          <span class="eyebrow">MAPA DE CALOR</span>
+          <h2 id="heatmap-heading">Blocos A, B, C e D</h2>
+        </div>
+        <label class="filter-label" for="problem-filter">Mostrar
+          <select id="problem-filter"><option value="all">Todos os problemas</option></select>
+        </label>
+      </div>
+
+      <p id="map-status" class="map-status" role="status" aria-live="polite">Carregando os dados do Radar…</p>
+      <div class="map-board">
+        <div class="scene-heading"><span>ESQUEMA 3D DOS BLOCOS</span><span id="last-updated">Aguardando dados</span></div>
+        <nav class="tower-jump" aria-label="Ir para um bloco">
+          <button type="button" data-jump="A">A</button><button type="button" data-jump="B">B</button><button type="button" data-jump="C">C</button><button type="button" data-jump="D">D</button>
+        </nav>
+        <div id="tower-grid" class="tower-grid" aria-label="Mapa de calor dos blocos"></div>
+        <div class="legend" aria-label="Legenda do mapa de calor"><strong>Unidades com relatos</strong><span><i class="swatch low"></i>3–4</span><span><i class="swatch medium"></i>5–9</span><span><i class="swatch high"></i>10 ou mais</span><span><i class="swatch neutral"></i>Sem dados publicáveis</span></div>
+      </div>
+      <p class="map-note">O desenho mostra <strong>blocos esquemáticos</strong>, sem reproduzir a arquitetura, a posição ou o número de apartamentos do edifício. As cores mostram <strong>faixas de unidades com relatos</strong>, não a gravidade. Para preservar os moradores, só aparecem recortes com relatos de pelo menos 3 unidades distintas. Os números exatos não são divulgados.</p>
+    </section>
+
+    <section class="map-details" aria-labelledby="details-title">
+      <div class="selected-panel" id="selected-panel"><span class="eyebrow">DETALHE</span><h2 id="details-title">Toque em uma faixa colorida</h2><p id="selected-description">Você verá o bloco, o pavimento e a faixa de unidades com relatos para o filtro escolhido.</p></div>
+      <div class="ranking-panel"><span class="eyebrow">COMPARAR</span><h2>Pavimentos com maior recorrência</h2><ol id="hotspots-list"><li>Os dados aparecerão quando houver relatos suficientes.</li></ol></div>
+    </section>
+    <p class="independence-note">O Radar reúne informações enviadas pelos moradores. Os relatos não são laudos nem substituem chamados e comunicados oficiais. Uma situação urgente deve ser informada diretamente à portaria, administração ou serviço competente.</p>
+  </main>
+  <footer><a href="radar.html">Radar Riviera</a><a href="./">Plantas</a><a href="privacidade.html">Dados e privacidade</a><button id="analytics-preferences" class="analytics-preferences" type="button" hidden>Preferências</button></footer>
+  <section id="analytics-consent" class="analytics-consent" aria-label="Privacidade das visitas" hidden><p><strong>Podemos medir o uso do site?</strong> Isso nos ajuda a entender quais páginas recebem visitas. IDs, contatos e conteúdo dos relatos não são enviados à medição. <a href="privacidade.html">Saiba mais</a>.</p><div><button id="analytics-reject" type="button">Agora não</button><button id="analytics-accept" type="button">Permitir</button></div></section>
+</body>
+</html>

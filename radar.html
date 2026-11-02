@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta id="browser-theme-color" name="theme-color" content="#f6f2e9">
+  <meta name="description" content="Registre problemas da entrega, consulte relatos agrupados e ajude a organizar a pauta do Riviera Martim de Sá.">
+  <title>Radar Riviera · Riviera Plantas</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
+  <link rel="stylesheet" href="styles.css?v=radar-1">
+  <link rel="stylesheet" href="analytics.css?v=1">
+  <link rel="stylesheet" href="radar.css?v=1">
+  <script src="radar-config.js?v=20261102" defer></script>
+  <script src="analytics.js?v=1" defer></script>
+  <script src="radar.js?v=1" defer></script>
+</head>
+<body class="radar-page">
+  <a class="skip-link" href="#conteudo">Ir para o Radar</a>
+  <header class="topbar radar-topbar">
+    <div class="identity"><span class="identity-mark" aria-hidden="true">R</span><div><strong>Riviera Martim de Sá</strong><small>Plantas dos apartamentos</small></div></div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Tema escuro</span></button>
+    <nav class="radar-toplinks" aria-label="Outras páginas"><a href="./">Plantas</a><a href="predio.html">Prédio 3D</a><a href="cotacao-coletiva.html">Cotação coletiva</a></nav>
+  </header>
+
+  <main id="conteudo" class="radar-main">
+    <section class="radar-hero" aria-labelledby="radar-title">
+      <span class="section-kicker">RELATOS DOS MORADORES · INICIATIVA INDEPENDENTE</span>
+      <h1 id="radar-title">Radar Riviera</h1>
+      <p>Encontrou um problema no apartamento ou no prédio? Registre em poucos passos. O painel reúne os relatos para ajudar a identificar o que precisa de atenção.</p>
+      <div class="radar-hero-actions"><a class="radar-button radar-button--primary" href="#registrar">Registrar problema <span aria-hidden="true">→</span></a><a class="radar-button" href="#painel">Ver o painel</a><a class="radar-button" href="#midias">Fotos e vídeos</a></div>
+      <p id="radar-availability" class="radar-status" role="status" hidden></p>
+      <p class="radar-disclaimer">Relatos enviados por moradores, sem verificação técnica. Este site não substitui chamados, administração, assembleia ou atendimento de emergência.</p>
+    </section>
+
+    <section id="painel" class="radar-section" aria-labelledby="painel-title">
+      <div class="radar-section-title"><div><span class="section-kicker">01 / VISÃO GERAL</span><h2 id="painel-title">Onde estão as pendências?</h2></div><a href="predio.html" class="radar-inline-link">Ver no prédio 3D ↗</a></div>
+      <p id="radar-summary-status" class="radar-status" role="status">Carregando relatos…</p>
+      <div class="radar-stats" aria-label="Resumo dos relatos">
+        <div><small>UNIDADES COM RELATOS</small><strong id="stat-units">—</strong></div>
+        <div><small>PROBLEMAS REGISTRADOS</small><strong id="stat-reports">—</strong></div>
+        <div class="radar-stat-urgent"><small>PEDEM ATENÇÃO AGORA</small><strong id="stat-urgent">—</strong></div>
+      </div>
+      <div class="radar-filters"><label for="summary-filter">Mostrar</label><select id="summary-filter"><option value="all">Todos os problemas</option></select><label for="summary-order">Ordenar</label><select id="summary-order"><option value="priority">Mais urgentes</option><option value="count">Mais relatados</option></select></div>
+      <div id="radar-issue-list" class="radar-issue-list" aria-live="polite"><p class="radar-empty">Aguardando os primeiros relatos.</p></div>
+      <p class="radar-footnote">Os números só entram no painel após revisão. A prioridade considera risco, dano em andamento, uso impedido e recorrência. Uma contagem alta não significa, sozinha, maior urgência.</p>
+      <div class="radar-updated" id="radar-updated"></div>
+    </section>
+
+    <section id="registrar" class="radar-section" aria-labelledby="registrar-title">
+      <div class="radar-section-title"><div><span class="section-kicker">02 / REGISTRE</span><h2 id="registrar-title">O que aconteceu?</h2></div><span class="radar-step-note">Você pode incluir mais de um problema</span></div>
+      <p>Escolha os problemas primeiro. Seus dados são informados uma vez só no final.</p>
+      <form id="radar-report-form" novalidate>
+        <label class="radar-hp" aria-hidden="true">Deixe vazio<input id="report-website" name="website" type="text" tabindex="-1" autocomplete="off"></label>
+        <div class="radar-form-card">
+          <div class="radar-form-grid">
+            <label>Onde?<select id="report-category" required><option value="">Escolha uma área</option></select></label>
+            <label>Assunto<select id="report-topic" disabled required><option value="">Escolha primeiro a área</option></select></label>
+            <label>Problema<select id="report-detail" disabled required><option value="">Escolha primeiro o assunto</option></select></label>
+            <label>Cômodo ou local<input id="report-room" type="text" maxlength="80" autocomplete="off" placeholder="Ex.: banheiro social"></label>
+          </div>
+          <fieldset class="radar-impact"><legend>O que esse problema está causando?</legend><label><input id="report-active" type="checkbox"> Está acontecendo agora</label><label><input id="report-risk" type="checkbox"> Pode causar dano ou risco</label><label><input id="report-blocks" type="checkbox"> Impede usar o ambiente ou continuar a obra</label></fieldset>
+          <p class="radar-emergency" id="radar-emergency" hidden>Se houver risco ou dano em andamento, procure também a portaria, a administração ou o serviço competente agora. O Radar não acompanha emergências em tempo real.</p>
+          <div class="radar-form-grid"><label class="radar-wide">Descrição <span>(opcional)</span><textarea id="report-description" rows="3" maxlength="700" placeholder="Conte o que você observou, sem citar nomes de terceiros."></textarea></label><label>Protocolo de chamado <span>(opcional)</span><input id="report-protocol" type="text" maxlength="80" autocomplete="off" placeholder="Se já tiver"></label></div>
+          <button id="add-issue" class="radar-button radar-button--secondary" type="button">+ Adicionar este problema</button>
+          <p id="add-issue-feedback" class="radar-form-feedback" role="status"></p>
+        </div>
+        <div class="radar-selected"><h3>Problemas que você vai enviar</h3><ul id="selected-issues"><li class="radar-empty">Nenhum selecionado ainda.</li></ul></div>
+        <div class="radar-form-card radar-personal"><h3>Seus dados</h3><p>O ID ajuda a agrupar relatos da mesma unidade, sem comprovar a autoria. Nome e contato são opcionais e ficam privados.</p><div class="radar-form-grid"><label>Nome <span>(opcional)</span><input id="report-name" type="text" autocomplete="name" maxlength="100"></label><label>ID do apartamento<input id="report-unit" type="text" inputmode="text" autocapitalize="characters" maxlength="6" placeholder="Ex.: 804A" required></label><label class="radar-wide">WhatsApp ou e-mail para retorno <span>(opcional)</span><input id="report-contact" type="text" autocomplete="off" maxlength="160"></label></div><label class="radar-consent"><input id="report-consent" type="checkbox" required> Concordo com o uso privado do meu ID e dos dados que informar para organizar os relatos e eventual contato sobre esta pendência. Apenas totais agrupados serão públicos.</label><div id="report-turnstile" class="radar-turnstile"></div><button id="submit-report" class="radar-button radar-button--primary" type="submit">Enviar problemas <span aria-hidden="true">→</span></button><p id="report-feedback" class="radar-form-feedback" role="status"></p></div>
+      </form>
+    </section>
+
+    <section id="midias" class="radar-section" aria-labelledby="midias-title">
+      <div class="radar-section-title"><div><span class="section-kicker">03 / MURAL DE EVIDÊNCIAS</span><h2 id="midias-title">Fotos e vídeos dos moradores</h2></div><a href="#enviar-midia" class="radar-inline-link">Enviar mídia ↗</a></div>
+      <p>Veja os registros publicados e conte se o mesmo problema aconteceu na sua unidade. Os envios e comentários passam por revisão antes de aparecer.</p>
+      <div class="radar-filters"><label for="media-filter">Filtrar</label><select id="media-filter"><option value="all">Todos os problemas</option></select></div>
+      <p id="radar-media-status" class="radar-status" role="status">Carregando mídias…</p>
+      <div id="radar-media-list" class="radar-media-list" aria-live="polite"><p class="radar-empty">Nenhuma mídia publicada ainda.</p></div>
+      <div id="enviar-midia" class="radar-form-card radar-media-form-wrap"><h3>Mostre o que encontrou</h3><p>Envie uma foto ou um vídeo do problema. Seu ID aparecerá parcialmente oculto. Não inclua rostos, placas, documentos ou números visíveis na imagem.</p><form id="radar-media-form" novalidate><label class="radar-hp" aria-hidden="true">Deixe vazio<input id="media-website" name="website" type="text" tabindex="-1" autocomplete="off"></label><div class="radar-form-grid"><label>ID do apartamento<input id="media-unit" type="text" inputmode="text" autocapitalize="characters" maxlength="6" placeholder="Ex.: 804A" required></label><label>Cômodo ou local<input id="media-room" type="text" maxlength="80" placeholder="Ex.: banheiro social" required></label><label>Assunto<select id="media-category" required><option value="">Escolha uma área</option></select></label><label>Problema<select id="media-detail" disabled required><option value="">Escolha primeiro o assunto</option></select></label><label class="radar-wide">Foto ou vídeo<input id="media-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" required><small>Uma mídia por envio. Fotos e vídeos serão revisados antes da publicação.</small></label><label class="radar-wide">Descrição <span>(opcional)</span><textarea id="media-description" rows="3" maxlength="500" placeholder="Algo importante que não aparece na imagem?"></textarea></label></div><label class="radar-consent"><input id="media-consent" type="checkbox" required> Sou responsável por esta mídia e autorizo a publicação da versão revisada, com meu ID parcial.</label><div id="media-turnstile" class="radar-turnstile"></div><button id="submit-media" class="radar-button radar-button--primary" type="submit">Enviar mídia para revisão <span aria-hidden="true">→</span></button><p id="media-feedback" class="radar-form-feedback" role="status"></p></form></div>
+    </section>
+    <section id="privacidade-radar" class="radar-section radar-privacy-section" aria-labelledby="privacy-title">
+      <div class="radar-section-title"><div><span class="section-kicker">04 / SEUS DADOS</span><h2 id="privacy-title">Pedir correção ou remoção</h2></div></div>
+      <p>Se algum relato ou mídia sua precisar ser corrigido ou removido, envie um pedido privado. Informe o ID da publicação no detalhe, se souber.</p>
+      <form id="radar-privacy-form" class="radar-form-card" novalidate>
+        <label class="radar-hp" aria-hidden="true">Deixe vazio<input id="privacy-website" name="website" type="text" tabindex="-1" autocomplete="off"></label>
+        <div class="radar-form-grid"><label>O que você precisa?<select id="privacy-type" required><option value="">Escolha</option><option value="correcao">Corrigir</option><option value="remocao">Remover</option></select></label><label>ID do apartamento<input id="privacy-unit" type="text" inputmode="text" autocapitalize="characters" maxlength="6" placeholder="Ex.: 804A" required></label><label class="radar-wide">Contato para resposta<input id="privacy-contact" type="text" maxlength="160" autocomplete="off" required></label><label class="radar-wide">Qual publicação ou informação? <span>(opcional)</span><textarea id="privacy-detail" rows="3" maxlength="500" placeholder="Ex.: mídia da cozinha ou ID da publicação"></textarea></label></div>
+        <div id="privacy-turnstile" class="radar-turnstile"></div><button id="submit-privacy" class="radar-button radar-button--secondary" type="submit">Enviar pedido</button><p id="privacy-feedback" class="radar-form-feedback" role="status"></p>
+      </form>
+    </section>
+  </main>
+
+  <dialog id="radar-interaction-dialog" class="radar-dialog" aria-labelledby="interaction-title"><form id="radar-interaction-form" novalidate><label class="radar-hp" aria-hidden="true">Deixe vazio<input id="interaction-website" name="website" type="text" tabindex="-1" autocomplete="off"></label><div class="radar-dialog-heading"><div><span class="section-kicker" id="interaction-kicker">PARTICIPAR</span><h2 id="interaction-title">Comentar</h2></div><button id="interaction-close" type="button" aria-label="Fechar">×</button></div><p id="interaction-context"></p><div class="radar-form-grid"><label>Seu nome<input id="interaction-name" type="text" autocomplete="name" maxlength="100" required></label><label>ID do apartamento<input id="interaction-unit" type="text" inputmode="text" autocapitalize="characters" maxlength="6" placeholder="Ex.: 804A" required></label><label id="interaction-text-wrap" class="radar-wide">Comentário<textarea id="interaction-text" rows="4" maxlength="500" required placeholder="Acrescente uma informação útil sobre este problema."></textarea></label></div><p class="radar-footnote">No site aparecem apenas seu primeiro nome e o ID parcial. Nome e ID completos ficam privados.</p><div id="interaction-turnstile" class="radar-turnstile"></div><div class="radar-dialog-actions"><button class="radar-button" type="button" id="interaction-cancel">Cancelar</button><button class="radar-button radar-button--primary" type="submit" id="interaction-submit">Enviar para revisão</button></div><p id="interaction-feedback" class="radar-form-feedback" role="status"></p></form></dialog>
+
+  <footer class="radar-footer"><a href="./">← Voltar à planta</a><a href="#privacidade-radar">Corrigir ou remover relato</a><a href="privacidade.html">Dados e privacidade</a><button id="analytics-preferences" class="analytics-preferences" type="button" hidden>Preferências</button></footer>
+  <section id="analytics-consent" class="analytics-consent" aria-label="Privacidade das visitas" hidden><p><strong>Podemos medir o uso do site?</strong> Isso nos ajuda a entender quais páginas recebem visitas. Nome, ID, contato e conteúdo dos relatos não são enviados à medição. <a href="privacidade.html">Saiba mais</a>.</p><div><button id="analytics-reject" type="button">Agora não</button><button id="analytics-accept" type="button">Permitir</button></div></section>
+</body>
+</html>
