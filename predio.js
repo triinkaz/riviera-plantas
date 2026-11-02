@@ -4,6 +4,7 @@
   const NS = "http://www.w3.org/2000/svg";
   const TOWERS = ["A", "B", "C", "D"];
   const BANDS = { 1: "3–4", 2: "5–9", 3: "10 ou mais" };
+  const embedded = document.documentElement.classList.contains("is-embedded");
   const filter = document.getElementById("problem-filter");
   const grid = document.getElementById("tower-grid");
   const status = document.getElementById("map-status");
@@ -263,8 +264,34 @@
     syncTheme();
   });
 
+  if (embedded) {
+    function applyTheme(theme) {
+      if (theme !== "light" && theme !== "dark") return;
+      document.documentElement.dataset.theme = theme;
+      document.getElementById("browser-theme-color").content = theme === "dark" ? "#0b0b0a" : "#f6f2e9";
+      syncTheme();
+    }
+    window.addEventListener("message", event => {
+      if (event.source !== window.parent || event.origin !== location.origin || event.data?.type !== "riviera-theme") return;
+      applyTheme(event.data.theme);
+    });
+    window.addEventListener("storage", event => {
+      if (event.key === "riviera-theme") applyTheme(event.newValue === "dark" ? "dark" : "light");
+    });
+    const main = document.getElementById("conteudo");
+    function sendHeight() {
+      if (window.parent === window) return;
+      const height = Math.max(420, Math.ceil(main.scrollHeight) + 2);
+      window.parent.postMessage({ type: "riviera-heatmap-height", height }, location.origin === "null" ? "*" : location.origin);
+    }
+    if ("ResizeObserver" in window) new ResizeObserver(sendHeight).observe(main);
+    window.addEventListener("resize", sendHeight);
+    requestAnimationFrame(sendHeight);
+  }
+
   buildFilter();
   render();
+  status.textContent = "Carregando as faixas do Radar…";
   load();
   setInterval(() => { if (document.visibilityState === "visible") load(); }, 60000);
 })();

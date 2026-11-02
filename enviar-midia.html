@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta id="browser-theme-color" name="theme-color" content="#f6f2e9">
+  <meta name="description" content="Envie fotos ou vídeos de problemas do apartamento ou do prédio para o mural do Radar Riviera.">
+  <title>Enviar fotos ou vídeos · Radar Riviera</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
+  <link rel="stylesheet" href="styles.css?v=radar-1">
+  <link rel="stylesheet" href="analytics.css?v=1">
+  <link rel="stylesheet" href="radar.css?v=2">
+  <link rel="stylesheet" href="radar-forms.css?v=1">
+  <script src="radar-config.js?v=20261102" defer></script>
+  <script src="analytics.js?v=1" defer></script>
+  <script src="radar-forms.js?v=1" defer></script>
+</head>
+<body class="radar-page radar-form-page" data-form-page="media">
+  <a class="skip-link" href="#conteudo">Ir para o formulário</a>
+  <header class="topbar radar-topbar">
+    <div class="identity"><span class="identity-mark" aria-hidden="true">R</span><div><strong>Riviera Martim de Sá</strong><small>Radar dos moradores</small></div></div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Tema escuro</span></button>
+    <nav class="radar-toplinks" aria-label="Outras páginas"><a href="radar.html">Ver Radar</a><a href="registrar-problema.html">Registrar problema</a></nav>
+  </header>
+  <main id="conteudo" class="radar-main">
+    <section class="radar-hero radar-form-hero" aria-labelledby="page-title">
+      <a class="radar-back" href="radar.html">← Voltar ao Radar</a>
+      <span class="section-kicker">RADAR RIVIERA / MURAL</span>
+      <h1 id="page-title">Enviar fotos ou vídeos</h1>
+      <p>Mostre o que você encontrou. Escolha o local e o assunto para que os moradores entendam a imagem.</p>
+      <p id="radar-availability" class="radar-status" role="status" hidden></p>
+    </section>
+    <section class="radar-section radar-form-section" aria-labelledby="form-title">
+      <div class="radar-section-title"><div><span class="section-kicker">01 / ENVIO</span><h2 id="form-title">Sobre esta mídia</h2></div><a href="radar.html#midias" class="radar-inline-link">Ver mural ↗</a></div>
+      <p>Envie uma foto ou um vídeo por vez. Depois de enviar, você pode adicionar mais. Seu ID aparecerá parcialmente oculto; não inclua rostos, placas, documentos ou números visíveis.</p>
+      <form id="radar-media-form" class="radar-form-card" novalidate>
+        <label class="radar-hp" aria-hidden="true">Deixe vazio<input id="media-website" name="website" type="text" tabindex="-1" autocomplete="off"></label>
+        <div class="radar-form-grid">
+          <label>ID do apartamento<input id="media-unit" type="text" inputmode="text" autocapitalize="characters" maxlength="6" placeholder="Ex.: 804A" required></label>
+          <label>Cômodo ou local<input id="media-room" type="text" maxlength="80" placeholder="Ex.: banheiro social" required></label>
+          <label>Assunto<select id="media-category" required><option value="">Escolha uma área</option></select></label>
+          <label>Problema<select id="media-detail" disabled required><option value="">Escolha primeiro o assunto</option></select></label>
+          <label class="radar-wide">Foto ou vídeo<input id="media-file" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" required><small>Foto JPG, PNG ou WebP de até 8 MB; vídeo MP4 ou WebM de até 25 MB. O arquivo será revisado antes da publicação.</small></label>
+          <label class="radar-wide">Descrição <span>(opcional)</span><textarea id="media-description" rows="3" maxlength="500" placeholder="Algo importante que não aparece na imagem?"></textarea></label>
+        </div>
+        <label class="radar-consent"><input id="media-consent" type="checkbox" required> Sou responsável por esta mídia e autorizo a publicação da versão revisada, com meu ID parcialmente oculto.</label>
+        <div id="media-turnstile" class="radar-turnstile"></div>
+        <button id="submit-media" class="radar-button radar-button--primary" type="submit">Enviar mídia para revisão <span aria-hidden="true">→</span></button>
+        <p id="media-feedback" class="radar-form-feedback" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+    <p class="radar-disclaimer">Fotos e vídeos são relatos dos moradores, sem verificação técnica. O Radar não substitui chamados, administração ou atendimento de emergência.</p>
+  </main>
+  <footer class="radar-footer"><a href="radar.html#midias">← Ver mural</a><a href="radar.html#privacidade-radar">Corrigir ou remover mídia</a><a href="privacidade.html">Dados e privacidade</a><button id="analytics-preferences" class="analytics-preferences" type="button" hidden>Preferências</button></footer>
+  <section id="analytics-consent" class="analytics-consent" aria-label="Privacidade das visitas" hidden><p><strong>Podemos medir o uso do site?</strong> Isso nos ajuda a entender quais páginas recebem visitas. Nome, ID, contato e conteúdo dos relatos não são enviados à medição. <a href="privacidade.html">Saiba mais</a>.</p><div><button id="analytics-reject" type="button">Agora não</button><button id="analytics-accept" type="button">Permitir</button></div></section>
+</body>
+</html>

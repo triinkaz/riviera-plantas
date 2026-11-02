@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta id="browser-theme-color" name="theme-color" content="#f6f2e9">
+  <meta name="description" content="Registre problemas do apartamento ou do prédio no Radar Riviera e anexe fotos ou vídeos para o mural.">
+  <title>Registrar problema · Radar Riviera</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
+  <link rel="stylesheet" href="styles.css?v=radar-1">
+  <link rel="stylesheet" href="analytics.css?v=1">
+  <link rel="stylesheet" href="radar.css?v=2">
+  <link rel="stylesheet" href="radar-forms.css?v=1">
+  <script src="radar-config.js?v=20261102" defer></script>
+  <script src="analytics.js?v=1" defer></script>
+  <script src="radar-forms.js?v=1" defer></script>
+</head>
+<body class="radar-page radar-form-page" data-form-page="report">
+  <a class="skip-link" href="#conteudo">Ir para o formulário</a>
+  <header class="topbar radar-topbar">
+    <div class="identity"><span class="identity-mark" aria-hidden="true">R</span><div><strong>Riviera Martim de Sá</strong><small>Radar dos moradores</small></div></div>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Ativar tema escuro" aria-pressed="false"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-label">Tema escuro</span></button>
+    <nav class="radar-toplinks" aria-label="Outras páginas"><a href="radar.html">Ver Radar</a><a href="enviar-midia.html">Enviar só mídia</a></nav>
+  </header>
+  <main id="conteudo" class="radar-main">
+    <section class="radar-hero radar-form-hero" aria-labelledby="page-title">
+      <a class="radar-back" href="radar.html">← Voltar ao Radar</a>
+      <span class="section-kicker">RADAR RIVIERA / REGISTRO</span>
+      <h1 id="page-title">Registrar problema</h1>
+      <p>Escolha o que aconteceu e onde. Se tiver foto ou vídeo, anexe ao problema. Você pode incluir mais de um no mesmo envio.</p>
+      <p id="radar-availability" class="radar-status" role="status" hidden></p>
+    </section>
+    <section class="radar-section radar-form-section" aria-labelledby="form-title">
+      <div class="radar-section-title"><div><span class="section-kicker">01 / PROBLEMAS</span><h2 id="form-title">O que você encontrou?</h2></div></div>
+      <form id="radar-report-form" novalidate>
+        <label class="radar-hp" aria-hidden="true">Deixe vazio<input id="report-website" name="website" type="text" tabindex="-1" autocomplete="off"></label>
+        <div class="radar-form-card">
+          <div class="radar-form-grid">
+            <label>Onde?<select id="report-category" required><option value="">Escolha uma área</option></select></label>
+            <label>Assunto<select id="report-topic" disabled required><option value="">Escolha primeiro a área</option></select></label>
+            <label>Problema<select id="report-detail" disabled required><option value="">Escolha primeiro o assunto</option></select></label>
+            <label>Cômodo ou local <span>(opcional)</span><input id="report-room" type="text" maxlength="80" autocomplete="off" placeholder="Ex.: banheiro social"></label>
+          </div>
+          <fieldset class="radar-impact"><legend>O que esse problema está causando?</legend><label><input id="report-active" type="checkbox"> Está acontecendo agora</label><label><input id="report-risk" type="checkbox"> Pode causar dano ou risco</label><label><input id="report-blocks" type="checkbox"> Impede usar o ambiente ou continuar a obra</label></fieldset>
+          <p class="radar-emergency" id="radar-emergency" hidden>Se houver risco ou dano em andamento, procure também a portaria, a administração ou o serviço competente agora. O Radar não acompanha emergências em tempo real.</p>
+          <div class="radar-form-grid">
+            <label class="radar-wide">Descrição <span>(opcional)</span><textarea id="report-description" rows="3" maxlength="700" placeholder="Conte o que você observou, sem citar nomes de terceiros."></textarea></label>
+            <label>Protocolo de chamado <span>(opcional)</span><input id="report-protocol" type="text" maxlength="80" autocomplete="off" placeholder="Se já tiver"></label>
+            <label class="radar-wide">Fotos ou vídeos deste problema <span>(opcional)</span><input id="report-files" type="file" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"><small>Até 4 arquivos por envio: fotos JPG, PNG ou WebP de até 8 MB cada; vídeos MP4 ou WebM de até 25 MB. Total dos arquivos: até 26 MB.</small></label>
+          </div>
+          <button id="add-issue" class="radar-button radar-button--secondary" type="button">+ Adicionar este problema</button>
+          <p id="add-issue-feedback" class="radar-form-feedback" role="status"></p>
+        </div>
+        <div class="radar-selected"><h3>Problemas que você vai enviar</h3><ul id="selected-issues"><li class="radar-empty">Nenhum selecionado ainda.</li></ul></div>
+        <div class="radar-form-card radar-personal">
+          <h3>Seus dados</h3>
+          <p>O ID ajuda a agrupar relatos da mesma unidade, sem comprovar a autoria. Nome e contato são opcionais e ficam privados. O painel mostra somente os totais aprovados.</p>
+          <div class="radar-form-grid"><label>Nome <span>(opcional)</span><input id="report-name" type="text" autocomplete="name" maxlength="100"></label><label>ID do apartamento<input id="report-unit" type="text" inputmode="text" autocapitalize="characters" maxlength="6" placeholder="Ex.: 804A" required></label><label class="radar-wide">WhatsApp ou e-mail para retorno <span>(opcional)</span><input id="report-contact" type="text" autocomplete="off" maxlength="160"></label></div>
+          <label class="radar-consent"><input id="report-consent" type="checkbox" required> Concordo com o uso privado do meu ID e dos dados que informar para organizar os relatos e eventual contato sobre esta pendência.</label>
+          <label id="media-consent-wrap" class="radar-consent" hidden><input id="report-media-consent" type="checkbox"> Sou responsável pelos arquivos anexados e autorizo a publicação da versão revisada no mural, com meu ID parcialmente oculto. Sei que fotos e vídeos podem revelar detalhes da minha unidade.</label>
+          <p class="radar-private-note">Antes de enviar mídias, retire rostos, placas, documentos e números visíveis. Relatos e arquivos passam por revisão antes de aparecer no site. Para pedir correção ou remoção depois, use o formulário no Radar.</p>
+          <div id="report-turnstile" class="radar-turnstile"></div>
+          <button id="submit-report" class="radar-button radar-button--primary" type="submit">Enviar problemas <span aria-hidden="true">→</span></button>
+          <p id="report-feedback" class="radar-form-feedback" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+    <p class="radar-disclaimer">Relatos enviados por moradores, sem verificação técnica. Este site não substitui chamados, administração, assembleia ou atendimento de emergência.</p>
+  </main>
+  <footer class="radar-footer"><a href="radar.html">← Voltar ao Radar</a><a href="radar.html#privacidade-radar">Corrigir ou remover relato</a><a href="privacidade.html">Dados e privacidade</a><button id="analytics-preferences" class="analytics-preferences" type="button" hidden>Preferências</button></footer>
+  <section id="analytics-consent" class="analytics-consent" aria-label="Privacidade das visitas" hidden><p><strong>Podemos medir o uso do site?</strong> Isso nos ajuda a entender quais páginas recebem visitas. Nome, ID, contato e conteúdo dos relatos não são enviados à medição. <a href="privacidade.html">Saiba mais</a>.</p><div><button id="analytics-reject" type="button">Agora não</button><button id="analytics-accept" type="button">Permitir</button></div></section>
+</body>
+</html>

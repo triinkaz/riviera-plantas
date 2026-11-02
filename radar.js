@@ -117,6 +117,7 @@
       const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
       document.documentElement.dataset.theme = next;
       try { localStorage.setItem("riviera-theme", next); } catch { /* preferência opcional */ }
+      $("radar-map-frame")?.contentWindow?.postMessage({ type: "riviera-theme", theme: next }, location.origin);
       reflect();
     });
     reflect();
@@ -125,9 +126,10 @@
   function setupTaxonomy() {
     for (const id of ["report-category", "media-category", "summary-filter", "media-filter"]) {
       const select = $(id);
+      if (!select) continue;
       for (const item of catalog) option(select, item.id, item.label);
     }
-    $("report-category").addEventListener("change", () => {
+    $("report-category")?.addEventListener("change", () => {
       const select = $("report-topic");
       resetSelect(select, "Escolha o assunto");
       resetSelect($("report-detail"), "Escolha primeiro o assunto");
@@ -136,14 +138,14 @@
       $("report-detail").disabled = true;
       chosen?.topics.forEach(item => option(select, item.id, item.label));
     });
-    $("report-topic").addEventListener("change", () => {
+    $("report-topic")?.addEventListener("change", () => {
       const select = $("report-detail");
       resetSelect(select, "Escolha o problema");
       const chosen = topic($("report-category").value, $("report-topic").value);
       select.disabled = !chosen;
       chosen?.details.forEach(([id, label]) => option(select, id, label));
     });
-    $("media-category").addEventListener("change", () => {
+    $("media-category")?.addEventListener("change", () => {
       const select = $("media-detail");
       resetSelect(select, "Escolha o problema");
       const chosen = category($("media-category").value);
@@ -156,9 +158,9 @@
         select.append(group);
       }
     });
-    $("summary-filter").addEventListener("change", renderSummary);
-    $("summary-order").addEventListener("change", renderSummary);
-    $("media-filter").addEventListener("change", renderMedia);
+    $("summary-filter")?.addEventListener("change", renderSummary);
+    $("summary-order")?.addEventListener("change", renderSummary);
+    $("media-filter")?.addEventListener("change", renderMedia);
   }
 
   function showEmergency() {
@@ -355,9 +357,9 @@
       const message = "Envios ainda não disponíveis. O serviço de recebimento está sendo preparado.";
       $("radar-availability").hidden = false;
       $("radar-availability").textContent = message;
-      for (const id of ["submit-report", "submit-media", "interaction-submit", "submit-privacy"]) $(id).disabled = true;
-      status($("report-feedback"), message);
-      status($("media-feedback"), message);
+      for (const id of ["submit-report", "submit-media", "interaction-submit", "submit-privacy"]) if ($(id)) $(id).disabled = true;
+      if ($("report-feedback")) status($("report-feedback"), message);
+      if ($("media-feedback")) status($("media-feedback"), message);
       status($("privacy-feedback"), message);
       return;
     }
@@ -375,17 +377,18 @@
       });
       if (!window.turnstile) throw new Error("Turnstile indisponível");
       for (const id of ["report-turnstile", "media-turnstile", "interaction-turnstile", "privacy-turnstile"]) {
-        widgets.set(id, window.turnstile.render($(id), { sitekey: siteKey, theme: document.documentElement.dataset.theme === "dark" ? "dark" : "light" }));
+        if ($(id)) widgets.set(id, window.turnstile.render($(id), { sitekey: siteKey, theme: document.documentElement.dataset.theme === "dark" ? "dark" : "light" }));
       }
     } catch {
-      for (const id of ["submit-report", "submit-media", "interaction-submit", "submit-privacy"]) $(id).disabled = true;
-      status($("report-feedback"), "Não foi possível preparar o envio seguro. Atualize a página e tente novamente.", "error");
-      status($("media-feedback"), "Não foi possível preparar o envio seguro. Atualize a página e tente novamente.", "error");
+      for (const id of ["submit-report", "submit-media", "interaction-submit", "submit-privacy"]) if ($(id)) $(id).disabled = true;
+      if ($("report-feedback")) status($("report-feedback"), "Não foi possível preparar o envio seguro. Atualize a página e tente novamente.", "error");
+      if ($("media-feedback")) status($("media-feedback"), "Não foi possível preparar o envio seguro. Atualize a página e tente novamente.", "error");
       status($("privacy-feedback"), "Não foi possível preparar o envio seguro. Atualize a página e tente novamente.", "error");
     }
   }
 
   function setupReports() {
+    if (!$('radar-report-form')) return;
     $("add-issue").addEventListener("click", addIssue);
     for (const id of ["report-active", "report-risk", "report-blocks"]) $(id).addEventListener("change", showEmergency);
     $("radar-report-form").addEventListener("submit", async event => {
@@ -410,6 +413,7 @@
   }
 
   function setupMediaForm() {
+    if (!$('radar-media-form')) return;
     $("radar-media-form").addEventListener("submit", async event => {
       event.preventDefault();
       if (!canSend) return;
@@ -508,7 +512,19 @@
     });
   }
 
+  function setupMapFrame() {
+    const frame = $("radar-map-frame");
+    if (!frame) return;
+    window.addEventListener("message", event => {
+      if (event.origin !== location.origin || event.source !== frame.contentWindow || event.data?.type !== "riviera-heatmap-height") return;
+      const height = Number(event.data.height);
+      if (Number.isFinite(height) && height >= 350 && height <= 2400) frame.style.height = Math.ceil(height) + "px";
+    });
+    frame.addEventListener("load", () => frame.contentWindow?.postMessage({ type: "riviera-theme", theme: document.documentElement.dataset.theme === "dark" ? "dark" : "light" }, location.origin));
+  }
+
   setupTheme();
+  setupMapFrame();
   setupTaxonomy();
   setupReports();
   setupMediaForm();

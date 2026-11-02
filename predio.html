@@ -7,12 +7,21 @@
   <meta name="description" content="Veja onde os relatos dos moradores do Riviera Martim de Sá se concentram, por bloco, pavimento e tipo de problema.">
   <title>Mapa do prédio · Radar Riviera</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <script>try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}</script>
-  <link rel="stylesheet" href="predio.css?v=1">
+  <script>
+    const heatmapEmbedded = new URLSearchParams(location.search).get("embed") === "1";
+    if (heatmapEmbedded) document.documentElement.classList.add("is-embedded");
+    try{if(localStorage.getItem("riviera-theme")==="dark"){document.documentElement.dataset.theme="dark";document.getElementById("browser-theme-color").content="#0b0b0a"}}catch{}
+    // The Radar page already measures its own visit. Do not count the embedded map twice.
+    if (!heatmapEmbedded) document.addEventListener("DOMContentLoaded", () => {
+      const script = document.createElement("script");
+      script.src = "analytics.js?v=1";
+      document.head.append(script);
+    });
+  </script>
+  <link rel="stylesheet" href="predio.css?v=2">
   <link rel="stylesheet" href="analytics.css?v=1">
   <script src="radar-config.js?v=20261102" defer></script>
-  <script src="analytics.js?v=1" defer></script>
-  <script src="predio.js?v=2" defer></script>
+  <script src="predio.js?v=3" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Ir para o mapa</a>
@@ -30,7 +39,7 @@
         <h1 id="map-title">Onde os problemas se concentram?</h1>
         <p>Veja os relatos dos moradores por bloco e pavimento. Escolha um tipo de problema para comparar as áreas.</p>
       </div>
-      <a class="report-link" href="radar.html#registrar">Registrar um problema <span aria-hidden="true">↗</span></a>
+      <a class="report-link" href="registrar-problema.html">Registrar um problema <span aria-hidden="true">↗</span></a>
     </section>
 
     <section class="map-shell" aria-labelledby="heatmap-heading">
@@ -42,6 +51,7 @@
         <label class="filter-label" for="problem-filter">Mostrar
           <select id="problem-filter"><option value="all">Todos os problemas</option></select>
         </label>
+        <a class="embed-open" href="predio.html" target="_top">Abrir mapa completo <span aria-hidden="true">↗</span></a>
       </div>
 
       <p id="map-status" class="map-status" role="status" aria-live="polite">Carregando os dados do Radar…</p>
@@ -54,6 +64,7 @@
         <div class="legend" aria-label="Legenda do mapa de calor"><strong>Unidades com relatos</strong><span><i class="swatch low"></i>3–4</span><span><i class="swatch medium"></i>5–9</span><span><i class="swatch high"></i>10 ou mais</span><span><i class="swatch neutral"></i>Sem dados publicáveis</span></div>
       </div>
       <p class="map-note">O desenho mostra <strong>blocos esquemáticos</strong>, sem reproduzir a arquitetura, a posição ou o número de apartamentos do edifício. As cores mostram <strong>faixas de unidades com relatos</strong>, não a gravidade. Para preservar os moradores, só aparecem recortes com relatos de pelo menos 3 unidades distintas. Os números exatos não são divulgados.</p>
+      <p class="embed-note">Blocos ilustrativos. As cores indicam a recorrência, não a urgência. Só mostramos faixas com relatos de pelo menos 3 unidades distintas, sem divulgar números exatos.</p>
     </section>
 
     <section class="map-details" aria-labelledby="details-title">
