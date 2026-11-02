@@ -181,8 +181,8 @@ function dimensionMarkers() {
     const y1=small?rawY1:yy(rawY1),y2=small?rawY2:yy(rawY2),cy=small?rawCy:yy(rawCy);
     const horizontal=y1===y2,height=small?36:48,tick=small?7:10;
     const ticks=horizontal
-      ? `<path d="M${x1} ${y1-tick}V${y1+tick}M${x2} ${y2-tick}V${y2+tick}"/>`
-      : `<path d="M${x1-tick} ${y1}H${x1+tick}M${x2-tick} ${y2}H${x2+tick}"/>`;
+      ? `M${x1} ${y1-tick}V${y1+tick}M${x2} ${y2-tick}V${y2+tick}`
+      : `M${x1-tick} ${y1}H${x1+tick}M${x2-tick} ${y2}H${x2+tick}`;
     const leader=horizontal
       ? `M${cx} ${cy+(cy<y1?height/2:-height/2)}V${y1}`
       : `M${cx+(cx<x1?width/2:-width/2)} ${cy}H${x1}`;
