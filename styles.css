@@ -285,6 +285,19 @@ html[data-theme="light"] .sponsor-card--premium .premium-calendar-day strong{col
 html[data-theme="light"] .sponsor-card--premium .premium-calendar-note{color:#564762}
 html[data-theme="light"] .sponsor-card--premium a{border-color:#765289;background:#66467e;color:#fff}
 html[data-theme="light"] .sponsor-card--premium a:hover{background:#53356d}
+.sponsor-card--editorial{padding:11px;min-width:0}
+.sponsor-card--editorial .premium-name{display:inline-block;white-space:normal;overflow-wrap:anywhere;font-size:11px;animation:none}
+.sponsor-card--editorial .editorial-headline{margin:11px 0 8px;color:#f7e8fc;font:700 17px/1.18 Georgia,serif}
+.sponsor-card--editorial .editorial-copy{margin:0 0 11px;color:#e9dfeb;font:11px/1.43 Arial,sans-serif}
+.sponsor-card--editorial .editorial-condition{margin:13px 0 10px;padding:10px;border:1px solid #e5b977;border-radius:7px;background:linear-gradient(125deg,#654878,#3c304c)}
+.sponsor-card--editorial .editorial-condition-label{display:block;color:#f7dca5;font:700 9px/1.2 Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.sponsor-card--editorial .editorial-condition strong{display:block;margin:5px 0 0;color:#fff9eb;font:700 14px/1.25 Georgia,serif}
+.sponsor-card--editorial a{display:flex;margin-top:12px;min-height:44px}
+html[data-theme="light"] .sponsor-card--editorial .editorial-headline{color:#4a305b}
+html[data-theme="light"] .sponsor-card--editorial .editorial-copy{color:#4c4350}
+html[data-theme="light"] .sponsor-card--editorial .editorial-condition{border-color:#d8ad66;background:linear-gradient(115deg,#fff0d8,#f7e7f8)}
+html[data-theme="light"] .sponsor-card--editorial .editorial-condition-label{color:#8a542e}
+html[data-theme="light"] .sponsor-card--editorial .editorial-condition strong{color:#4b2f47}
 @keyframes premium-ring-flow{0%{background-position:0 0,0% 50%}50%{background-position:0 0,100% 50%}100%{background-position:0 0,0% 50%}}
 @media(prefers-reduced-motion:reduce){.sponsor-card--premium .premium-name{animation:none}}
 @media(max-width:660px){.sponsor-card--premium .premium-calendar{padding:8px}.sponsor-card--premium .premium-calendar-day{padding:6px 4px}.sponsor-card--premium a{min-height:44px}}

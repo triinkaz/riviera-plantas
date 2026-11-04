@@ -742,12 +742,23 @@ function createProviderCard(provider,service,independent,serviceId){
   const campaign=provider.campaign;
   const compactPremium=campaign?.premium && campaign.compactServices?.includes(serviceId);
   if(campaign?.premium && !compactPremium)card.classList.add("sponsor-card--premium");
+  if(campaign?.editorial)card.classList.add("sponsor-card--editorial");
   const badge=document.createElement("small");
   badge.textContent=independent?"Publicidade · profissional independente":"Publicidade";
   const name=document.createElement("strong");name.textContent=provider.name;
   if(campaign?.premium && !compactPremium)name.className="premium-name";
   card.append(badge,name);
-  if(campaign?.gift && !compactPremium){
+  if(campaign?.editorial){
+    const editorial=campaign.editorial;
+    const headline=document.createElement("h4");headline.className="editorial-headline";headline.textContent=editorial.headline;
+    card.append(headline);
+    editorial.paragraphs.forEach(copy=>{const paragraph=document.createElement("p");paragraph.className="editorial-copy";paragraph.textContent=copy;card.append(paragraph);});
+    const condition=document.createElement("div");condition.className="editorial-condition";
+    const label=document.createElement("span");label.className="editorial-condition-label";label.textContent=editorial.offerLabel;
+    const offer=document.createElement("strong");offer.textContent=editorial.offer;
+    condition.append(label,offer);card.append(condition);
+  }
+  if(!campaign?.editorial && campaign?.gift && !compactPremium){
     const gift=document.createElement("div");gift.className="premium-gift";
     const mark=document.createElement("span");mark.className="premium-gift-mark";mark.setAttribute("aria-hidden","true");mark.textContent="✦";
     const copy=document.createElement("div");
@@ -756,7 +767,7 @@ function createProviderCard(provider,service,independent,serviceId){
     const condition=document.createElement("span");condition.className="premium-gift-condition";condition.textContent=campaign.gift.condition;
     copy.append(eyebrow,title,condition);gift.append(mark,copy);card.append(gift);
   }
-  if(campaign?.offer){
+  if(!campaign?.editorial && campaign?.offer){
     const offer=document.createElement("span");offer.className=compactPremium||!campaign.premium?"sponsor-discount":"premium-offer";offer.textContent=campaign.offer;
     card.append(offer);
     if(!compactPremium && campaign.description){

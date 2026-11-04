@@ -118,7 +118,7 @@ const SPONSORS = [
   {
     id:"fernanda-souza",
     name:"Fernanda Souza",
-    services:["marcenaria","interiores"],
+    services:["marcenaria"],
     whatsapp:"5512982034901",
     message:"Olá, Fernanda! Vim pelo Riviera Plantas. Vi os 20% de desconto no projeto inteiro e o cooktop de brinde para quem fechar uma cozinha. Gostaria de conversar sobre o meu apartamento.",
     active:true,
@@ -134,6 +134,26 @@ const SPONSORS = [
           {week:"SÁB",day:"31",label:"Sábado, 31 de outubro de 2026"}
         ],
         note:"Coquetel com comes e bebes. Pergunte o horário e o endereço pelo WhatsApp."
+      }
+    }
+  },
+  {
+    id:"gisa-studio",
+    name:"GISÁ STUDIO | PROJETOS E OBRAS",
+    services:["interiores"],
+    whatsapp:"5512991923740",
+    message:"Olá, Isabela! Vi a Gisá Studio no Riviera Plantas e quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá. Pode me passar um orçamento e explicar a cortesia do projeto ao fechar a obra?",
+    active:true,
+    campaign:{
+      premium:true,
+      editorial:{
+        headline:"Sua obra, do desenho à execução",
+        paragraphs:[
+          "Projetos de interiores, gerenciamento e acompanhamento de obras e documentação técnica.",
+          "Cuidamos de cada etapa para transformar seu projeto em realidade com planejamento, sofisticação e tranquilidade"
+        ],
+        offerLabel:"Condição especial",
+        offer:"Fechou sua obra conosco? O valor do projeto é nossa cortesia!"
       }
     }
   },
