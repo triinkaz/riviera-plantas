@@ -141,8 +141,8 @@ const SPONSORS = [
     id:"gisa-studio",
     name:"GISÁ STUDIO | PROJETOS E OBRAS",
     services:["interiores"],
-    whatsapp:"5512991923740",
-    message:"Olá, Isabela! Vi a Gisá Studio no Riviera Plantas e quero conversar sobre a reforma do meu apartamento no Riviera Martim de Sá. Pode me passar um orçamento e explicar a cortesia do projeto ao fechar a obra?",
+    whatsapp:"5512978984432",
+    message:"Olá! Vim pelo site Riviera Plantas e gostaria de conversar sobre um projeto.",
     active:true,
     campaign:{
       premium:true,
