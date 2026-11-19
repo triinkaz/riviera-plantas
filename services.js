@@ -11,6 +11,7 @@ const SERVICE_CATALOG = {
   impermeabilizacao: {name:"Avaliar impermeabilização", detail:"Diagnóstico e projeto de reparo; intervenções em áreas impermeabilizadas exigem análise.", conditional:true},
   arquitetura: {name:"Arquitetura", detail:"Projeto e acompanhamento da reforma do apartamento, respeitando as plantas e as regras do condomínio."},
   marcenaria: {name:"Móveis planejados", detail:"Projeto e execução de móveis sob medida após levantamento no imóvel e verificação das fixações."},
+  acompanhamento_obra: {name:"Acompanhamento de obra", detail:"Acompanhamento da execução da reforma por profissional habilitado, conforme o projeto e as regras do condomínio."},
   interiores: {name:"Design de interiores", detail:"Planejamento dos ambientes, mobiliário, iluminação e acabamentos conforme as condições reais do apartamento."},
   engenharia: {name:"Engenharia", detail:"Avaliação técnica, projetos e acompanhamento de serviços que exigem profissional habilitado e documentação aplicável."},
   art: {name:"ART para reforma", detail:"Converse sobre a documentação técnica adequada ao serviço que pretende fazer e confira as exigências do condomínio."},
@@ -156,6 +157,14 @@ const SPONSORS = [
         offer:"Fechou sua obra conosco? O valor do projeto é nossa cortesia!"
       }
     }
+  },
+  {
+    id:"raissa-tayna-klasman",
+    name:"Arq. Raíssa Tayná Klasman",
+    services:["acompanhamento_obra","interiores"],
+    whatsapp:"5545999836972",
+    message:"Olá, Raíssa! Vim pelo Riviera Plantas e gostaria de conversar sobre acompanhamento de obra ou design de interiores no meu apartamento no Riviera Martim de Sá.",
+    active:true
   },
   {
     id:"taynara-murade",

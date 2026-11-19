@@ -226,7 +226,7 @@ html[data-theme="light"] .tech-popover.is-structural .tech-check p{color:#772833
 /* Atalhos para profissionais que atendem o apartamento inteiro. */
 .whole-home-actions{position:absolute;z-index:6;top:54px;left:13px;right:13px;width:auto;touch-action:auto}
 .whole-home-label{display:none}
-.whole-home-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.whole-home-buttons{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
 .whole-home-buttons button{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:42px;width:100%;padding:6px 7px;border:1px solid #836a42;background:#191711eb;color:#f0d7a7;text-align:left;font:10px Georgia,serif;line-height:1.12;box-shadow:0 2px 10px #0007;white-space:normal}
 .whole-home-buttons button .service-chevron{font:17px Arial,sans-serif;line-height:.8;color:var(--gold)}
 .whole-home-buttons .service-label-compact{display:none}
@@ -243,7 +243,7 @@ html[data-theme="light"] .whole-home-buttons button:hover,html[data-theme="light
 @media(min-width:661px) and (max-width:1150px){
   .whole-home-buttons{grid-template-columns:repeat(6,minmax(0,1fr))}
   .whole-home-buttons button{grid-column:span 2;min-height:37px;padding:4px 6px}
-  .whole-home-buttons button:nth-child(n+4){grid-column:span 3}
+  .whole-home-buttons button:nth-child(n+4){grid-column:span 2}
   .plan-stage,#plan-3d,.dimension-status{top:144px}
   #plan-3d{height:calc(100% - 144px)}
   .area-status{top:183px}

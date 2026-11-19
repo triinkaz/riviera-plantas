@@ -61,7 +61,7 @@
   #plan-3d{bottom:112px;height:calc(100% - 160px)}
   .whole-home-actions{top:auto;left:0;right:0;bottom:59px;width:100%;z-index:4;overflow:hidden}
   .whole-home-label{display:none}
-  .whole-home-buttons{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;padding:3px 6px}
+  .whole-home-buttons{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;padding:3px 6px}
   .whole-home-buttons button,.whole-home-buttons button:nth-child(n+4){grid-column:auto;justify-content:center;min-width:0;width:100%;min-height:44px;padding:4px 2px;font-size:9px;line-height:1.1;text-align:center;white-space:normal;box-shadow:none}
   .whole-home-buttons .service-label-wide,.whole-home-buttons .service-chevron{display:none}
   .whole-home-buttons .service-label-compact{display:inline}
