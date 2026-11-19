@@ -10,6 +10,7 @@ const SERVICE_CATALOG = {
   rejunte: {name:"Rejunte e vedação", detail:"Manutenção de juntas e vedações aparentes, sem presumir intervenção na impermeabilização."},
   impermeabilizacao: {name:"Avaliar impermeabilização", detail:"Diagnóstico e projeto de reparo; intervenções em áreas impermeabilizadas exigem análise.", conditional:true},
   arquitetura: {name:"Arquitetura", detail:"Projeto e acompanhamento da reforma do apartamento, respeitando as plantas e as regras do condomínio."},
+  consultoria_arquitetonica: {name:"Consultoria arquitetônica", detail:"Orientação profissional para planejar a reforma, avaliar os ambientes e esclarecer decisões do projeto."},
   marcenaria: {name:"Móveis planejados", detail:"Projeto e execução de móveis sob medida após levantamento no imóvel e verificação das fixações."},
   acompanhamento_obra: {name:"Acompanhamento de obra", detail:"Acompanhamento da execução da reforma por profissional habilitado, conforme o projeto e as regras do condomínio."},
   interiores: {name:"Design de interiores", detail:"Planejamento dos ambientes, mobiliário, iluminação e acabamentos conforme as condições reais do apartamento."},
@@ -117,28 +118,6 @@ const SPONSORS = [
     }
   },
   {
-    id:"fernanda-souza",
-    name:"Fernanda Souza",
-    services:["marcenaria"],
-    whatsapp:"5512982034901",
-    message:"Olá, Fernanda! Vim pelo Riviera Plantas. Vi os 20% de desconto no projeto inteiro e o cooktop de brinde para quem fechar uma cozinha. Gostaria de conversar sobre o meu apartamento.",
-    active:true,
-    campaign:{
-      premium:true,
-      gift:{title:"Cooktop de brinde",condition:"Ao fechar uma cozinha pelo site."},
-      offer:"20% de desconto no projeto inteiro",
-      description:"O desconto vale para qualquer projeto vindo do site.",
-      event:{
-        endAt:"2026-11-01T00:00:00-03:00",
-        days:[
-          {week:"SEX",day:"30",label:"Sexta-feira, 30 de outubro de 2026"},
-          {week:"SÁB",day:"31",label:"Sábado, 31 de outubro de 2026"}
-        ],
-        note:"Coquetel com comes e bebes. Pergunte o horário e o endereço pelo WhatsApp."
-      }
-    }
-  },
-  {
     id:"gisa-studio",
     name:"GISÁ STUDIO | PROJETOS E OBRAS",
     services:["interiores"],
@@ -161,10 +140,11 @@ const SPONSORS = [
   {
     id:"raissa-tayna-klasman",
     name:"Arq. Raíssa Tayná Klasman",
-    services:["acompanhamento_obra","interiores"],
+    services:["consultoria_arquitetonica","acompanhamento_obra","interiores"],
     whatsapp:"5545999836972",
-    message:"Olá, Raíssa! Vim pelo Riviera Plantas e gostaria de conversar sobre acompanhamento de obra ou design de interiores no meu apartamento no Riviera Martim de Sá.",
-    active:true
+    message:"Olá, Raíssa! Vim pelo Riviera Plantas e gostaria de conversar sobre consultoria arquitetônica, acompanhamento de obra ou design de interiores no meu apartamento no Riviera Martim de Sá.",
+    active:true,
+    campaign:{premium:true}
   },
   {
     id:"taynara-murade",
